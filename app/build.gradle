@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion '29.0.3'
+
+    defaultConfig {
+        applicationId "com.moko.mkscannerpro"
+        minSdkVersion 18
+        targetSdkVersion 29
+        versionCode 14
+        versionName "1.0.13"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                def formatedDate = new Date().format("yyyyMMddHHmm")
+                def apkFileName = "MKScannerPro_${defaultConfig.versionName}_${formatedDate}.apk"
+                if (outputFile.name.contains('debug')) {
+                    apkFileName = "MKScannerPro_${defaultConfig.versionName}_${formatedDate}_debug.apk"
+                }
+                outputFileName = apkFileName
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: '*.jar', dir: 'libs')
+    implementation project(path: ':mokosupport')
+    // Butter Knife
+    implementation 'com.jakewharton:butterknife:10.2.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.10'
+    implementation 'com.github.lzyzsd:circleprogress:1.2.1'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.59'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
+}

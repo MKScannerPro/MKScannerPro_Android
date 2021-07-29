@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey_f2f2f2">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:background="@color/blue_0188cc"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="back"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:id="@+id/tv_device_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text=""
+            android:textColor="@color/white_ffffff"
+            android:textSize="17sp" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="55dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/grey_f2f2f2">
+
+            <TextView
+                android:id="@+id/rssi_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="12dp"
+                android:text="RSSI Filter"
+                android:textColor="@color/black_333333"
+                android:textSize="18sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="(-100dBm~0dBm)"
+                android:textColor="@color/grey_808080"
+                android:textSize="13sp"
+                app:layout_constraintBaseline_toBaselineOf="@id/rssi_filter"
+                app:layout_constraintLeft_toRightOf="@id/rssi_filter" />
+
+            <LinearLayout
+                android:id="@+id/ll_rssi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rssi_filter">
+
+
+                <SeekBar
+                    android:id="@+id/sb_rssi"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:max="100"
+                    android:maxHeight="3dp"
+                    android:minHeight="3dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/seekbar_normal"
+                    android:thumb="@drawable/shape_thumb"
+                    android:thumbOffset="10dp" />
+
+                <TextView
+                    android:id="@+id/tv_rssi"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/scan_filter_rssi"
+                    android:textColor="@color/black_333333"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/name_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="Name Filter"
+                android:textColor="@color/black_333333"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@id/iv_name_filter"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/iv_name_filter" />
+
+            <ImageView
+                android:id="@+id/iv_name_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="12dp"
+                android:paddingTop="20dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="20dp"
+                android:src="@drawable/checkbox_close"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ll_rssi" />
+
+            <EditText
+                android:id="@+id/et_filter_name"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1.0"
+                android:background="@drawable/shape_radius_edit_bg"
+                android:hint="1~29 Characters"
+                android:maxLength="29"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textColor="@color/black_333333"
+                android:textColorHint="@color/grey_d9d9d9"
+                android:textSize="18sp"
+                android:visibility="gone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_name_filter" />
+
+            <TextView
+                android:id="@+id/mac_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="MAC Filter"
+                android:textColor="@color/black_333333"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@id/iv_mac_filter"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/iv_mac_filter" />
+
+            <ImageView
+                android:id="@+id/iv_mac_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="12dp"
+                android:paddingTop="20dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="20dp"
+                android:src="@drawable/checkbox_close"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_filter_name" />
+
+            <EditText
+                android:id="@+id/et_filter_mac"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1.0"
+                android:background="@drawable/shape_radius_edit_bg"
+                android:digits="0123456789abcdefABCDEF"
+                android:hint="6 Bytes"
+                android:maxLength="12"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textColor="@color/black_333333"
+                android:textColorHint="@color/grey_d9d9d9"
+                android:textSize="18sp"
+                android:visibility="gone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_mac_filter" />
+
+            <TextView
+                android:id="@+id/raw_data_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="Raw Data Filter"
+                android:textColor="@color/black_333333"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@id/iv_raw_data_filter"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/iv_raw_data_filter" />
+
+            <ImageView
+                android:id="@+id/iv_raw_data_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="12dp"
+                android:paddingTop="20dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="20dp"
+                android:src="@drawable/checkbox_close"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_filter_mac" />
+
+            <ImageView
+                android:id="@+id/iv_raw_data_del"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:paddingLeft="12dp"
+                android:paddingTop="20dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="20dp"
+                android:src="@drawable/ic_del"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/iv_raw_data_filter"
+                app:layout_constraintRight_toLeftOf="@id/iv_raw_data_filter"
+                app:layout_constraintTop_toTopOf="@id/iv_raw_data_filter" />
+
+            <ImageView
+                android:id="@+id/iv_raw_data_add"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:paddingLeft="12dp"
+                android:paddingTop="20dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="20dp"
+                android:src="@drawable/ic_add"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/iv_raw_data_filter"
+                app:layout_constraintRight_toLeftOf="@id/iv_raw_data_del"
+                app:layout_constraintTop_toTopOf="@id/iv_raw_data_filter" />
+
+
+            <LinearLayout
+                android:id="@+id/ll_raw_data_filter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintLeft_toLeftOf="@id/raw_data_filter"
+                app:layout_constraintRight_toRightOf="@id/iv_raw_data_filter"
+                app:layout_constraintTop_toBottomOf="@id/iv_raw_data_filter" />
+
+            <TextView
+                android:id="@+id/tv_done"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="53dp"
+                android:layout_marginRight="53dp"
+                android:background="@drawable/shape_corner_btn_bg"
+                android:gravity="center"
+                android:text="@string/modify_device_name_done"
+                android:textColor="@color/white_ffffff"
+                android:textSize="18sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ll_raw_data_filter" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

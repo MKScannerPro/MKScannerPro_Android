@@ -1,0 +1,171 @@
+<resources>
+    <string name="app_name">MKScannerPro</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="connect">Connect</string>
+    <string name="clear">Clear</string>
+    <string name="save">Save</string>
+    <string name="wait">Waiting...</string>
+    <string name="mqtt_connecting">Connecting...</string>
+    <string name="mqtt_connected">Connected</string>
+    <string name="mqtt_connect_failed">Connect Failed</string>
+    <string name="network_error">Network error,please check.</string>
+    <string name="device_offline">device is off-line</string>
+    <string name="guide_center">MKScannerPro</string>
+    <string name="guide_company_info">MOKO TECHNOLOGY LTD.</string>
+    <string name="main_welcome">Please add new device!</string>
+    <string name="main_add_device">Add Devices</string>
+    <string name="select_device_type">Select Device Type</string>
+    <string name="select_device_moko_plug">Moko plug</string>
+    <string name="select_device_wall_switch">Wall Switch</string>
+    <string name="add_device_title">Add Device</string>
+    <string name="add_plug_tips">Plug in the device and confirm \nthat indicator is blinking amber</string>
+    <string name="add_wall_switch_tips">Plug in the device and confirm \nthat indicator is blinking red</string>
+    <string name="not_blinking_amber_tips">My light is not blinking amber</string>
+    <string name="not_blinking_red_tips">My light is not blinking red</string>
+    <string name="plug_blinking">Indicator blink amber light</string>
+    <string name="wall_switch_blinking">Indicator blink red light</string>
+    <string name="support_wifi_tips">This app supports only 2.4GHz Wi-Fi network.</string>
+    <string name="settings">Settings</string>
+    <string name="settings_mqtt_device">MQTT settings for device</string>
+    <string name="settings_mqtt_app">MQTT settings for APP</string>
+    <string name="operation_steps_title">Operation Steps</string>
+    <string name="operation_steps_1">Step 1</string>
+    <string name="operation_steps_1_content">Plug the device in power</string>
+    <string name="operation_steps_2">Step 2</string>
+    <string name="operation_steps_3">Step 3</string>
+    <string name="operation_steps_2_content">Hold the button for 10s until the LED blink amber</string>
+    <string name="wall_switch_operation_steps_2_content">Hold the button for 10s until the LED blink red</string>
+    <string name="wall_switch_operation_steps_3_content">Confirm the indicator light is blinking</string>
+
+
+    <string name="mqtt_server">MQTT Server</string>
+    <string name="mqtt_host">Host</string>
+    <string name="mqtt_port">Port</string>
+    <string name="mqtt_clean_session">Clean Session</string>
+    <string name="mqtt_connct_mode">Connect Mode</string>
+    <string name="mqtt_topic_tips">Note：Input your  topic to communicate with the device or set the topic to empty.</string>
+    <string name="mqtt_connct_mode_tcp">TCP</string>
+    <string name="mqtt_connct_mode_ssl_one_way">One-way SSL</string>
+    <string name="mqtt_connct_mode_ssl_two_way">Two-way SSL</string>
+    <string name="mqtt_qos">Qos</string>
+    <string name="mqtt_keep_alive">Keep Alive</string>
+    <string name="mqtt_client_id">Client Id</string>
+    <string name="mqtt_device_id">Device Id</string>
+    <string name="mqtt_topic_subscribe">Subscribed Topic</string>
+    <string name="mqtt_topic_publish">Published Topic</string>
+    <string name="mqtt_username">Username</string>
+    <string name="mqtt_Password">Password</string>
+    <string name="mqtt_verify_client_id_empty">ClientId error</string>
+    <string name="mqtt_verify_device_id_empty">DeivceId error</string>
+    <string name="mqtt_verify_host">Host error</string>
+    <string name="mqtt_verify_port">Port range : 0~65535</string>
+    <string name="mqtt_verify_port_empty">Port error</string>
+    <string name="mqtt_verify_keep_alive">Keep alive range : 10~120</string>
+    <string name="mqtt_verify_username">Username error</string>
+    <string name="mqtt_verify_password">Password error</string>
+    <string name="mqtt_verify_client_id">ClientId error</string>
+    <string name="mqtt_verify_length">Length range is 0~32</string>
+    <string name="mqtt_verify_catalogue">Catalogue error</string>
+    <string name="mqtt_verify_ca">CA error</string>
+    <string name="mqtt_verify_topic_subscribe">Subscribed Topic error</string>
+    <string name="mqtt_verify_topic_publish">Published Topic error</string>
+    <string name="mqtt_verify_client_key">Client Key error</string>
+    <string name="mqtt_verify_client_cert">Client Cert error</string>
+    <string name="success">Success</string>
+    <string name="update_success">Update Success</string>
+    <string name="failed">Failed</string>
+    <string name="update_failed">Update Failed</string>
+    <string name="switch_on">On</string>
+    <string name="switch_off">Off</string>
+    <string name="device_state_offline">Off-line</string>
+    <string name="device_state_online">On-line</string>
+    <string name="wifi_alert_title">Connect  to device\'s hotspot</string>
+    <string name="wifi_alert_1_1">1.  Open"Setting</string>
+    <string name="wifi_alert_1_2">> WLAN"</string>
+    <string name="wifi_alert_2">2.  Connect to the Wi-Fi as below</string>
+    <string name="wifi_alert_3">3.  Back to the  App and continue</string>
+    <string name="wifi_input_title">Please enter Wi-Fi information</string>
+    <string name="wifi_input_ssid">Wi-Fi :</string>
+    <string name="wifi_input_password">Password :</string>
+    <string name="wifi_verify_empty">Please enter a valid name of wifi.</string>
+    <string name="wifi_connecting">Connecting...</string>
+    <string name="mqtt_connecting_title">Connecting now</string>
+    <string name="mqtt_connecting_content">Make sure your phone and device are \nas close to your router as possible.</string>
+    <string name="mqtt_connecting_timeout">Connect Timeout</string>
+
+    <string name="modify_device_name_conn_success">Connection successful</string>
+    <string name="modify_device_name_done">Done</string>
+    <string name="modify_device_name_empty">Device name can\'t be blank</string>
+    <string name="device_detail_switch_off">Socket is off</string>
+    <string name="device_detail_switch_offline">Socket is offline</string>
+    <string name="device_detail_switch_on">Socket is on</string>
+    <string name="device_detail_schedule">Schedule</string>
+    <string name="device_detail_timer">Timer</string>
+    <string name="device_detail_statistics">Statistics</string>
+    <string name="device_detail_schedule_tips">The timing function needs to be improved.</string>
+
+    <string name="electricity_title">Electricity Management</string>
+    <string name="electricity_current">Current(mA)</string>
+    <string name="electricity_voltage">Voltage(V)</string>
+    <string name="electricity_power">Power(W)</string>
+
+
+    <string name="permission_storage_close_title">Storage permission is not available</string>
+    <string name="permission_storage_close_content">Please find it in cellphone setting- permission, and allow MKScannerPro use the Storage permission</string>
+    <string name="permission_storage_need_title">Please turn on Storage permissions</string>
+    <string name="permission_storage_need_content">MKScannerPro requires access to Storage permission. If the permissions are not on, MKScannerPro cannot be used normally.</string>
+    <string name="countdown_timer_on">Countdown timer (on)</string>
+    <string name="countdown_timer_off">Countdown timer (off)</string>
+
+    <string name="more_title">More</string>
+    <string name="more_modify_name">Modify device name</string>
+    <string name="more_modify_name_title">Modify Device Name</string>
+    <string name="more_modify_switch_title">Modify Switch Name</string>
+    <string name="more_modify_name_tips">Device name can\'t be blank</string>
+    <string name="more_modify_switch_name_tips">Switch name can\'t be blank</string>
+    <string name="more_device_info">Device information</string>
+    <string name="more_new_firmware">Check update</string>
+    <string name="more_modify_power_status">Modify power status</string>
+    <string name="more_about">About</string>
+    <string name="more_app_version">App version</string>
+    <string name="more_remove_device">Remove Device</string>
+    <string name="more_reset">Reset</string>
+
+    <string name="device_info_title">Device Information</string>
+    <string name="device_info_company">Company Name</string>
+    <string name="device_info_date">Date of Manufacture</string>
+    <string name="device_info_name">Product Model</string>
+    <string name="device_info_version">Firmware Version</string>
+    <string name="device_info_mac">Device Mac</string>
+    <string name="device_info_no_statistics">The device does not have this function</string>
+
+    <string name="ensure">OK</string>
+    <string name="permission_open">OK</string>
+    <string name="location_need_title">Turn on Location permission</string>
+    <string name="location_need_content">After that, MKScannerPro could search the wifi</string>
+    <string name="permission_location_close_title">Location persission is not available</string>
+    <string name="permission_location_close_content">Please find it in cellphone setting- permission, and allow MKScannerPro use the Location and Storage permission</string>
+    <string name="permission_location_need_title">Turn on Location permission</string>
+    <string name="permission_location_need_content">After that, MKScannerPro could search the wifi</string>
+    <string name="mqtt_app_username"><![CDATA[iot_plug_https_test_app&a1iOTRs8KwG]]></string>
+    <string name="mqtt_device_username"><![CDATA[iot_plug_https_test_device1&a1iOTRs8KwG]]></string>
+    <string name="version_info">Version:%s</string>
+    <string name="about_moko_name">MOKO TECHNOLOGY LTD.</string>
+    <string name="company_website">www.mokosmart.com</string>
+    <string name="scan_device_name">Name:%s</string>
+    <string name="scan_device_mac">MAC:%s</string>
+    <string name="scan_device_rssi">RSSI:%ddBm</string>
+    <string name="scan_device_raw_data">Raw Data:%s</string>
+    <string name="scan_device_total">total:%d</string>
+    <string name="scan_filter_rssi">%ddBm</string>
+    <string-array name="update_type">
+        <item>Firmware</item>
+        <item>CA certification</item>
+        <item>Client certification</item>
+        <item>Client key</item>
+    </string-array>
+
+
+</resources>

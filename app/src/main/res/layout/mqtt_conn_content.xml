@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/mqtt_connecting_title"
+        android:textColor="@color/black_333333"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+
+    <com.github.lzyzsd.circleprogress.DonutProgress
+        android:id="@+id/dp_progress"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="33dp"
+        android:layout_marginTop="33dp"
+        app:donut_circle_starting_degree="-90"
+        app:donut_finished_color="@color/blue_0188cc"
+        app:donut_finished_stroke_width="5dp"
+        app:donut_max="100"
+        app:donut_progress="0"
+        app:donut_text="0%"
+        app:donut_text_color="@color/black_333333"
+        app:donut_unfinished_color="@color/grey_cccccc"
+        app:donut_unfinished_stroke_width="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/mqtt_connecting_content"
+        android:textColor="@color/black_333333"
+        android:textSize="15sp" />
+</LinearLayout>
