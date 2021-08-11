@@ -1,0 +1,4 @@
+<paths>
+    <external-path name="log" path="MKScannerPro/"/>
+    <external-path name="*" path="."/>
+</paths>

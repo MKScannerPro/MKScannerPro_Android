@@ -8,8 +8,7 @@
 
     <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="54dp"
-
+        android:layout_height="55dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -22,7 +21,7 @@
             android:gravity="center"
             android:text="About MOKO"
             android:textColor="@color/white_ffffff"
-            android:textSize="18sp" />
+            android:textSize="17sp" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -86,7 +85,7 @@
                         android:drawablePadding="10dp"
                         android:gravity="center_vertical"
                         android:text="Fax"
-                        android:textSize="18sp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -118,7 +117,7 @@
                         android:drawablePadding="10dp"
                         android:gravity="center_vertical"
                         android:text="Tel"
-                        android:textSize="18sp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -150,7 +149,7 @@
                         android:drawablePadding="10dp"
                         android:gravity="center_vertical"
                         android:text="Add"
-                        android:textSize="18sp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -182,7 +181,7 @@
                         android:drawablePadding="10dp"
                         android:gravity="center_vertical"
                         android:text="Website"
-                        android:textSize="18sp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:layout_width="wrap_content"

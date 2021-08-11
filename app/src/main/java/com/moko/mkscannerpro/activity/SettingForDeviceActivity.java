@@ -1,58 +1,73 @@
 package com.moko.mkscannerpro.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
-import com.moko.support.MokoConstants;
+import com.moko.mkscannerpro.utils.SPUtiles;
+import com.moko.support.MQTTConstants;
+import com.moko.support.MQTTSupport;
+import com.moko.support.entity.ConfigInfo;
+import com.moko.support.entity.MsgDeviceInfo;
+import com.moko.support.entity.MsgReadResult;
+import com.moko.support.event.DeviceOnlineEvent;
+import com.moko.support.event.MQTTMessageArrivedEvent;
+import com.moko.support.handler.MQTTMessageAssembler;
+
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * @Date 2019/10/21
- * @Author wenzheng.liu
- * @Description
- * @ClassPath com.moko.mkscannerpro.activity.SettingForDeviceActivity
- */
+
 public class SettingForDeviceActivity extends BaseActivity {
 
-    public static String TAG = "SettingForDeviceActivity";
+    public static String TAG = SettingForDeviceActivity.class.getSimpleName();
+    @BindView(R.id.tv_type)
+    TextView tvType;
     @BindView(R.id.tv_host)
     TextView tvHost;
     @BindView(R.id.tv_port)
     TextView tvPort;
-    @BindView(R.id.tv_clean_session)
-    TextView tvCleanSession;
+    @BindView(R.id.tv_client_id)
+    TextView tvClientId;
     @BindView(R.id.tv_user_name)
     TextView tvUserName;
     @BindView(R.id.tv_password)
     TextView tvPassword;
+    @BindView(R.id.tv_clean_session)
+    TextView tvCleanSession;
     @BindView(R.id.tv_qos)
     TextView tvQos;
     @BindView(R.id.tv_keep_alive)
     TextView tvKeepAlive;
-    @BindView(R.id.tv_client_id)
-    TextView tvClientId;
     @BindView(R.id.tv_device_id)
     TextView tvDeviceId;
-    @BindView(R.id.tv_connect_mode)
-    TextView tvConnectMode;
     @BindView(R.id.tv_subscribe_topic)
     TextView tvSubscribeTopic;
     @BindView(R.id.tv_publish_topic)
     TextView tvPublishTopic;
-    private MokoDevice mokoDevice;
+
+    private MokoDevice mMokoDevice;
+    private MQTTConfig appMqttConfig;
+
+    public Handler mHandler;
 
 
     @Override
@@ -60,61 +75,98 @@ public class SettingForDeviceActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_for_device);
         ButterKnife.bind(this);
-        mokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
-        String mqttConfigDeviceStr = mokoDevice.mqttInfo;
-        MQTTConfig mqttConfig = new Gson().fromJson(mqttConfigDeviceStr, MQTTConfig.class);
+        String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
+        appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
+        mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
 
-        tvHost.setText(mqttConfig.host);
-        tvPort.setText(mqttConfig.port);
-        tvCleanSession.setText(mqttConfig.cleanSession ? "ON" : "OFF");
-        tvUserName.setText(mqttConfig.username);
-        tvPassword.setText(mqttConfig.password);
-        tvQos.setText(mqttConfig.qos + "");
-        tvKeepAlive.setText(mqttConfig.keepAlive + "");
-        tvClientId.setText(mqttConfig.clientId);
-        tvDeviceId.setText(mqttConfig.uniqueId);
-
-        if (mqttConfig.connectMode == 0) {
-            tvConnectMode.setText(getString(R.string.mqtt_connct_mode_tcp));
-        }
-        if (mqttConfig.connectMode == 1) {
-            tvConnectMode.setText(getString(R.string.mqtt_connct_mode_ssl_one_way));
-        }
-        if (mqttConfig.connectMode == 3) {
-            tvConnectMode.setText(getString(R.string.mqtt_connct_mode_ssl_two_way));
-        }
-        tvSubscribeTopic.setText(mqttConfig.topicSubscribe);
-        tvPublishTopic.setText(mqttConfig.topicPublish);
-        // 注册广播接收器
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(AppConstants.ACTION_DEVICE_STATE);
-        registerReceiver(mReceiver, filter);
+        mHandler = new Handler(Looper.getMainLooper());
+        showLoadingProgressDialog();
+        mHandler.postDelayed(() -> {
+            dismissLoadingProgressDialog();
+            finish();
+        }, 30 * 1000);
+        getSettingForDevice();
     }
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (AppConstants.ACTION_DEVICE_STATE.equals(action)) {
-                String topic = intent.getStringExtra(MokoConstants.EXTRA_MQTT_RECEIVE_TOPIC);
-                if (topic.equals(mokoDevice.topicPublish)) {
-                    boolean isOnline = intent.getBooleanExtra(MokoConstants.EXTRA_MQTT_RECEIVE_STATE, false);
-                    mokoDevice.isOnline = isOnline;
-                    if (!isOnline) {
-                        finish();
-                    }
-                }
-            }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMQTTMessageArrivedEvent(MQTTMessageArrivedEvent event) {
+        // 更新所有设备的网络状态
+        final String topic = event.getTopic();
+        final String message = event.getMessage();
+        if (TextUtils.isEmpty(message))
+            return;
+        JSONObject object = new Gson().fromJson(message, JSONObject.class);
+        int msg_id = 0;
+        try {
+            msg_id = object.getInt("msg_id");
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-    };
+        if (msg_id == MQTTConstants.READ_MSG_ID_CONFIG_INFO) {
+            Type type = new TypeToken<MsgReadResult<ConfigInfo>>() {
+            }.getType();
+            MsgReadResult<ConfigInfo> result = new Gson().fromJson(message, type);
+            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
+                return;
+            }
+            dismissLoadingProgressDialog();
+            mHandler.removeMessages(0);
+            tvHost.setText(result.data.host);
+            tvPort.setText(String.valueOf(result.data.port));
+            tvCleanSession.setText(result.data.clean_session == 0 ? "NO" : "YES");
+            tvUserName.setText(result.data.username);
+            tvPassword.setText(result.data.password);
+            tvQos.setText(String.valueOf(result.data.qos));
+            tvKeepAlive.setText(String.valueOf(result.data.keep_alive));
+            tvClientId.setText(result.data.client_id);
+            tvDeviceId.setText(result.data.device_id);
+
+            if (result.data.connect_type == 0) {
+                tvType.setText(getString(R.string.mqtt_connct_mode_tcp));
+            }
+            if (result.data.connect_type == 1) {
+                tvType.setText(getString(R.string.mqtt_connct_mode_ssl_one_way));
+            }
+            if (result.data.connect_type == 3) {
+                tvType.setText(getString(R.string.mqtt_connct_mode_ssl_two_way));
+            }
+            tvSubscribeTopic.setText(result.data.subscribe_topic);
+            tvPublishTopic.setText(result.data.publish_topic);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDeviceOnlineEvent(DeviceOnlineEvent event) {
+        String deviceId = event.getDeviceId();
+        if (!mMokoDevice.deviceId.equals(deviceId)) {
+            return;
+        }
+        boolean online = event.isOnline();
+        if (!online) {
+            finish();
+        }
+    }
 
     public void back(View view) {
         finish();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(mReceiver);
+
+    private void getSettingForDevice() {
+        String appTopic;
+        if (TextUtils.isEmpty(appMqttConfig.topicPublish)) {
+            appTopic = mMokoDevice.topicSubscribe;
+        } else {
+            appTopic = appMqttConfig.topicPublish;
+        }
+        MsgDeviceInfo deviceInfo = new MsgDeviceInfo();
+        deviceInfo.device_id = mMokoDevice.deviceId;
+        deviceInfo.mac = mMokoDevice.mac;
+        String message = MQTTMessageAssembler.assembleReadDeviceConfigInfo(deviceInfo);
+        try {
+            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.READ_MSG_ID_CONFIG_INFO, appMqttConfig.qos);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 }

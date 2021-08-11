@@ -7,13 +7,14 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="55dp"
         android:background="@color/blue_0188cc">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:onClick="setAppMqttConfig"
+            android:clickable="true"
+            android:onClick="setAppMQTTConfig"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:scaleType="fitCenter"
@@ -26,13 +27,14 @@
             android:layout_centerInParent="true"
             android:text="@string/app_name"
             android:textColor="@color/white_ffffff"
-            android:textSize="18sp" />
+            android:textSize="17sp" />
 
         <ImageView
             android:id="@+id/iv_about"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
+            android:clickable="true"
             android:onClick="about"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
@@ -49,17 +51,11 @@
         android:layout_height="0dp"
         android:layout_weight="1.0">
 
-        <ListView
-            android:id="@+id/lv_device_list"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_device_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/grey_ebebeb"
-            android:cacheColorHint="@color/transparent"
-            android:clipToPadding="false"
-            android:divider="@color/grey_d9d9d9"
-            android:dividerHeight="1dp"
-            android:listSelector="@color/transparent"
-            android:scrollbarStyle="outsideOverlay" />
+            android:overScrollMode="never" />
 
         <RelativeLayout
             android:id="@+id/rl_empty"
@@ -75,7 +71,7 @@
                 android:layout_marginTop="50dp"
                 android:text="@string/main_welcome"
                 android:textColor="@color/grey_808080"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -90,14 +86,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
         android:layout_marginLeft="53dp"
-        android:layout_marginBottom="70dp"
         android:layout_marginRight="53dp"
+        android:layout_marginBottom="50dp"
         android:background="@drawable/shape_corner_btn_bg"
+        android:clickable="true"
         android:gravity="center"
         android:onClick="mainAddDevices"
         android:text="@string/main_add_device"
         android:textColor="@color/white_ffffff"
-        android:textSize="18sp" />
+        android:textSize="15sp" />
 </LinearLayout>

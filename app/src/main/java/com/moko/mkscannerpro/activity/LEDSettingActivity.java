@@ -1,40 +1,43 @@
 package com.moko.mkscannerpro.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Message;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.CheckBox;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
-import com.moko.mkscannerpro.db.DBTools;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
-import com.moko.mkscannerpro.service.MokoService;
 import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
-import com.moko.support.MokoConstants;
-import com.moko.support.handler.BaseMessageHandler;
+import com.moko.support.MQTTConstants;
+import com.moko.support.MQTTSupport;
+import com.moko.support.entity.IndicatorLightStatus;
+import com.moko.support.entity.MsgConfigResult;
+import com.moko.support.entity.MsgDeviceInfo;
+import com.moko.support.entity.MsgReadResult;
+import com.moko.support.event.DeviceOnlineEvent;
+import com.moko.support.event.MQTTMessageArrivedEvent;
+import com.moko.support.event.MQTTPublishFailureEvent;
+import com.moko.support.event.MQTTPublishSuccessEvent;
 import com.moko.support.handler.MQTTMessageAssembler;
-import com.moko.support.utils.MokoUtils;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.Arrays;
+import java.lang.reflect.Type;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class LEDSettingActivity extends BaseActivity {
 
@@ -48,15 +51,13 @@ public class LEDSettingActivity extends BaseActivity {
     CheckBox cbServerConnected;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
-    private MokoService mokoService;
 
     private int bleBroadcastEnable;
     private int bleConnectedEnable;
     private int serverConnectingEnable;
     private int serverConnectedEnable;
 
-
-    private int mPublishType;
+    public Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,147 +68,89 @@ public class LEDSettingActivity extends BaseActivity {
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
 
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
-        mHandler = new MessageHandler(this);
-        bindService(new Intent(this, MokoService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        mHandler = new Handler(Looper.getMainLooper());
+        showLoadingProgressDialog();
+        mHandler.postDelayed(() -> {
+            dismissLoadingProgressDialog();
+            LEDSettingActivity.this.finish();
+        }, 30 * 1000);
+        getLEDStatus();
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mokoService = ((MokoService.LocalBinder) service).getService();
-            // 注册广播接收器
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(MokoConstants.ACTION_MQTT_CONNECTION);
-            filter.addAction(MokoConstants.ACTION_MQTT_RECEIVE);
-            filter.addAction(MokoConstants.ACTION_MQTT_PUBLISH);
-            filter.addAction(AppConstants.ACTION_MODIFY_NAME);
-            filter.addAction(AppConstants.ACTION_DEVICE_STATE);
-            registerReceiver(mReceiver, filter);
-            showLoadingProgressDialog(getString(R.string.wait));
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    dismissLoadingProgressDialog();
-                    LEDSettingActivity.this.finish();
-                }
-            }, 30 * 1000);
-            getLEDStatus();
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMQTTMessageArrivedEvent(MQTTMessageArrivedEvent event) {
+        // 更新所有设备的网络状态
+        final String topic = event.getTopic();
+        final String message = event.getMessage();
+        if (TextUtils.isEmpty(message))
+            return;
+        JSONObject object = new Gson().fromJson(message, JSONObject.class);
+        int msg_id = 0;
+        try {
+            msg_id = object.getInt("msg_id");
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
-
-
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (MokoConstants.ACTION_MQTT_CONNECTION.equals(action)) {
-                int state = intent.getIntExtra(MokoConstants.EXTRA_MQTT_CONNECTION_STATE, 0);
+        if (msg_id == MQTTConstants.READ_MSG_ID_INDICATOR_STATUS) {
+            Type type = new TypeToken<MsgReadResult<IndicatorLightStatus>>() {
+            }.getType();
+            MsgReadResult<IndicatorLightStatus> result = new Gson().fromJson(message, type);
+            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
+                return;
             }
-            if (MokoConstants.ACTION_MQTT_PUBLISH.equals(action)) {
-                int state = intent.getIntExtra(MokoConstants.EXTRA_MQTT_STATE, 0);
-                if (state == MokoConstants.MQTT_STATE_SUCCESS) {
-                    if (mPublishType > 0) {
-                        dismissLoadingProgressDialog();
-                        ToastUtils.showToast(LEDSettingActivity.this, "Succeed");
-                        mHandler.removeMessages(0);
-                    }
-                }
+            dismissLoadingProgressDialog();
+            mHandler.removeMessages(0);
+            bleBroadcastEnable = result.data.ble_adv;
+            bleConnectedEnable = result.data.ble_connected;
+            serverConnectingEnable = result.data.server_connecting;
+            serverConnectedEnable = result.data.server_connected;
+            if (bleConnectedEnable == 1) {
+                cbBleConnected.setChecked(true);
             }
-            if (MokoConstants.ACTION_MQTT_RECEIVE.equals(action)) {
-                final String topic = intent.getStringExtra(MokoConstants.EXTRA_MQTT_RECEIVE_TOPIC);
-                byte[] receive = intent.getByteArrayExtra(MokoConstants.EXTRA_MQTT_RECEIVE_MESSAGE);
-                int header = receive[0] & 0xFF;
-                if (header == 0x1b)// LED
-                {
-                    int length = receive[1] & 0xFF;
-                    byte[] id = Arrays.copyOfRange(receive, 2, 2 + length);
-                    if (mMokoDevice.uniqueId.equals(new String(id))) {
-                        dismissLoadingProgressDialog();
-                        mHandler.removeMessages(0);
-                        byte[] dataLength = Arrays.copyOfRange(receive, 2 + length, 4 + length);
-                        if (MokoUtils.toInt(dataLength) == 4) {
-                            int allLength = receive.length;
-                            bleConnectedEnable = receive[allLength - 1];
-                            bleBroadcastEnable = receive[allLength - 2];
-                            serverConnectedEnable = receive[allLength - 3];
-                            serverConnectingEnable = receive[allLength - 4];
-                            if (bleConnectedEnable == 1) {
-                                cbBleConnected.setChecked(true);
-                            }
-                            if (bleBroadcastEnable == 1) {
-                                cbBleBroadcast.setChecked(true);
-                            }
-                            if (serverConnectingEnable == 1) {
-                                cbServerConnecting.setChecked(true);
-                            }
-                            if (serverConnectedEnable == 1) {
-                                cbServerConnected.setChecked(true);
-                            }
-                        }
-                    }
-                }
+            if (bleBroadcastEnable == 1) {
+                cbBleBroadcast.setChecked(true);
             }
-            if (AppConstants.ACTION_MODIFY_NAME.equals(action)) {
-                MokoDevice device = DBTools.getInstance(LEDSettingActivity.this).selectDevice(mMokoDevice.uniqueId);
-                mMokoDevice.nickName = device.nickName;
+            if (serverConnectingEnable == 1) {
+                cbServerConnecting.setChecked(true);
             }
-            if (AppConstants.ACTION_DEVICE_STATE.equals(action)) {
-                String topic = intent.getStringExtra(MokoConstants.EXTRA_MQTT_RECEIVE_TOPIC);
-                if (topic.equals(mMokoDevice.topicPublish)) {
-                    boolean isOnline = intent.getBooleanExtra(MokoConstants.EXTRA_MQTT_RECEIVE_STATE, false);
-                    mMokoDevice.isOnline = isOnline;
-                    if (!isOnline) {
-                        finish();
-                    }
-                }
+            if (serverConnectedEnable == 1) {
+                cbServerConnected.setChecked(true);
             }
         }
-    };
+        if (msg_id == MQTTConstants.CONFIG_MSG_ID_INDICATOR_STATUS) {
+            Type type = new TypeToken<MsgConfigResult>() {
+            }.getType();
+            MsgConfigResult result = new Gson().fromJson(message, type);
+            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
+                return;
+            }
+            dismissLoadingProgressDialog();
+            mHandler.removeMessages(0);
+            if (result.result_code == 0) {
+                ToastUtils.showToast(this, "Set up succeed");
+            } else {
+                ToastUtils.showToast(this, "Set up failed");
+            }
+        }
+    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(mReceiver);
-        unbindService(serviceConnection);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDeviceOnlineEvent(DeviceOnlineEvent event) {
+        String deviceId = event.getDeviceId();
+        if (!mMokoDevice.deviceId.equals(deviceId)) {
+            return;
+        }
+        boolean online = event.isOnline();
+        if (!online) {
+            finish();
+        }
     }
 
     public void back(View view) {
         finish();
     }
 
-    @OnClick({R.id.tv_confirm})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.tv_confirm:
-                if (!mokoService.isConnected()) {
-                    ToastUtils.showToast(this, R.string.network_error);
-                    return;
-                }
-                if (!mMokoDevice.isOnline) {
-                    ToastUtils.showToast(this, R.string.device_offline);
-                    return;
-                }
-                bleBroadcastEnable = cbBleBroadcast.isChecked() ? 1 : 0;
-                bleConnectedEnable = cbBleConnected.isChecked() ? 1 : 0;
-                serverConnectingEnable = cbServerConnecting.isChecked() ? 1 : 0;
-                serverConnectedEnable = cbServerConnected.isChecked() ? 1 : 0;
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        dismissLoadingProgressDialog();
-                        LEDSettingActivity.this.finish();
-                    }
-                }, 30 * 1000);
-                showLoadingProgressDialog(getString(R.string.wait));
-                setLEDStatus();
-                break;
-        }
-    }
 
     private void setLEDStatus() {
         String appTopic;
@@ -216,16 +159,21 @@ public class LEDSettingActivity extends BaseActivity {
         } else {
             appTopic = appMqttConfig.topicPublish;
         }
-        mPublishType = 1;
-        byte[] message = MQTTMessageAssembler.assembleWriteLEDStatus(mMokoDevice.uniqueId,
-                bleBroadcastEnable, bleConnectedEnable, serverConnectingEnable, serverConnectedEnable);
+        MsgDeviceInfo deviceInfo = new MsgDeviceInfo();
+        deviceInfo.device_id = mMokoDevice.deviceId;
+        deviceInfo.mac = mMokoDevice.mac;
+        IndicatorLightStatus lightStatus = new IndicatorLightStatus();
+        lightStatus.ble_adv = bleBroadcastEnable;
+        lightStatus.ble_connected = bleConnectedEnable;
+        lightStatus.server_connecting = serverConnectingEnable;
+        lightStatus.server_connected = serverConnectedEnable;
+        String message = MQTTMessageAssembler.assembleWriteLEDStatus(deviceInfo, lightStatus);
         try {
-            mokoService.publish(appTopic, message, appMqttConfig.qos);
+            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_INDICATOR_STATUS, appMqttConfig.qos);
         } catch (MqttException e) {
             e.printStackTrace();
         }
     }
-
 
     private void getLEDStatus() {
         String appTopic;
@@ -234,24 +182,37 @@ public class LEDSettingActivity extends BaseActivity {
         } else {
             appTopic = appMqttConfig.topicPublish;
         }
-        byte[] message = MQTTMessageAssembler.assembleReadLEDStatus(mMokoDevice.uniqueId);
+        MsgDeviceInfo deviceInfo = new MsgDeviceInfo();
+        deviceInfo.device_id = mMokoDevice.deviceId;
+        deviceInfo.mac = mMokoDevice.mac;
+        String message = MQTTMessageAssembler.assembleReadLEDStatus(deviceInfo);
         try {
-            mokoService.publish(appTopic, message, appMqttConfig.qos);
+            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.READ_MSG_ID_INDICATOR_STATUS, appMqttConfig.qos);
         } catch (MqttException e) {
             e.printStackTrace();
         }
     }
 
-    public MessageHandler mHandler;
-
-    public class MessageHandler extends BaseMessageHandler<LEDSettingActivity> {
-
-        public MessageHandler(LEDSettingActivity activity) {
-            super(activity);
+    public void onConfirm(View view) {
+        if (isWindowLocked())
+            return;
+        if (!MQTTSupport.getInstance().isConnected()) {
+            ToastUtils.showToast(this, R.string.network_error);
+            return;
         }
-
-        @Override
-        protected void handleMessage(LEDSettingActivity activity, Message msg) {
+        if (!mMokoDevice.isOnline) {
+            ToastUtils.showToast(this, R.string.device_offline);
+            return;
         }
+        bleBroadcastEnable = cbBleBroadcast.isChecked() ? 1 : 0;
+        bleConnectedEnable = cbBleConnected.isChecked() ? 1 : 0;
+        serverConnectingEnable = cbServerConnecting.isChecked() ? 1 : 0;
+        serverConnectedEnable = cbServerConnected.isChecked() ? 1 : 0;
+        mHandler.postDelayed(() -> {
+            dismissLoadingProgressDialog();
+            ToastUtils.showToast(this, "Set up failed");
+        }, 30 * 1000);
+        showLoadingProgressDialog();
+        setLEDStatus();
     }
 }

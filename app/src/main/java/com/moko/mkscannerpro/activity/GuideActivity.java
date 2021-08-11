@@ -23,12 +23,6 @@ import androidx.core.app.ActivityCompat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * @Date 2018/6/7
- * @Author wenzheng.liu
- * @Description
- * @ClassPath com.moko.mkscannerpro.activity.GuideActivity
- */
 public class GuideActivity extends BaseActivity {
 
     @BindView(R.id.iv_logo)

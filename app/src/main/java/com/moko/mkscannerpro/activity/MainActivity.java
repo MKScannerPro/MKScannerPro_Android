@@ -1,61 +1,68 @@
 package com.moko.mkscannerpro.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.adapter.DeviceAdapter;
 import com.moko.mkscannerpro.base.BaseActivity;
 import com.moko.mkscannerpro.db.DBTools;
-import com.moko.mkscannerpro.dialog.RemoveDialog;
+import com.moko.mkscannerpro.dialog.AlertMessageDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
-import com.moko.mkscannerpro.service.MokoService;
+import com.moko.support.entity.MsgNotify;
+import com.moko.support.entity.NetworkingStatus;
 import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
-import com.moko.support.MokoConstants;
-import com.moko.support.handler.BaseMessageHandler;
-import com.moko.support.log.LogModule;
+import com.moko.mkscannerpro.utils.Utils;
+import com.moko.support.MQTTConstants;
+import com.moko.support.MQTTSupport;
+import com.moko.support.event.DeviceDeletedEvent;
+import com.moko.support.event.DeviceModifyNameEvent;
+import com.moko.support.event.DeviceOnlineEvent;
+import com.moko.support.event.MQTTConnectionCompleteEvent;
+import com.moko.support.event.MQTTConnectionFailureEvent;
+import com.moko.support.event.MQTTConnectionLostEvent;
+import com.moko.support.event.MQTTMessageArrivedEvent;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * @Date 2018/6/7
- * @Author wenzheng.liu
- * @Description 设备列表
- * @ClassPath com.moko.mkscannerpro.activity.MainActivity
- */
-public class MainActivity extends BaseActivity implements DeviceAdapter.AdapterClickListener {
+public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnItemClickListener, BaseQuickAdapter.OnItemLongClickListener {
 
     @BindView(R.id.rl_empty)
     RelativeLayout rlEmpty;
-    @BindView(R.id.lv_device_list)
-    ListView lvDeviceList;
+    @BindView(R.id.rv_device_list)
+    RecyclerView rvDeviceList;
     @BindView(R.id.tv_title)
     TextView tvTitle;
     private ArrayList<MokoDevice> devices;
     private DeviceAdapter adapter;
-    private MokoService mokoService;
+    public Handler mHandler;
+    public String MQTTAppConfigStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,185 +70,86 @@ public class MainActivity extends BaseActivity implements DeviceAdapter.AdapterC
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         devices = DBTools.getInstance(this).selectAllDevice();
-        adapter = new DeviceAdapter(this);
-        adapter.setListener(this);
-        adapter.setItems(devices);
-        lvDeviceList.setAdapter(adapter);
+        adapter = new DeviceAdapter();
+        adapter.openLoadAnimation();
+        adapter.replaceData(devices);
+        rvDeviceList.setLayoutManager(new LinearLayoutManager(this));
+        rvDeviceList.setAdapter(adapter);
         if (devices.isEmpty()) {
             rlEmpty.setVisibility(View.VISIBLE);
-            lvDeviceList.setVisibility(View.GONE);
+            rvDeviceList.setVisibility(View.GONE);
         } else {
-            lvDeviceList.setVisibility(View.VISIBLE);
+            rvDeviceList.setVisibility(View.VISIBLE);
             rlEmpty.setVisibility(View.GONE);
         }
-        mHandler = new OfflineHandler(this);
-
-
-        startService(new Intent(this, MokoService.class));
-        bindService(new Intent(this, MokoService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        mHandler = new Handler(Looper.getMainLooper());
+        MQTTAppConfigStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
+        MQTTSupport.getInstance().connectMqtt(MQTTAppConfigStr);
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mokoService = ((MokoService.LocalBinder) service).getService();
-            // 注册广播接收器
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(MokoConstants.ACTION_MQTT_CONNECTION);
-            filter.addAction(MokoConstants.ACTION_MQTT_RECEIVE);
-            filter.addAction(MokoConstants.ACTION_MQTT_SUBSCRIBE);
-            filter.addAction(MokoConstants.ACTION_MQTT_UNSUBSCRIBE);
-            filter.addAction(MokoConstants.ACTION_MQTT_PUBLISH);
-            filter.addAction(AppConstants.ACTION_MODIFY_NAME);
-            filter.addAction(AppConstants.ACTION_DELETE_DEVICE);
-            registerReceiver(mReceiver, filter);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMQTTConnectionCompleteEvent(MQTTConnectionCompleteEvent event) {
+        tvTitle.setText(getString(R.string.app_name));
+        // 订阅所有设备的Topic
+        subscribeAllDevices();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMQTTConnectionLostEvent(MQTTConnectionLostEvent event) {
+        tvTitle.setText(getString(R.string.mqtt_connecting));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMQTTConnectionFailureEvent(MQTTConnectionFailureEvent event) {
+        tvTitle.setText(getString(R.string.mqtt_connect_failed));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMQTTMessageArrivedEvent(MQTTMessageArrivedEvent event) {
+        // 更新所有设备的网络状态
+        updateDeviceNetwokStatus(event);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDeviceModifyNameEvent(DeviceModifyNameEvent event) {
+        // 修改了设备名称
+        devices.clear();
+        devices.addAll(DBTools.getInstance(MainActivity.this).selectAllDevice());
+        adapter.replaceData(devices);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDeviceDeletedEvent(DeviceDeletedEvent event) {
+        // 删除了设备
+        int id = event.getId();
+        if (id > 0 && mHandler.hasMessages(id)) {
+            mHandler.removeMessages(id);
         }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
-
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (MokoConstants.ACTION_MQTT_CONNECTION.equals(action)) {
-                int state = intent.getIntExtra(MokoConstants.EXTRA_MQTT_CONNECTION_STATE, 0);
-                String title = "";
-                if (state == MokoConstants.MQTT_CONN_STATUS_LOST) {
-                    title = getString(R.string.mqtt_connecting);
-                } else if (state == MokoConstants.MQTT_CONN_STATUS_SUCCESS) {
-                    title = getString(R.string.app_name);
-                } else if (state == MokoConstants.MQTT_CONN_STATUS_FAILED) {
-                    title = getString(R.string.mqtt_connect_failed);
-                }
-                tvTitle.setText(title);
-                if (state == 1) {
-//                    try {
-//                        mokoService.subscribe("lwz_123", 1);
-//                    } catch (MqttException e) {
-//                        e.printStackTrace();
-//                    }
-                    String mqttConfigAppStr = SPUtiles.getStringValue(MainActivity.this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
-                    MQTTConfig appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
-                    // 订阅
-                    try {
-                        if (!TextUtils.isEmpty(appMqttConfig.topicSubscribe)) {
-                            mokoService.subscribe(appMqttConfig.topicSubscribe, appMqttConfig.qos);
-                        }
-                    } catch (MqttException e) {
-                        e.printStackTrace();
-                    }
-                    if (devices.isEmpty()) {
-                        return;
-                    }
-                    for (MokoDevice device : devices) {
-                        // 订阅
-//                        for (String topic : device.getDeviceTopics()) {
-                        try {
-                            if (TextUtils.isEmpty(appMqttConfig.topicSubscribe)) {
-                                mokoService.subscribe(device.topicPublish, appMqttConfig.qos);
-                            }
-                        } catch (MqttException e) {
-                            e.printStackTrace();
-                        }
-//                        }
-                    }
-                }
-            }
-            if (MokoConstants.ACTION_MQTT_SUBSCRIBE.equals(action)) {
-                int state = intent.getIntExtra(MokoConstants.EXTRA_MQTT_STATE, 0);
-            }
-            if (MokoConstants.ACTION_MQTT_UNSUBSCRIBE.equals(action)) {
-                int state = intent.getIntExtra(MokoConstants.EXTRA_MQTT_STATE, 0);
-                dismissLoadingProgressDialog();
-            }
-            if (MokoConstants.ACTION_MQTT_PUBLISH.equals(action)) {
-                int state = intent.getIntExtra(MokoConstants.EXTRA_MQTT_STATE, 0);
-            }
-            if (MokoConstants.ACTION_MQTT_RECEIVE.equals(action)) {
-                final String topic = intent.getStringExtra(MokoConstants.EXTRA_MQTT_RECEIVE_TOPIC);
-                byte[] receive = intent.getByteArrayExtra(MokoConstants.EXTRA_MQTT_RECEIVE_MESSAGE);
-                if (devices.isEmpty()) {
-                    return;
-                }
-                int header = receive[0] & 0xFF;
-                if (header == 0x24)// 设备联网状态
-                {
-                    int length = receive[1] & 0xFF;
-                    byte[] id = Arrays.copyOfRange(receive, 2, 2 + length);
-                    for (final MokoDevice device : devices) {
-                        if (device.uniqueId.equals(new String(id))) {
-                            device.isOnline = true;
-                            Intent i = new Intent(AppConstants.ACTION_DEVICE_STATE);
-                            i.putExtra(MokoConstants.EXTRA_MQTT_RECEIVE_TOPIC, topic);
-                            i.putExtra(MokoConstants.EXTRA_MQTT_RECEIVE_STATE, true);
-                            MainActivity.this.sendBroadcast(i);
-                            if (mHandler.hasMessages(device.id)) {
-                                mHandler.removeMessages(device.id);
-                            }
-                            Message message = Message.obtain(mHandler, new Runnable() {
-                                @Override
-                                public void run() {
-                                    device.isOnline = false;
-                                    LogModule.i(device.uniqueId + "离线");
-                                    adapter.notifyDataSetChanged();
-                                    Intent i = new Intent(AppConstants.ACTION_DEVICE_STATE);
-                                    i.putExtra(MokoConstants.EXTRA_MQTT_RECEIVE_TOPIC, topic);
-                                    MainActivity.this.sendBroadcast(i);
-                                }
-                            });
-                            message.what = device.id;
-                            mHandler.sendMessageDelayed(message, 62 * 1000);
-                            adapter.notifyDataSetChanged();
-                            break;
-                        }
-                    }
-                }
-            }
-            if (AppConstants.ACTION_MODIFY_NAME.equals(action)) {
-                devices.clear();
-                devices.addAll(DBTools.getInstance(MainActivity.this).selectAllDevice());
-                adapter.notifyDataSetChanged();
-            }
-            if (AppConstants.ACTION_DELETE_DEVICE.equals(action)) {
-                int id = intent.getIntExtra(AppConstants.EXTRA_DELETE_DEVICE_ID, -1);
-                if (id > 0 && mHandler.hasMessages(id)) {
-                    mHandler.removeMessages(id);
-                }
-            }
-        }
-    };
-
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        LogModule.i("onNewIntent...");
+        XLog.i("onNewIntent...");
         setIntent(intent);
         if (getIntent().getExtras() != null) {
             String from = getIntent().getStringExtra(AppConstants.EXTRA_KEY_FROM_ACTIVITY);
-            String uniqueId = getIntent().getStringExtra(AppConstants.EXTRA_KEY_UNIQUE_ID);
+            String deviceId = getIntent().getStringExtra(AppConstants.EXTRA_KEY_DEVICE_ID);
             if (ModifyNameActivity.TAG.equals(from)
-                    || MoreActivity.TAG.equals(from)) {
+                    || DeviceSettingActivity.TAG.equals(from)) {
                 devices.clear();
                 devices.addAll(DBTools.getInstance(this).selectAllDevice());
-                if (!TextUtils.isEmpty(uniqueId)) {
+                if (!TextUtils.isEmpty(deviceId)) {
                     for (final MokoDevice device : devices) {
-                        if (uniqueId.equals(device.uniqueId)) {
+                        if (deviceId.equals(device.deviceId)) {
                             device.isOnline = true;
                             if (mHandler.hasMessages(device.id)) {
                                 mHandler.removeMessages(device.id);
                             }
-                            Message message = Message.obtain(mHandler, new Runnable() {
-                                @Override
-                                public void run() {
-                                    device.isOnline = false;
-                                    LogModule.i(device.uniqueId + "离线");
-                                    adapter.notifyDataSetChanged();
-                                }
+                            Message message = Message.obtain(mHandler, () -> {
+                                device.isOnline = false;
+                                XLog.i(device.deviceId + "离线");
+                                adapter.replaceData(devices);
                             });
                             message.what = device.id;
                             mHandler.sendMessageDelayed(message, 62 * 1000);
@@ -249,122 +157,175 @@ public class MainActivity extends BaseActivity implements DeviceAdapter.AdapterC
                         }
                     }
                 }
-                adapter.notifyDataSetChanged();
+                adapter.replaceData(devices);
                 if (!devices.isEmpty()) {
-                    lvDeviceList.setVisibility(View.VISIBLE);
+                    rvDeviceList.setVisibility(View.VISIBLE);
                     rlEmpty.setVisibility(View.GONE);
                 } else {
-                    lvDeviceList.setVisibility(View.GONE);
+                    rvDeviceList.setVisibility(View.GONE);
                     rlEmpty.setVisibility(View.VISIBLE);
                 }
             }
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(mReceiver);
-        unbindService(serviceConnection);
-        stopService(new Intent(this, MokoService.class));
-    }
-
-    public void setAppMqttConfig(View view) {
-        startActivity(new Intent(this, SetAppMqttActivity.class));
+    public void setAppMQTTConfig(View view) {
+        if (isWindowLocked())
+            return;
+        startActivityForResult(new Intent(this, SetAppMQTTActivity.class), AppConstants.REQUEST_CODE_MQTT_CONFIG_APP);
     }
 
     public void mainAddDevices(View view) {
-//        MqttMessage message = new MqttMessage();
-//        message.setPayload("332211".getBytes());
-//        message.setQos(1);
-//        try {
-//            mokoService.publish("lwz_321", message);
-//        } catch (MqttException e) {
-//            e.printStackTrace();
-//        }
-
-        String mqttAppConfigStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
-//        String mqttDeviceConfigStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG, "");
-//        if (TextUtils.isEmpty(mqttDeviceConfigStr)) {
-//            startActivity(new Intent(this, SetDeviceMqttActivity.class));
-//            return;e
-//        }
-        if (TextUtils.isEmpty(mqttAppConfigStr)) {
-            startActivity(new Intent(this, SetAppMqttActivity.class));
+        if (isWindowLocked())
+            return;
+        if (TextUtils.isEmpty(MQTTAppConfigStr)) {
+            startActivity(new Intent(this, SetAppMQTTActivity.class));
             return;
         }
-        MQTTConfig mqttConfig = new Gson().fromJson(mqttAppConfigStr, MQTTConfig.class);
-        if (TextUtils.isEmpty(mqttConfig.host)) {
-            startActivity(new Intent(this, SetAppMqttActivity.class));
-            return;
-        }
-        startActivity(new Intent(this, ScannerDeviceActivity.class));
-    }
-
-    @Override
-    public void deviceDetailClick(MokoDevice device) {
-        if (!mokoService.isConnected()) {
-            ToastUtils.showToast(this, R.string.network_error);
-            return;
-        }
-        if (!device.isOnline) {
-            ToastUtils.showToast(this, R.string.device_offline);
-            return;
-        }
-        Intent i = new Intent(MainActivity.this, DeviceDetailActivity.class);
-        i.putExtra(AppConstants.EXTRA_KEY_DEVICE, device);
-        startActivity(i);
-    }
-
-    @Override
-    public void deviceLongClick(final MokoDevice device) {
-        RemoveDialog dialog = new RemoveDialog(this);
-        dialog.setListener(new RemoveDialog.RemoveListener() {
-            @Override
-            public void onConfirmClick(RemoveDialog dialog) {
-                if (!mokoService.isConnected()) {
-                    ToastUtils.showToast(MainActivity.this, R.string.network_error);
-                    return;
-                }
-                showLoadingProgressDialog(getString(R.string.wait));
-                // 取消订阅
-                try {
-                    mokoService.unSubscribe(device.topicPublish);
-                } catch (MqttException e) {
-                    e.printStackTrace();
-                }
-                LogModule.i("删除设备");
-                DBTools.getInstance(MainActivity.this).deleteDevice(device);
-                Intent i = new Intent(AppConstants.ACTION_DELETE_DEVICE);
-                i.putExtra(AppConstants.EXTRA_DELETE_DEVICE_ID, device.id);
-                MainActivity.this.sendBroadcast(i);
-                devices.remove(device);
-                adapter.notifyDataSetChanged();
-                if (devices.isEmpty()) {
-                    rlEmpty.setVisibility(View.VISIBLE);
-                    lvDeviceList.setVisibility(View.GONE);
-                }
-                dialog.dismiss();
+        if (Utils.isNetworkAvailable(this) && Utils.pingIPAddress("amazon.com")) {
+            MQTTConfig MQTTAppConfig = new Gson().fromJson(MQTTAppConfigStr, MQTTConfig.class);
+            if (TextUtils.isEmpty(MQTTAppConfig.host)) {
+                startActivity(new Intent(this, SetAppMQTTActivity.class));
+                return;
             }
-        });
-        dialog.show();
+            startActivity(new Intent(this, ScannDeviceActivity.class));
+        } else {
+            String ssid = Utils.getWifiSSID(this);
+            ToastUtils.showToast(this, String.format("SSID:%s, the network cannot available,please check", ssid));
+            XLog.i(String.format("SSID:%s, the network cannot available,please check", ssid));
+        }
     }
 
     public void about(View view) {
+        if (isWindowLocked())
+            return;
         // 关于
         startActivity(new Intent(this, AboutActivity.class));
     }
 
-    public OfflineHandler mHandler;
-
-    public class OfflineHandler extends BaseMessageHandler<MainActivity> {
-
-        public OfflineHandler(MainActivity activity) {
-            super(activity);
+    @Override
+    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+        MokoDevice mokoDevice = (MokoDevice) adapter.getItem(position);
+        if (mokoDevice == null)
+            return;
+        if (!MQTTSupport.getInstance().isConnected()) {
+            ToastUtils.showToast(this, R.string.network_error);
+            return;
         }
+        if (!mokoDevice.isOnline) {
+            ToastUtils.showToast(this, R.string.device_offline);
+            return;
+        }
+        Intent i = new Intent(MainActivity.this, DeviceDetailActivity.class);
+        i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mokoDevice);
+        startActivity(i);
+    }
 
-        @Override
-        protected void handleMessage(MainActivity activity, Message msg) {
+    @Override
+    public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+        MokoDevice mokoDevice = (MokoDevice) adapter.getItem(position);
+        if (mokoDevice == null)
+            return true;
+        AlertMessageDialog dialog = new AlertMessageDialog();
+        dialog.setTitle("Remove Device");
+        dialog.setMessage("Please confirm again whether to \n remove the device");
+        dialog.setOnAlertConfirmListener(() -> {
+            if (!MQTTSupport.getInstance().isConnected()) {
+                ToastUtils.showToast(MainActivity.this, R.string.network_error);
+                return;
+            }
+            showLoadingProgressDialog();
+            // 取消订阅
+            try {
+                MQTTSupport.getInstance().unSubscribe(mokoDevice.topicPublish);
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            XLog.i("删除设备");
+            DBTools.getInstance(MainActivity.this).deleteDevice(mokoDevice);
+            Intent i = new Intent(AppConstants.ACTION_DELETE_DEVICE);
+            i.putExtra(AppConstants.EXTRA_DELETE_DEVICE_ID, mokoDevice.id);
+            MainActivity.this.sendBroadcast(i);
+            devices.remove(mokoDevice);
+            adapter.replaceData(devices);
+            if (devices.isEmpty()) {
+                rlEmpty.setVisibility(View.VISIBLE);
+                rvDeviceList.setVisibility(View.GONE);
+            }
+        });
+        dialog.show(getSupportFragmentManager());
+        return true;
+    }
+
+    private void subscribeAllDevices() {
+        MQTTConfig MQTTAppConfig = new Gson().fromJson(MQTTAppConfigStr, MQTTConfig.class);
+        if (!TextUtils.isEmpty(MQTTAppConfig.topicSubscribe)) {
+            try {
+                MQTTSupport.getInstance().subscribe(MQTTAppConfig.topicSubscribe, MQTTAppConfig.qos);
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        } else {
+            if (devices.isEmpty()) {
+                return;
+            }
+            for (MokoDevice device : devices) {
+                try {
+                    if (TextUtils.isEmpty(MQTTAppConfig.topicSubscribe)) {
+                        MQTTSupport.getInstance().subscribe(device.topicPublish, MQTTAppConfig.qos);
+                    }
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void updateDeviceNetwokStatus(MQTTMessageArrivedEvent event) {
+        if (devices.isEmpty()) {
+            return;
+        }
+        final String topic = event.getTopic();
+        final String message = event.getMessage();
+        if (TextUtils.isEmpty(message))
+            return;
+        Type type = new TypeToken<MsgNotify<NetworkingStatus>>() {
+        }.getType();
+        MsgNotify<NetworkingStatus> msgNotify = new Gson().fromJson(message, type);
+        if (msgNotify.msg_id != MQTTConstants.NOTIFY_MSG_ID_NETWORKING_STATUS)
+            return;
+        final String deviceId = msgNotify.device_info.device_id;
+        for (final MokoDevice device : devices) {
+            if (device.deviceId.equals(deviceId)) {
+                device.isOnline = true;
+                EventBus.getDefault().post(new DeviceOnlineEvent(deviceId, true));
+                if (mHandler.hasMessages(device.id)) {
+                    mHandler.removeMessages(device.id);
+                }
+                Message offline = Message.obtain(mHandler, () -> {
+                    device.isOnline = false;
+                    XLog.i(device.deviceId + "离线");
+                    adapter.replaceData(devices);
+                    EventBus.getDefault().post(new DeviceOnlineEvent(deviceId, false));
+                });
+                offline.what = device.id;
+                mHandler.sendMessageDelayed(offline, 62 * 1000);
+                adapter.replaceData(devices);
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK)
+            return;
+        if (requestCode == AppConstants.REQUEST_CODE_MQTT_CONFIG_APP) {
+            MQTTAppConfigStr = data.getStringExtra(AppConstants.EXTRA_KEY_MQTT_CONFIG_APP);
+            tvTitle.setText(getString(R.string.app_name));
+            // 订阅所有设备的Topic
+            subscribeAllDevices();
         }
     }
 }

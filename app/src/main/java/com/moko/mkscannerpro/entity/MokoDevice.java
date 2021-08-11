@@ -7,8 +7,9 @@ public class MokoDevice implements Serializable {
 
     public int id;
     public String name;
+    public String mac;
     public String nickName;
-    public String uniqueId;
+    public String deviceId;
     public String company_name;
     public String production_date;
     public String product_model;
@@ -16,6 +17,5 @@ public class MokoDevice implements Serializable {
     public String mqttInfo;
     public String topicPublish;
     public String topicSubscribe;
-    public String mac;
     public boolean isOnline;
 }

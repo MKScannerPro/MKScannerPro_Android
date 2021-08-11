@@ -30,9 +30,10 @@ public class DBTools {
     public long insertDevice(MokoDevice mokoDevice) {
         ContentValues cv = new ContentValues();
         cv.put(DBConstants.DEVICE_FIELD_NAME, mokoDevice.name);
+        cv.put(DBConstants.DEVICE_FIELD_MAC, mokoDevice.mac);
         cv.put(DBConstants.DEVICE_FIELD_NICK_NAME, mokoDevice.nickName);
         cv.put(DBConstants.DEVICE_FIELD_MQTT_INFO, mokoDevice.mqttInfo);
-        cv.put(DBConstants.DEVICE_FIELD_UNIQUE_ID, mokoDevice.uniqueId);
+        cv.put(DBConstants.DEVICE_FIELD_DEVICE_ID, mokoDevice.deviceId);
         cv.put(DBConstants.DEVICE_FIELD_TOPIC_PUBLISH, mokoDevice.topicPublish);
         cv.put(DBConstants.DEVICE_FIELD_TOPIC_SUBSCRIBE, mokoDevice.topicSubscribe);
         long row = db.insert(DBConstants.TABLE_NAME_DEVICE, null, cv);
@@ -49,12 +50,14 @@ public class DBTools {
                     .getColumnIndex(DBConstants.DEVICE_FIELD_ID));
             mokoDevice.name = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_NAME));
+            mokoDevice.mac = cursor.getString(cursor
+                    .getColumnIndex(DBConstants.DEVICE_FIELD_MAC));
             mokoDevice.nickName = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_NICK_NAME));
             mokoDevice.mqttInfo = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_MQTT_INFO));
-            mokoDevice.uniqueId = cursor.getString(cursor
-                    .getColumnIndex(DBConstants.DEVICE_FIELD_UNIQUE_ID));
+            mokoDevice.deviceId = cursor.getString(cursor
+                    .getColumnIndex(DBConstants.DEVICE_FIELD_DEVICE_ID));
             mokoDevice.topicPublish = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_TOPIC_PUBLISH));
             mokoDevice.topicSubscribe = cursor.getString(cursor
@@ -64,8 +67,8 @@ public class DBTools {
         return mokoDevices;
     }
 
-    public MokoDevice selectDevice(String uniqueId) {
-        Cursor cursor = db.query(DBConstants.TABLE_NAME_DEVICE, null, DBConstants.DEVICE_FIELD_UNIQUE_ID + " = ?", new String[]{uniqueId}, null, null, null);
+    public MokoDevice selectDevice(String deviceId) {
+        Cursor cursor = db.query(DBConstants.TABLE_NAME_DEVICE, null, DBConstants.DEVICE_FIELD_DEVICE_ID + " = ?", new String[]{deviceId}, null, null, null);
         MokoDevice mokoDevice = null;
         while (cursor.moveToFirst()) {
             mokoDevice = new MokoDevice();
@@ -73,12 +76,14 @@ public class DBTools {
                     .getColumnIndex(DBConstants.DEVICE_FIELD_ID));
             mokoDevice.name = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_NAME));
+            mokoDevice.mac = cursor.getString(cursor
+                    .getColumnIndex(DBConstants.DEVICE_FIELD_MAC));
             mokoDevice.nickName = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_NICK_NAME));
             mokoDevice.mqttInfo = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_MQTT_INFO));
-            mokoDevice.uniqueId = cursor.getString(cursor
-                    .getColumnIndex(DBConstants.DEVICE_FIELD_UNIQUE_ID));
+            mokoDevice.deviceId = cursor.getString(cursor
+                    .getColumnIndex(DBConstants.DEVICE_FIELD_DEVICE_ID));
             mokoDevice.topicPublish = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_TOPIC_PUBLISH));
             mokoDevice.topicSubscribe = cursor.getString(cursor
@@ -88,8 +93,8 @@ public class DBTools {
         return mokoDevice;
     }
 
-    public MokoDevice selectDeviceByName(String name) {
-        Cursor cursor = db.query(DBConstants.TABLE_NAME_DEVICE, null, DBConstants.DEVICE_FIELD_NAME + " = ?", new String[]{name}, null, null, null);
+    public MokoDevice selectDeviceByMac(String mac) {
+        Cursor cursor = db.query(DBConstants.TABLE_NAME_DEVICE, null, DBConstants.DEVICE_FIELD_MAC + " = ?", new String[]{mac}, null, null, null);
         MokoDevice mokoDevice = null;
         while (cursor.moveToFirst()) {
             mokoDevice = new MokoDevice();
@@ -97,12 +102,14 @@ public class DBTools {
                     .getColumnIndex(DBConstants.DEVICE_FIELD_ID));
             mokoDevice.name = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_NAME));
+            mokoDevice.mac = cursor.getString(cursor
+                    .getColumnIndex(DBConstants.DEVICE_FIELD_MAC));
             mokoDevice.nickName = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_NICK_NAME));
             mokoDevice.mqttInfo = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_MQTT_INFO));
-            mokoDevice.uniqueId = cursor.getString(cursor
-                    .getColumnIndex(DBConstants.DEVICE_FIELD_UNIQUE_ID));
+            mokoDevice.deviceId = cursor.getString(cursor
+                    .getColumnIndex(DBConstants.DEVICE_FIELD_DEVICE_ID));
             mokoDevice.topicPublish = cursor.getString(cursor
                     .getColumnIndex(DBConstants.DEVICE_FIELD_TOPIC_PUBLISH));
             mokoDevice.topicSubscribe = cursor.getString(cursor
@@ -114,14 +121,15 @@ public class DBTools {
 
 
     public void updateDevice(MokoDevice mokoDevice) {
-        String where = DBConstants.DEVICE_FIELD_NAME + " = ?";
-        String[] whereValue = {mokoDevice.name};
+        String where = DBConstants.DEVICE_FIELD_MAC + " = ?";
+        String[] whereValue = {mokoDevice.mac};
         ContentValues cv = new ContentValues();
         cv.put(DBConstants.DEVICE_FIELD_NICK_NAME, mokoDevice.nickName);
+        cv.put(DBConstants.DEVICE_FIELD_MAC, mokoDevice.mac);
         cv.put(DBConstants.DEVICE_FIELD_MQTT_INFO, mokoDevice.mqttInfo);
         cv.put(DBConstants.DEVICE_FIELD_TOPIC_PUBLISH, mokoDevice.topicPublish);
         cv.put(DBConstants.DEVICE_FIELD_TOPIC_SUBSCRIBE, mokoDevice.topicSubscribe);
-        cv.put(DBConstants.DEVICE_FIELD_UNIQUE_ID, mokoDevice.uniqueId);
+        cv.put(DBConstants.DEVICE_FIELD_DEVICE_ID, mokoDevice.deviceId);
         db.update(DBConstants.TABLE_NAME_DEVICE, cv, where, whereValue);
     }
 
@@ -130,8 +138,8 @@ public class DBTools {
     }
 
     public void deleteDevice(MokoDevice device) {
-        String where = DBConstants.DEVICE_FIELD_UNIQUE_ID + " = ?";
-        String[] whereValue = {device.uniqueId + ""};
+        String where = DBConstants.DEVICE_FIELD_DEVICE_ID + " = ?";
+        String[] whereValue = {device.deviceId + ""};
         db.delete(DBConstants.TABLE_NAME_DEVICE, where, whereValue);
     }
 

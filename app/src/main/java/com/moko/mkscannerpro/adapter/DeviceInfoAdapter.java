@@ -13,6 +13,6 @@ public class DeviceInfoAdapter extends BaseQuickAdapter<DeviceInfo, BaseViewHold
     @Override
     protected void convert(BaseViewHolder helper, DeviceInfo item) {
         helper.setText(R.id.tv_device_name, item.name);
-        helper.setText(R.id.tv_device_rssi, item.rssi + "");
+        helper.setText(R.id.tv_device_rssi, String.valueOf(item.rssi));
     }
 }

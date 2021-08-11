@@ -21,12 +21,7 @@ import com.moko.mkscannerpro.utils.ToastUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * @Date 2018/6/7
- * @Author wenzheng.liu
- * @Description
- * @ClassPath com.moko.mkscannerpro.activity.ModifyNameActivity
- */
+
 public class ModifyNameActivity extends BaseActivity {
     public static String TAG = "ModifyNameActivity";
 
@@ -47,7 +42,7 @@ public class ModifyNameActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_device_name);
         ButterKnife.bind(this);
-        device = (MokoDevice) getIntent().getSerializableExtra("mokodevice");
+        device = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
         etNickName.setText(device.nickName);
         etNickName.setSelection(etNickName.getText().toString().length());
         etNickName.setFilters(new InputFilter[]{filter, new InputFilter.LengthFilter(20)});
@@ -72,7 +67,7 @@ public class ModifyNameActivity extends BaseActivity {
         // 跳转首页，刷新数据
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(AppConstants.EXTRA_KEY_FROM_ACTIVITY, TAG);
-        intent.putExtra(AppConstants.EXTRA_KEY_UNIQUE_ID, device.uniqueId);
+        intent.putExtra(AppConstants.EXTRA_KEY_DEVICE_ID, device.deviceId);
         startActivity(intent);
     }
 
