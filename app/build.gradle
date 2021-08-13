@@ -8,8 +8,8 @@ android {
         applicationId "com.moko.mkscannerpro"
         minSdkVersion 18
         targetSdkVersion 29
-        versionCode 14
-        versionName "1.0.13"
+        versionCode 1
+        versionName "1.0.0"
     }
 
     buildTypes {
@@ -51,4 +51,5 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     implementation "androidx.viewpager2:viewpager2:1.0.0"
+    implementation 'com.github.GrenderG:Toasty:1.4.1'
 }

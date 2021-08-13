@@ -25,7 +25,5 @@ public class DeviceAdapter extends BaseQuickAdapter<MokoDevice, BaseViewHolder> 
             helper.setText(R.id.tv_device_status, mContext.getString(R.string.device_state_online));
             helper.setTextColor(R.id.tv_device_status, ContextCompat.getColor(mContext, R.color.blue_0188cc));
         }
-        helper.addOnClickListener(R.id.cl_device_info);
-        helper.addOnLongClickListener(R.id.cl_device_info);
     }
 }

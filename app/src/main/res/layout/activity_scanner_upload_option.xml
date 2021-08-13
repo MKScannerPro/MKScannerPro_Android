@@ -65,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/white_ffffff"
-            android:button="null"
+            android:button="@null"
             android:checked="false"
             android:drawableRight="@drawable/selector_cb_btn"
             android:paddingLeft="12dp"
@@ -74,18 +74,28 @@
             android:textColor="@color/black_333333"
             android:textSize="15sp" />
 
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_filter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white_ffffff"
-            android:padding="10dp"
+            android:paddingBottom="10dp"
             android:visibility="gone">
+
+            <View
+                style="@style/divider_line"
+                android:background="@color/grey_d9d9d9"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_condition_a_title"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
                 android:text="Filter Condition A"
                 android:textColor="@color/black_333333"
@@ -98,6 +108,8 @@
                 android:id="@+id/tv_condition_a"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
                 android:clickable="true"
                 android:drawableRight="@drawable/arrow_right"
                 android:drawablePadding="10dp"
@@ -114,6 +126,7 @@
                 style="@style/divider_line"
                 android:layout_width="0dp"
                 android:layout_marginTop="10dp"
+                android:background="@color/grey_d9d9d9"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_condition_a" />
@@ -122,6 +135,7 @@
                 android:id="@+id/tv_condition_b_title"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="20dp"
                 android:gravity="center_vertical"
                 android:text="Filter Condition B"
@@ -135,6 +149,7 @@
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginRight="10dp"
                 android:clickable="true"
                 android:drawableRight="@drawable/arrow_right"
                 android:drawablePadding="10dp"
@@ -152,6 +167,7 @@
                 style="@style/divider_line"
                 android:layout_width="0dp"
                 android:layout_marginTop="10dp"
+                android:background="@color/grey_d9d9d9"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_condition_b" />
@@ -159,6 +175,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="20dp"
                 android:gravity="center_vertical"
                 android:text="Filter Condition A"
@@ -171,6 +188,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginRight="10dp"
                 android:gravity="center_vertical"
                 android:text="Filter Condition B"
                 android:textColor="@color/black_333333"

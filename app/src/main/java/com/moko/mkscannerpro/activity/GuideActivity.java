@@ -18,6 +18,10 @@ import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
 import com.moko.mkscannerpro.utils.Utils;
+import com.moko.support.event.MQTTConnectionCompleteEvent;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import androidx.core.app.ActivityCompat;
 import butterknife.BindView;
@@ -238,5 +242,9 @@ public class GuideActivity extends BaseActivity {
                     }
                 }).create();
         dialog.show();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMQTTConnectionCompleteEvent(MQTTConnectionCompleteEvent event) {
     }
 }

@@ -3,11 +3,6 @@ package com.moko.mkscannerpro.dialog;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.StyleRes;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -17,6 +12,12 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.moko.mkscannerpro.R;
+
+import androidx.annotation.LayoutRes;
+import androidx.annotation.StyleRes;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 
 public abstract class MokoBaseDialog extends DialogFragment {

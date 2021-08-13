@@ -37,8 +37,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -239,7 +237,7 @@ public class ScannDeviceActivity extends BaseActivity implements MokoScanDeviceC
             if (isPasswordError) {
                 isPasswordError = false;
             } else {
-                ToastUtils.showToast(this, "Connection Failed");
+                ToastUtils.showToast(this, "Connection Failed, please try again");
             }
             if (animation == null) {
                 startScan();

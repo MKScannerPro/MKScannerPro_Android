@@ -1,13 +1,16 @@
 package com.moko.mkscannerpro.dialog;
 
 import android.content.Context;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.utils.ToastUtils;
@@ -21,6 +24,8 @@ public class PasswordDialog extends MokoBaseDialog {
 
     @BindView(R.id.et_password)
     EditText etPassword;
+    @BindView(R.id.tv_password_ensure)
+    TextView tvPasswordEnsure;
     private final String FILTER_ASCII = "[^ -~]";
 
     private String password;
@@ -44,6 +49,21 @@ public class PasswordDialog extends MokoBaseDialog {
             }
         };
         etPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8), filter});
+        etPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                tvPasswordEnsure.setEnabled(s.toString().length() == 8);
+            }
+        });
         if (!TextUtils.isEmpty(password)) {
             etPassword.setText(password);
             etPassword.setSelection(password.length());
@@ -80,10 +100,10 @@ public class PasswordDialog extends MokoBaseDialog {
                     ToastUtils.showToast(getContext(), getContext().getString(R.string.password_null));
                     return;
                 }
-                if (password.length() != 8) {
-                    ToastUtils.showToast(getContext(), getContext().getString(R.string.main_password_length));
-                    return;
-                }
+//                if (password.length() != 8) {
+//                    ToastUtils.showToast(getContext(), getContext().getString(R.string.main_password_length));
+//                    return;
+//                }
                 if (passwordClickListener != null)
                     passwordClickListener.onEnsureClicked(etPassword.getText().toString());
                 break;

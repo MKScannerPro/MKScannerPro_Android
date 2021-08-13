@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 public class MQTTConfig implements Serializable {
     public String host = "";
-    public String port = "1883";
+    public String port = "";
     public boolean cleanSession = true;
     public int connectMode;
     public int qos = 1;

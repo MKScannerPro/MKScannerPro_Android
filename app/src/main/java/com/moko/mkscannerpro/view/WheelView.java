@@ -17,7 +17,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-
 import com.moko.mkscannerpro.R;
 
 import java.util.ArrayList;

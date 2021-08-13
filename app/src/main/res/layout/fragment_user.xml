@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white_ffffff"
+    android:minHeight="170dp"
     android:paddingLeft="12dp"
-    android:paddingRight="12dp"
-    android:paddingBottom="12dp">
+    android:paddingRight="12dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -22,7 +22,7 @@
     <EditText
         android:id="@+id/et_mqtt_username"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/shape_radius_edit_bg"
@@ -31,6 +31,7 @@
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:singleLine="true"
+        android:textSize="15sp"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -51,7 +52,7 @@
     <EditText
         android:id="@+id/et_mqtt_password"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/shape_radius_edit_bg"
@@ -60,6 +61,7 @@
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:singleLine="true"
+        android:textSize="15sp"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

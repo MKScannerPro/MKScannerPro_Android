@@ -426,14 +426,12 @@ public class MQTTSupport {
         mqttAndroidClient.subscribe(topic, qos, null, new IMqttActionListener() {
             @Override
             public void onSuccess(IMqttToken asyncActionToken) {
-                String topic = asyncActionToken.getTopics()[0];
                 XLog.w(String.format("%s:%s->%s", TAG, topic, "subscribe success"));
                 EventBus.getDefault().post(new MQTTSubscribeSuccessEvent(topic));
             }
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                String topic = asyncActionToken.getTopics()[0];
                 XLog.w(String.format("%s:%s->%s", TAG, topic, "subscribe failure"));
                 EventBus.getDefault().post(new MQTTSubscribeFailureEvent(topic));
             }
@@ -455,14 +453,12 @@ public class MQTTSupport {
         mqttAndroidClient.unsubscribe(topic, null, new IMqttActionListener() {
             @Override
             public void onSuccess(IMqttToken asyncActionToken) {
-                String topic = asyncActionToken.getTopics()[0];
                 XLog.w(String.format("%s:%s->%s", TAG, topic, "unsubscribe success"));
                 EventBus.getDefault().post(new MQTTUnSubscribeSuccessEvent(topic));
             }
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                String topic = asyncActionToken.getTopics()[0];
                 XLog.w(String.format("%s:%s->%s", TAG, topic, "unsubscribe failure"));
                 EventBus.getDefault().post(new MQTTUnSubscribeFailureEvent(topic));
             }
@@ -480,14 +476,12 @@ public class MQTTSupport {
         mqttAndroidClient.publish(topic, messageInfo, null, new IMqttActionListener() {
             @Override
             public void onSuccess(IMqttToken asyncActionToken) {
-                String topic = asyncActionToken.getTopics()[0];
                 XLog.w(String.format("%s:%s->%s", TAG, topic, "publish success"));
                 EventBus.getDefault().post(new MQTTPublishSuccessEvent(topic, msgId));
             }
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                String topic = asyncActionToken.getTopics()[0];
                 XLog.w(String.format("%s:%s->%s", TAG, topic, "publish failure"));
                 EventBus.getDefault().post(new MQTTPublishFailureEvent(topic, msgId));
             }

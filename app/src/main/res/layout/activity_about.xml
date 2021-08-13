@@ -199,11 +199,25 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/tv_feedback_log"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/shape_radius_blue_btn_bg"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:clickable="true"
+                android:onClick="onFeedbackLog"
+                android:paddingBottom="10dp"
+                android:text="Feedback log"
+                android:textColor="@color/white_ffffff"
+                android:textSize="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:text="@string/about_moko_name"
                 android:textColor="@color/black_333333"
                 android:textSize="15sp" />

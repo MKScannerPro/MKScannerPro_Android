@@ -23,6 +23,7 @@ import com.moko.ble.lib.event.ConnectStatusEvent;
 import com.moko.ble.lib.event.OrderTaskResponseEvent;
 import com.moko.ble.lib.task.OrderTask;
 import com.moko.ble.lib.task.OrderTaskResponse;
+import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.adapter.MQTTFragmentAdapter;
@@ -32,8 +33,6 @@ import com.moko.mkscannerpro.dialog.BottomDialog;
 import com.moko.mkscannerpro.dialog.CustomDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
-import com.moko.support.entity.MsgNotify;
-import com.moko.support.entity.NetworkingStatus;
 import com.moko.mkscannerpro.fragment.GeneralFragment;
 import com.moko.mkscannerpro.fragment.SSLFragment;
 import com.moko.mkscannerpro.fragment.UserFragment;
@@ -43,17 +42,21 @@ import com.moko.support.MQTTConstants;
 import com.moko.support.MQTTSupport;
 import com.moko.support.MokoSupport;
 import com.moko.support.OrderTaskAssembler;
+import com.moko.support.entity.MsgNotify;
+import com.moko.support.entity.NetworkingStatus;
 import com.moko.support.entity.OrderCHAR;
 import com.moko.support.entity.ParamsKeyEnum;
 import com.moko.support.event.MQTTMessageArrivedEvent;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import androidx.annotation.IdRes;
 import androidx.fragment.app.Fragment;
@@ -154,35 +157,44 @@ public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.On
                 }
             }
         });
+        vpMqtt.setOffscreenPageLimit(3);
         rgMqtt.setOnCheckedChangeListener(this);
         mTimeZones = new ArrayList<>();
-        for (int i = -12; i < 13; i++) {
-            if (i < 0) {
-                mTimeZones.add(String.format("UTC%02d", i));
-            } else if (i == 0) {
+        for (int i = 0; i <= 24; i++) {
+            if (i < 12) {
+                mTimeZones.add(String.format("UTC-%02d", 12 - i));
+            } else if (i == 12) {
                 mTimeZones.add("UTC+00");
             } else {
-                mTimeZones.add(String.format("UTC+%02d", i));
+                mTimeZones.add(String.format("UTC+%02d", i - 12));
             }
         }
-        mSelectedTimeZone = 13;
+        mSelectedTimeZone = 12;
+        tvTimeZone.setText(mTimeZones.get(mSelectedTimeZone));
         mHandler = new Handler(Looper.getMainLooper());
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.POSTING, priority = 100)
     public void onConnectStatusEvent(ConnectStatusEvent event) {
         String action = event.getAction();
         if (MokoConstants.ACTION_DISCONNECTED.equals(action)) {
-            if (isSettingSuccess)
+            if (isSettingSuccess) {
+                EventBus.getDefault().cancelEventDelivery(event);
                 return;
-            dismissLoadingProgressDialog();
-            finish();
+            }
+            runOnUiThread(() -> {
+                dismissLoadingProgressDialog();
+                finish();
+            });
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onOrderTaskResponseEvent(OrderTaskResponseEvent event) {
         final String action = event.getAction();
+        if (MokoConstants.ACTION_ORDER_FINISH.equals(action)) {
+            dismissLoadingProgressDialog();
+        }
         if (MokoConstants.ACTION_ORDER_RESULT.equals(action)) {
             OrderTaskResponse response = event.getResponse();
             OrderCHAR orderCHAR = (OrderCHAR) response.orderCHAR;
@@ -235,7 +247,6 @@ public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.On
                                     if (savedParamsError) {
                                         ToastUtils.showToast(this, "Opps！Save failed. Please check the input characters and try again.");
                                     } else {
-                                        ToastUtils.showToast(this, "Saved Successfully！");
                                         isSettingSuccess = true;
                                         showConnMqttDialog();
                                         subscribeTopic();
@@ -248,14 +259,16 @@ public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.On
                             switch (configKeyEnum) {
                                 case KEY_DEVICE_NAME:
                                     if (length > 0) {
-                                        String name = new String(value);
+                                        byte[] data = Arrays.copyOfRange(value, 4, 4 + length);
+                                        String name = new String(data);
                                         mSelectedDeviceName = name;
                                     }
                                     break;
                                 case KEY_DEVICE_MAC:
                                     if (length > 0) {
-                                        String mac = new String(value);
-                                        mSelectedDeviceMac = mac;
+                                        byte[] data = Arrays.copyOfRange(value, 4, 4 + length);
+                                        String mac = MokoUtils.bytesToHexString(data);
+                                        mSelectedDeviceMac = mac.toUpperCase();
                                     }
                                     break;
                             }
@@ -506,10 +519,10 @@ public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.On
             orderTasks.add(OrderTaskAssembler.setMqttDeivceId(mqttDeviceConfig.deviceId));
             orderTasks.add(OrderTaskAssembler.setMqttPublishTopic(mqttDeviceConfig.topicPublish));
             orderTasks.add(OrderTaskAssembler.setMqttSubscribeTopic(mqttDeviceConfig.topicSubscribe));
-            if (TextUtils.isEmpty(mqttDeviceConfig.username)) {
+            if (!TextUtils.isEmpty(mqttDeviceConfig.username)) {
                 orderTasks.add(OrderTaskAssembler.setMqttUserName(mqttDeviceConfig.username));
             }
-            if (TextUtils.isEmpty(mqttDeviceConfig.password)) {
+            if (!TextUtils.isEmpty(mqttDeviceConfig.password)) {
                 orderTasks.add(OrderTaskAssembler.setMqttPassword(mqttDeviceConfig.password));
             }
             orderTasks.add(OrderTaskAssembler.setMqttConnectMode(mqttDeviceConfig.connectMode));

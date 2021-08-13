@@ -238,6 +238,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <RadioGroup
+                android:id="@+id/rg_mqtt"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:orientation="horizontal">
@@ -380,7 +381,7 @@
                     android:minWidth="70dp"
                     android:onClick="selectTimeZone"
                     android:padding="12dp"
-                    android:text="UTC"
+                    android:text="UTC+00"
                     android:textColor="@color/white_ffffff"
                     android:textSize="15sp"
                     app:layout_constraintRight_toRightOf="parent"

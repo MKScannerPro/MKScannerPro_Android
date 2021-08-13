@@ -17,10 +17,10 @@ public class TypeFilter {
      */
 
     public int ibeacon;
-    public int eddyston_uid;
-    public int eddyston_url;
-    public int eddyston_tlm;
-    public int MK_ibeacon;
+    public int eddystone_uid;
+    public int eddystone_url;
+    public int eddystone_tlm;
+    public int MK_iBeacon;
     public int MK_ACC;
     public int BXP_ACC;
     @SerializedName("BXP_T&H")

@@ -6,9 +6,10 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
@@ -30,8 +31,6 @@ import com.moko.support.handler.MQTTMessageAssembler;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 
@@ -87,13 +86,9 @@ public class BeaconTypeFilterActivity extends BaseActivity {
         final String message = event.getMessage();
         if (TextUtils.isEmpty(message))
             return;
-        JSONObject object = new Gson().fromJson(message, JSONObject.class);
-        int msg_id = 0;
-        try {
-            msg_id = object.getInt("msg_id");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        JsonObject object = new Gson().fromJson(message, JsonObject.class);
+        JsonElement element = object.get("msg_id");
+        int msg_id = element.getAsInt();
         if (msg_id == MQTTConstants.READ_MSG_ID_BEACON_TYPE_FILTER) {
             Type type = new TypeToken<MsgReadResult<TypeFilter>>() {
             }.getType();
@@ -104,10 +99,10 @@ public class BeaconTypeFilterActivity extends BaseActivity {
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
             cbTypeIbeacon.setChecked(result.data.ibeacon == 1);
-            cbTypeEddystoneUid.setChecked(result.data.eddyston_uid == 1);
-            cbTypeEddystoneUrl.setChecked(result.data.eddyston_url == 1);
-            cbTypeEddystoneTlm.setChecked(result.data.eddyston_tlm == 1);
-            cbTypeMkibeacon.setChecked(result.data.MK_ibeacon == 1);
+            cbTypeEddystoneUid.setChecked(result.data.eddystone_uid == 1);
+            cbTypeEddystoneUrl.setChecked(result.data.eddystone_url == 1);
+            cbTypeEddystoneTlm.setChecked(result.data.eddystone_tlm == 1);
+            cbTypeMkibeacon.setChecked(result.data.MK_iBeacon == 1);
             cbTypeMkibeaconAcc.setChecked(result.data.MK_ACC == 1);
             cbTypeBxpAcc.setChecked(result.data.BXP_ACC == 1);
             cbTypeBxpTh.setChecked(result.data.BXP_TH == 1);
@@ -158,10 +153,10 @@ public class BeaconTypeFilterActivity extends BaseActivity {
         deviceInfo.mac = mMokoDevice.mac;
         TypeFilter typeFilter = new TypeFilter();
         typeFilter.ibeacon = cbTypeIbeacon.isChecked() ? 1 : 0;
-        typeFilter.eddyston_uid = cbTypeEddystoneUid.isChecked() ? 1 : 0;
-        typeFilter.eddyston_url = cbTypeEddystoneUrl.isChecked() ? 1 : 0;
-        typeFilter.eddyston_tlm = cbTypeEddystoneTlm.isChecked() ? 1 : 0;
-        typeFilter.MK_ibeacon = cbTypeMkibeacon.isChecked() ? 1 : 0;
+        typeFilter.eddystone_uid = cbTypeEddystoneUid.isChecked() ? 1 : 0;
+        typeFilter.eddystone_url = cbTypeEddystoneUrl.isChecked() ? 1 : 0;
+        typeFilter.eddystone_tlm = cbTypeEddystoneTlm.isChecked() ? 1 : 0;
+        typeFilter.MK_iBeacon = cbTypeMkibeacon.isChecked() ? 1 : 0;
         typeFilter.MK_ACC = cbTypeMkibeaconAcc.isChecked() ? 1 : 0;
         typeFilter.BXP_ACC = cbTypeBxpAcc.isChecked() ? 1 : 0;
         typeFilter.BXP_TH = cbTypeBxpTh.isChecked() ? 1 : 0;

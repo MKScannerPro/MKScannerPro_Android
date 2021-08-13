@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white_ffffff"
+    android:minHeight="170dp"
     android:paddingLeft="12dp"
     android:paddingRight="12dp"
     android:paddingBottom="12dp">
@@ -26,7 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cb_ssl">
@@ -52,9 +53,9 @@
             android:clickable="true"
             android:gravity="center"
             android:minWidth="70dp"
-            android:onClick="selectCertificationMode"
+            android:onClick="selectCertificate"
             android:padding="12dp"
-            android:text="Self signed certificate"
+            android:text="CA signed server certificate"
             android:textColor="@color/white_ffffff"
             android:textSize="15sp"
             app:layout_constraintRight_toRightOf="parent"
@@ -67,6 +68,7 @@
             android:layout_marginTop="10dp"
             android:minHeight="50dp"
             android:orientation="horizontal"
+            android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_certification">
@@ -110,6 +112,7 @@
             android:layout_marginTop="10dp"
             android:minHeight="50dp"
             android:orientation="horizontal"
+            android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ll_ca">
@@ -153,6 +156,7 @@
             android:layout_marginTop="10dp"
             android:minHeight="50dp"
             android:orientation="horizontal"
+            android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ll_client_key">

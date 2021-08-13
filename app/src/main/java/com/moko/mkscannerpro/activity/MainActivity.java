@@ -13,6 +13,8 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
@@ -22,13 +24,13 @@ import com.moko.mkscannerpro.db.DBTools;
 import com.moko.mkscannerpro.dialog.AlertMessageDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
-import com.moko.support.entity.MsgNotify;
-import com.moko.support.entity.NetworkingStatus;
 import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.mkscannerpro.utils.Utils;
 import com.moko.support.MQTTConstants;
 import com.moko.support.MQTTSupport;
+import com.moko.support.entity.MsgNotify;
+import com.moko.support.entity.NetworkingStatus;
 import com.moko.support.event.DeviceDeletedEvent;
 import com.moko.support.event.DeviceModifyNameEvent;
 import com.moko.support.event.DeviceOnlineEvent;
@@ -36,11 +38,14 @@ import com.moko.support.event.MQTTConnectionCompleteEvent;
 import com.moko.support.event.MQTTConnectionFailureEvent;
 import com.moko.support.event.MQTTConnectionLostEvent;
 import com.moko.support.event.MQTTMessageArrivedEvent;
+import com.moko.support.event.MQTTUnSubscribeFailureEvent;
+import com.moko.support.event.MQTTUnSubscribeSuccessEvent;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -73,6 +78,8 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         adapter = new DeviceAdapter();
         adapter.openLoadAnimation();
         adapter.replaceData(devices);
+        adapter.setOnItemClickListener(this);
+        adapter.setOnItemLongClickListener(this);
         rvDeviceList.setLayoutManager(new LinearLayoutManager(this));
         rvDeviceList.setAdapter(adapter);
         if (devices.isEmpty()) {
@@ -84,6 +91,9 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         }
         mHandler = new Handler(Looper.getMainLooper());
         MQTTAppConfigStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
+        if (!TextUtils.isEmpty(MQTTAppConfigStr)) {
+            tvTitle.setText(getString(R.string.mqtt_connecting));
+        }
         MQTTSupport.getInstance().connectMqtt(MQTTAppConfigStr);
     }
 
@@ -111,10 +121,26 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMQTTUnSubscribeSuccessEvent(MQTTUnSubscribeSuccessEvent event) {
+        dismissLoadingProgressDialog();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMQTTUnSubscribeFailureEvent(MQTTUnSubscribeFailureEvent event) {
+        dismissLoadingProgressDialog();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDeviceModifyNameEvent(DeviceModifyNameEvent event) {
         // 修改了设备名称
-        devices.clear();
-        devices.addAll(DBTools.getInstance(MainActivity.this).selectAllDevice());
+        if (!devices.isEmpty()) {
+            for (MokoDevice device : devices) {
+                if (device.deviceId.equals(event.getDeviceId())) {
+                    device.nickName = DBTools.getInstance(this).selectDevice(device.deviceId).nickName;
+                    break;
+                }
+            }
+        }
         adapter.replaceData(devices);
     }
 
@@ -182,7 +208,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
             startActivity(new Intent(this, SetAppMQTTActivity.class));
             return;
         }
-        if (Utils.isNetworkAvailable(this) && Utils.pingIPAddress("amazon.com")) {
+        if (Utils.isNetworkAvailable(this)) {
             MQTTConfig MQTTAppConfig = new Gson().fromJson(MQTTAppConfigStr, MQTTConfig.class);
             if (TextUtils.isEmpty(MQTTAppConfig.host)) {
                 startActivity(new Intent(this, SetAppMQTTActivity.class));
@@ -241,7 +267,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
             } catch (MqttException e) {
                 e.printStackTrace();
             }
-            XLog.i("删除设备");
+            XLog.i(String.format("删除设备:%s", mokoDevice.name));
             DBTools.getInstance(MainActivity.this).deleteDevice(mokoDevice);
             Intent i = new Intent(AppConstants.ACTION_DELETE_DEVICE);
             i.putExtra(AppConstants.EXTRA_DELETE_DEVICE_ID, mokoDevice.id);
@@ -289,11 +315,14 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         final String message = event.getMessage();
         if (TextUtils.isEmpty(message))
             return;
-        Type type = new TypeToken<MsgNotify<NetworkingStatus>>() {
+        JsonObject object = new Gson().fromJson(message, JsonObject.class);
+        JsonElement element = object.get("msg_id");
+        int msg_id = element.getAsInt();
+        if (msg_id != MQTTConstants.NOTIFY_MSG_ID_NETWORKING_STATUS)
+            return;
+        Type type = new TypeToken<MsgNotify<JSONObject>>() {
         }.getType();
         MsgNotify<NetworkingStatus> msgNotify = new Gson().fromJson(message, type);
-        if (msgNotify.msg_id != MQTTConstants.NOTIFY_MSG_ID_NETWORKING_STATUS)
-            return;
         final String deviceId = msgNotify.device_info.device_id;
         for (final MokoDevice device : devices) {
             if (device.deviceId.equals(deviceId)) {
@@ -326,6 +355,19 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
             tvTitle.setText(getString(R.string.app_name));
             // 订阅所有设备的Topic
             subscribeAllDevices();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MQTTSupport.getInstance().disconnectMqtt();
+        if (!devices.isEmpty()) {
+            for (final MokoDevice device : devices) {
+                if (mHandler.hasMessages(device.id)) {
+                    mHandler.removeMessages(device.id);
+                }
+            }
         }
     }
 }

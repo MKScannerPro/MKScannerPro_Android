@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
@@ -27,8 +29,6 @@ import com.moko.support.handler.MQTTMessageAssembler;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 
@@ -95,13 +95,9 @@ public class SettingForDeviceActivity extends BaseActivity {
         final String message = event.getMessage();
         if (TextUtils.isEmpty(message))
             return;
-        JSONObject object = new Gson().fromJson(message, JSONObject.class);
-        int msg_id = 0;
-        try {
-            msg_id = object.getInt("msg_id");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        JsonObject object = new Gson().fromJson(message, JsonObject.class);
+        JsonElement element = object.get("msg_id");
+        int msg_id = element.getAsInt();
         if (msg_id == MQTTConstants.READ_MSG_ID_CONFIG_INFO) {
             Type type = new TypeToken<MsgReadResult<ConfigInfo>>() {
             }.getType();

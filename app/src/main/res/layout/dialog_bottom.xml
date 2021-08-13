@@ -38,7 +38,7 @@
             android:textSize="15sp" />
     </RelativeLayout>
 
-    <com.moko.lw001.view.WheelView
+    <com.moko.mkscannerpro.view.WheelView
         android:id="@+id/wv_bottom"
         android:layout_width="0dp"
         android:layout_height="204dp"

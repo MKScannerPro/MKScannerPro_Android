@@ -8,8 +8,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
@@ -24,6 +25,7 @@ import com.moko.support.entity.MsgConfigResult;
 import com.moko.support.entity.MsgDeviceInfo;
 import com.moko.support.entity.MsgReadResult;
 import com.moko.support.entity.SystemTime;
+import com.moko.support.entity.SystemTimeRead;
 import com.moko.support.event.DeviceOnlineEvent;
 import com.moko.support.event.MQTTMessageArrivedEvent;
 import com.moko.support.handler.MQTTMessageAssembler;
@@ -31,8 +33,6 @@ import com.moko.support.handler.MQTTMessageAssembler;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -65,13 +65,13 @@ public class SystemTimeActivity extends BaseActivity {
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
         mTimeZones = new ArrayList<>();
-        for (int i = -12; i < 13; i++) {
-            if (i < 0) {
-                mTimeZones.add(String.format("UTC%02d", i));
-            } else if (i == 0) {
+        for (int i = 0; i <= 24; i++) {
+            if (i < 12) {
+                mTimeZones.add(String.format("UTC-%02d", 12 - i));
+            } else if (i == 12) {
                 mTimeZones.add("UTC+00");
             } else {
-                mTimeZones.add(String.format("UTC+%02d", i));
+                mTimeZones.add(String.format("UTC+%02d", i - 12));
             }
         }
         mHandler = new Handler(Looper.getMainLooper());
@@ -91,32 +91,31 @@ public class SystemTimeActivity extends BaseActivity {
         final String message = event.getMessage();
         if (TextUtils.isEmpty(message))
             return;
-        JSONObject object = new Gson().fromJson(message, JSONObject.class);
-        int msg_id = 0;
-        try {
-            msg_id = object.getInt("msg_id");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        JsonObject object = new Gson().fromJson(message, JsonObject.class);
+        JsonElement element = object.get("msg_id");
+        int msg_id = element.getAsInt();
         if (msg_id == MQTTConstants.READ_MSG_ID_UTC) {
-            Type type = new TypeToken<MsgReadResult<SystemTime>>() {
+            Type type = new TypeToken<MsgReadResult<SystemTimeRead>>() {
             }.getType();
-            MsgReadResult<SystemTime> result = new Gson().fromJson(message, type);
+            MsgReadResult<SystemTimeRead> result = new Gson().fromJson(message, type);
             if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
                 return;
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            long timestamp = result.data.timestamp;
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(timestamp * 1000);
-            String time = MokoUtils.calendar2strDate(calendar, AppConstants.PATTERN_YYYY_MM_DD_HH_MM);
+            String timestamp = result.data.timestamp;
+            String date = timestamp.substring(0, 10);
+            String time = timestamp.substring(11, 16);
             mSelectedTimeZone = result.data.time_zone + 12;
             tvTimeZone.setText(mTimeZones.get(mSelectedTimeZone));
-            tvDeviceTime.setText(String.format("Device time:%s %s", time, mTimeZones.get(mSelectedTimeZone)));
+            tvDeviceTime.setText(String.format("Device time:%s %s %s", date, time, mTimeZones.get(mSelectedTimeZone)));
             if (mSyncTimeHandler.hasMessages(0))
                 mSyncTimeHandler.removeMessages(0);
             mSyncTimeHandler.postDelayed(() -> {
+                showLoadingProgressDialog();
+                mHandler.postDelayed(() -> {
+                    dismissLoadingProgressDialog();
+                }, 30 * 1000);
                 getSystemTime();
             }, 30 * 1000);
         }
@@ -241,5 +240,7 @@ public class SystemTimeActivity extends BaseActivity {
         super.onDestroy();
         if (mSyncTimeHandler.hasMessages(0))
             mSyncTimeHandler.removeMessages(0);
+        if (mHandler.hasMessages(0))
+            mHandler.removeMessages(0);
     }
 }

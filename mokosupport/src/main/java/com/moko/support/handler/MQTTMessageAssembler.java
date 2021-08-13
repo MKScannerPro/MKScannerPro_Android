@@ -2,6 +2,7 @@ package com.moko.support.handler;
 
 import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.moko.support.MQTTConstants;
 import com.moko.support.entity.ConnectionTimeout;
 import com.moko.support.entity.DataReportTimeout;
@@ -149,9 +150,12 @@ public class MQTTMessageAssembler {
     public static String assembleWriteBeaconTypeFilter(MsgDeviceInfo deviceInfo, TypeFilter typeFilter) {
         MsgConfigReq<TypeFilter> configReq = new MsgConfigReq();
         configReq.device_info = deviceInfo;
-        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_BLE_SCAN_TIMEOUT;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_BEACON_TYPE_FILTER;
         configReq.data = typeFilter;
-        String message = new Gson().toJson(configReq);
+        Gson gs = new GsonBuilder()
+                .disableHtmlEscaping()
+                .create();
+        String message = gs.toJson(configReq);
         XLog.e("app_to_device--->" + message);
         return message;
     }

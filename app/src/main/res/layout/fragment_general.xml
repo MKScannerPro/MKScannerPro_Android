@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white_ffffff"
+    android:minHeight="170dp"
     android:paddingLeft="12dp"
-    android:paddingRight="12dp"
-    android:paddingBottom="12dp">
+    android:paddingRight="12dp">
 
     <CheckBox
         android:id="@+id/cb_clean_session"
@@ -98,7 +98,7 @@
     <EditText
         android:id="@+id/et_keep_alive"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/shape_radius_edit_bg"

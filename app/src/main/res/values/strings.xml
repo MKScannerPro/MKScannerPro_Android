@@ -48,10 +48,10 @@
     <string name="wifi_input_title">Please enter Wi-Fi information</string>
     <string name="wifi_input_ssid">Wi-Fi :</string>
     <string name="wifi_input_password">Password :</string>
-    <string name="wifi_verify_empty">Please enter a valid name of wifi.</string>
+    <string name="wifi_verify_empty">Please enter a valid WIFI information</string>
     <string name="mqtt_connecting_title">Connecting now</string>
     <string name="mqtt_connecting_content">Make sure your phone and device are \nas close to your router as possible.</string>
-    <string name="mqtt_connecting_timeout">Connect Timeout</string>
+    <string name="mqtt_connecting_timeout">connect timeout</string>
 
     <string name="modify_device_name_conn_success">Connection successful</string>
     <string name="modify_device_name_done">Done</string>

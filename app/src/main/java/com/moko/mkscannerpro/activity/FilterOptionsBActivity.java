@@ -16,6 +16,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
@@ -39,8 +41,6 @@ import com.moko.support.handler.MQTTMessageAssembler;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -160,13 +160,9 @@ public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSe
         final String message = event.getMessage();
         if (TextUtils.isEmpty(message))
             return;
-        JSONObject object = new Gson().fromJson(message, JSONObject.class);
-        int msg_id = 0;
-        try {
-            msg_id = object.getInt("msg_id");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        JsonObject object = new Gson().fromJson(message, JsonObject.class);
+        JsonElement element = object.get("msg_id");
+        int msg_id = element.getAsInt();
         if (msg_id == MQTTConstants.READ_MSG_ID_FILTER_B) {
             Type type = new TypeToken<MsgReadResult<FilterCondition>>() {
             }.getType();
@@ -624,7 +620,7 @@ public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSe
                     }
                 }
                 FilterCondition.RawDataBean rawDataBean = new FilterCondition.RawDataBean();
-                rawDataBean.type = String.valueOf(dataType);
+                rawDataBean.type = String.format("%02x", dataType);
                 rawDataBean.start = min;
                 rawDataBean.end = max;
                 rawDataBean.data = rawDataStr;

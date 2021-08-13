@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
@@ -21,6 +23,7 @@ import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.support.MQTTConstants;
 import com.moko.support.MQTTSupport;
+import com.moko.support.entity.MsgConfigResult;
 import com.moko.support.entity.MsgDeviceInfo;
 import com.moko.support.entity.MsgNotify;
 import com.moko.support.entity.OTAParams;
@@ -32,8 +35,6 @@ import com.moko.support.handler.MQTTMessageAssembler;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -85,13 +86,9 @@ public class OTAActivity extends BaseActivity {
         final String message = event.getMessage();
         if (TextUtils.isEmpty(message))
             return;
-        JSONObject object = new Gson().fromJson(message, JSONObject.class);
-        int msg_id = 0;
-        try {
-            msg_id = object.getInt("msg_id");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        JsonObject object = new Gson().fromJson(message, JsonObject.class);
+        JsonElement element = object.get("msg_id");
+        int msg_id = element.getAsInt();
         if (msg_id == MQTTConstants.NOTIFY_MSG_ID_OTA_RESULT) {
             Type type = new TypeToken<MsgNotify<OTAResult>>() {
             }.getType();
@@ -107,21 +104,21 @@ public class OTAActivity extends BaseActivity {
                 ToastUtils.showToast(this, R.string.update_failed);
             }
         }
-//        if (msg_id == MQTTConstants.CONFIG_MSG_ID_OTA) {
-//            Type type = new TypeToken<MsgConfigResult>() {
-//            }.getType();
-//            MsgConfigResult result = new Gson().fromJson(message, type);
-//            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
-//                return;
-//            }
+        if (msg_id == MQTTConstants.CONFIG_MSG_ID_OTA) {
+            Type type = new TypeToken<MsgConfigResult>() {
+            }.getType();
+            MsgConfigResult result = new Gson().fromJson(message, type);
+            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
+                return;
+            }
 //            dismissLoadingProgressDialog();
-//            mHandler.removeMessages(0);
-//            if (result.result_code == 0) {
-//                ToastUtils.showToast(this, "Set up succeed");
-//            } else {
-//                ToastUtils.showToast(this, "Set up failed");
-//            }
-//        }
+            mHandler.removeMessages(0);
+            if (result.result_code == 0) {
+                ToastUtils.showToast(this, "Set up succeed");
+            } else {
+                ToastUtils.showToast(this, "Set up failed");
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -165,10 +162,10 @@ public class OTAActivity extends BaseActivity {
             return;
         }
         XLog.i("升级固件");
-//        mHandler.postDelayed(() -> {
-//            dismissLoadingProgressDialog();
-//            ToastUtils.showToast(this, "Set up failed");
-//        }, 30 * 1000);
+        mHandler.postDelayed(() -> {
+            dismissLoadingProgressDialog();
+            ToastUtils.showToast(this, "Set up failed");
+        }, 50 * 1000);
         showLoadingProgressDialog();
         setOTA(hostStr, Integer.parseInt(portStr), catalogueStr);
     }

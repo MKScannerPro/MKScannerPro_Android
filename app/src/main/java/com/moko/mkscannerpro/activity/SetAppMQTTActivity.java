@@ -95,6 +95,7 @@ public class SetAppMQTTActivity extends BaseActivity implements RadioGroup.OnChe
                 }
             }
         });
+        vpMqtt.setOffscreenPageLimit(3);
         rgMqtt.setOnCheckedChangeListener(this);
     }
 

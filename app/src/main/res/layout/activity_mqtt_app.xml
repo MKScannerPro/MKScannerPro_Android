@@ -81,7 +81,7 @@
                 <EditText
                     android:id="@+id/et_mqtt_host"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="45dp"
                     android:background="@drawable/shape_radius_edit_bg"
                     android:hint="1-64 Characters"
                     android:maxLength="64"
@@ -111,7 +111,7 @@
                 <EditText
                     android:id="@+id/et_mqtt_port"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="45dp"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/shape_radius_edit_bg"
                     android:hint="0-65535"
@@ -142,7 +142,7 @@
                 <EditText
                     android:id="@+id/et_mqtt_client_id"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="45dp"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/shape_radius_edit_bg"
                     android:hint="1-64 Characters"
@@ -189,7 +189,7 @@
                 <EditText
                     android:id="@+id/et_mqtt_subscribe_topic"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="45dp"
                     android:background="@drawable/shape_radius_edit_bg"
                     android:hint="0-128 Characters"
                     android:maxLength="128"
@@ -219,7 +219,7 @@
                 <EditText
                     android:id="@+id/et_mqtt_publish_topic"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="45dp"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/shape_radius_edit_bg"
                     android:hint="0-128 Characters"
