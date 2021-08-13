@@ -2,6 +2,7 @@ package com.moko.support;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import com.elvishew.xlog.XLog;
@@ -70,6 +71,7 @@ public class MQTTSupport {
 
 
     private MqttAndroidClient mqttAndroidClient;
+    private IMqttActionListener listener;
 
     private MQTTSupport() {
         //no instance
@@ -88,6 +90,18 @@ public class MQTTSupport {
 
     public void init(Context context) {
         mContext = context;
+        listener = new IMqttActionListener() {
+            @Override
+            public void onSuccess(IMqttToken asyncActionToken) {
+                XLog.w(String.format("%s:%s", TAG, "connect success"));
+            }
+
+            @Override
+            public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                XLog.w(String.format("%s:%s", TAG, "connect failure"));
+                EventBus.getDefault().post(new MQTTConnectionFailureEvent());
+            }
+        };
     }
 
     public void connectMqtt(String mqttAppConfigStr) {
@@ -393,21 +407,9 @@ public class MQTTSupport {
 
     private void connectMqtt(MqttConnectOptions options) throws MqttException {
         if (mqttAndroidClient != null && !mqttAndroidClient.isConnected()) {
-            mqttAndroidClient.connect(options, null, new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    XLog.w(String.format("%s:%s", TAG, "connect success"));
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    XLog.w(String.format("%s:%s", TAG, "connect failure"));
-                    EventBus.getDefault().post(new MQTTConnectionFailureEvent());
-                }
-            });
+            mqttAndroidClient.connect(options, null, listener);
         }
     }
-
 
     public void disconnectMqtt() {
         if (!isConnected())
@@ -482,6 +484,8 @@ public class MQTTSupport {
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                if (isWindowLocked())
+                    return;
                 XLog.w(String.format("%s:%s->%s", TAG, topic, "publish failure"));
                 EventBus.getDefault().post(new MQTTPublishFailureEvent(topic, msgId));
             }
@@ -493,5 +497,18 @@ public class MQTTSupport {
             return mqttAndroidClient.isConnected();
         }
         return false;
+    }
+
+    // 记录上次页面控件点击时间,屏蔽无效点击事件
+    protected long mLastOnClickTime = 0;
+
+    public boolean isWindowLocked() {
+        long current = SystemClock.elapsedRealtime();
+        if (current - mLastOnClickTime > 500) {
+            mLastOnClickTime = current;
+            return false;
+        } else {
+            return true;
+        }
     }
 }

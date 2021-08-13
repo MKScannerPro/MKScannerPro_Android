@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white_ffffff"
+    android:minHeight="300dp"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp">
+
+    <CheckBox
+        android:id="@+id/cb_clean_session"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:button="@null"
+        android:drawableRight="@drawable/selector_cb_btn"
+        android:text="Clean Session"
+        android:textColor="@color/black_333333"
+        android:textSize="15sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="Qos"
+        android:textColor="@color/black_333333"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@id/rg_qos"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rg_qos" />
+
+    <RadioGroup
+        android:id="@+id/rg_qos"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/shape_stroke_rg_bg"
+        android:orientation="horizontal"
+        android:padding="1px"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cb_clean_session"
+        app:layout_constraintWidth_percent="0.7">
+
+        <RadioButton
+            android:id="@+id/rb_qos_1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:background="@drawable/selector_rb_bg"
+            android:button="@null"
+            android:checked="true"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="@color/black_333333"
+            android:textSize="15sp" />
+
+        <RadioButton
+            android:id="@+id/rb_qos_2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:background="@drawable/selector_rb_bg"
+            android:button="@null"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="@color/black_333333"
+            android:textSize="15sp" />
+
+        <RadioButton
+            android:id="@+id/rb_qos_3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:background="@drawable/selector_rb_bg"
+            android:button="@null"
+            android:gravity="center"
+            android:text="2"
+            android:textColor="@color/black_333333"
+            android:textSize="15sp" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="Keep Alive"
+        android:textColor="@color/black_333333"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@id/et_keep_alive"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@id/et_keep_alive" />
+
+    <EditText
+        android:id="@+id/et_keep_alive"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/shape_radius_edit_bg"
+        android:hint="10~120"
+        android:inputType="number"
+        android:maxLength="3"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        app:layout_constraintLeft_toLeftOf="@id/rg_qos"
+        app:layout_constraintRight_toLeftOf="@id/keep_alive_unit"
+        app:layout_constraintTop_toBottomOf="@id/rg_qos" />
+
+    <TextView
+        android:id="@+id/keep_alive_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="s"
+        android:textColor="@color/black_333333"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@id/et_keep_alive"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/et_keep_alive" />
+</androidx.constraintlayout.widget.ConstraintLayout>

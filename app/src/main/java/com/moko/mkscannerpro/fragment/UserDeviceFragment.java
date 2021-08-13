@@ -14,9 +14,9 @@ import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class UserFragment extends Fragment {
+public class UserDeviceFragment extends Fragment {
 
-    private static final String TAG = UserFragment.class.getSimpleName();
+    private static final String TAG = UserDeviceFragment.class.getSimpleName();
     @BindView(R.id.et_mqtt_username)
     EditText etMqttUsername;
     @BindView(R.id.et_mqtt_password)
@@ -27,11 +27,11 @@ public class UserFragment extends Fragment {
     private String username;
     private String password;
 
-    public UserFragment() {
+    public UserDeviceFragment() {
     }
 
-    public static UserFragment newInstance() {
-        UserFragment fragment = new UserFragment();
+    public static UserDeviceFragment newInstance() {
+        UserDeviceFragment fragment = new UserDeviceFragment();
         return fragment;
     }
 
@@ -45,7 +45,7 @@ public class UserFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView: ");
-        View view = inflater.inflate(R.layout.fragment_user_app, container, false);
+        View view = inflater.inflate(R.layout.fragment_user_device, container, false);
         ButterKnife.bind(this, view);
         activity = (BaseActivity) getActivity();
         etMqttUsername.setText(username);

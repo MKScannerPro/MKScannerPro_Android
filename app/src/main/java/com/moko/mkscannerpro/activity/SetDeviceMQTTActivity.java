@@ -33,9 +33,11 @@ import com.moko.mkscannerpro.dialog.BottomDialog;
 import com.moko.mkscannerpro.dialog.CustomDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
-import com.moko.mkscannerpro.fragment.GeneralFragment;
-import com.moko.mkscannerpro.fragment.SSLFragment;
-import com.moko.mkscannerpro.fragment.UserFragment;
+import com.moko.mkscannerpro.fragment.GeneralDeviceFragment;
+import com.moko.mkscannerpro.fragment.GeneralDeviceFragment;
+import com.moko.mkscannerpro.fragment.SSLDeviceFragment;
+import com.moko.mkscannerpro.fragment.UserDeviceFragment;
+import com.moko.mkscannerpro.fragment.UserDeviceFragment;
 import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.support.MQTTConstants;
@@ -64,7 +66,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
+public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
 
     @BindView(R.id.et_mqtt_host)
     EditText etMqttHost;
@@ -92,9 +94,9 @@ public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.On
     EditText etNtpUrl;
     @BindView(R.id.tv_time_zone)
     TextView tvTimeZone;
-    private GeneralFragment generalFragment;
-    private UserFragment userFragment;
-    private SSLFragment sslFragment;
+    private GeneralDeviceFragment generalFragment;
+    private UserDeviceFragment userFragment;
+    private SSLDeviceFragment sslFragment;
     private MQTTFragmentAdapter adapter;
     private ArrayList<Fragment> fragments;
 
@@ -308,7 +310,7 @@ public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.On
                 @Override
                 public void run() {
                     dismissConnMqttDialog();
-                    MokoDevice mokoDevice = DBTools.getInstance(SetDeviceMqttActivity.this).selectDeviceByMac(mSelectedDeviceMac);
+                    MokoDevice mokoDevice = DBTools.getInstance(SetDeviceMQTTActivity.this).selectDeviceByMac(mSelectedDeviceMac);
                     String mqttConfigStr = new Gson().toJson(mqttDeviceConfig, MQTTConfig.class);
                     if (mokoDevice == null) {
                         mokoDevice = new MokoDevice();
@@ -319,7 +321,7 @@ public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.On
                         mokoDevice.topicSubscribe = mqttDeviceConfig.topicSubscribe;
                         mokoDevice.topicPublish = mqttDeviceConfig.topicPublish;
                         mokoDevice.deviceId = mqttDeviceConfig.deviceId;
-                        DBTools.getInstance(SetDeviceMqttActivity.this).insertDevice(mokoDevice);
+                        DBTools.getInstance(SetDeviceMQTTActivity.this).insertDevice(mokoDevice);
                     } else {
                         mokoDevice.name = mSelectedDeviceName;
                         mokoDevice.mac = mSelectedDeviceMac;
@@ -327,9 +329,9 @@ public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.On
                         mokoDevice.topicSubscribe = mqttDeviceConfig.topicSubscribe;
                         mokoDevice.topicPublish = mqttDeviceConfig.topicPublish;
                         mokoDevice.deviceId = mqttDeviceConfig.deviceId;
-                        DBTools.getInstance(SetDeviceMqttActivity.this).updateDevice(mokoDevice);
+                        DBTools.getInstance(SetDeviceMQTTActivity.this).updateDevice(mokoDevice);
                     }
-                    Intent modifyIntent = new Intent(SetDeviceMqttActivity.this, ModifyNameActivity.class);
+                    Intent modifyIntent = new Intent(SetDeviceMQTTActivity.this, ModifyNameActivity.class);
                     modifyIntent.putExtra(AppConstants.EXTRA_KEY_DEVICE, mokoDevice);
                     startActivity(modifyIntent);
                 }
@@ -339,9 +341,9 @@ public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.On
 
     private void createFragment() {
         fragments = new ArrayList<>();
-        generalFragment = GeneralFragment.newInstance();
-        userFragment = UserFragment.newInstance();
-        sslFragment = SSLFragment.newInstance();
+        generalFragment = GeneralDeviceFragment.newInstance();
+        userFragment = UserDeviceFragment.newInstance();
+        sslFragment = SSLDeviceFragment.newInstance();
         fragments.add(generalFragment);
         fragments.add(userFragment);
         fragments.add(sslFragment);
@@ -490,7 +492,7 @@ public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.On
                         mWifiSSID = etSSID.getText().toString();
                         // 获取WIFI后，连接成功后发给设备
                         if (TextUtils.isEmpty(mWifiSSID)) {
-                            ToastUtils.showToast(SetDeviceMqttActivity.this, getString(R.string.wifi_verify_empty));
+                            ToastUtils.showToast(SetDeviceMQTTActivity.this, getString(R.string.wifi_verify_empty));
                             return;
                         }
                         dialog.dismiss();
@@ -623,7 +625,8 @@ public class SetDeviceMqttActivity extends BaseActivity implements RadioGroup.On
                     isDeviceConnectSuccess = true;
                     isSettingSuccess = false;
                     dismissConnMqttDialog();
-                    ToastUtils.showToast(SetDeviceMqttActivity.this, getString(R.string.mqtt_connecting_timeout));
+                    ToastUtils.showToast(SetDeviceMQTTActivity.this, getString(R.string.mqtt_connecting_timeout));
+                    finish();
                 }
             }
         }, 90 * 1000);

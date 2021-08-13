@@ -29,12 +29,12 @@ import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SSLFragment extends Fragment {
+public class SSLDeviceFragment extends Fragment {
     public static final int REQUEST_CODE_SELECT_CA = 0x10;
     public static final int REQUEST_CODE_SELECT_CLIENT_KEY = 0x11;
     public static final int REQUEST_CODE_SELECT_CLIENT_CERT = 0x12;
 
-    private static final String TAG = SSLFragment.class.getSimpleName();
+    private static final String TAG = SSLDeviceFragment.class.getSimpleName();
     @BindView(R.id.cb_ssl)
     CheckBox cbSsl;
     @BindView(R.id.tv_certification)
@@ -66,11 +66,11 @@ public class SSLFragment extends Fragment {
     private ArrayList<String> values;
     private int selected;
 
-    public SSLFragment() {
+    public SSLDeviceFragment() {
     }
 
-    public static SSLFragment newInstance() {
-        SSLFragment fragment = new SSLFragment();
+    public static SSLDeviceFragment newInstance() {
+        SSLDeviceFragment fragment = new SSLDeviceFragment();
         return fragment;
     }
 
@@ -84,7 +84,7 @@ public class SSLFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView: ");
-        View view = inflater.inflate(R.layout.fragment_ssl_app, container, false);
+        View view = inflater.inflate(R.layout.fragment_ssl_device, container, false);
         ButterKnife.bind(this, view);
         activity = (BaseActivity) getActivity();
         clCertificate.setVisibility(connectMode > 0 ? View.VISIBLE : View.GONE);

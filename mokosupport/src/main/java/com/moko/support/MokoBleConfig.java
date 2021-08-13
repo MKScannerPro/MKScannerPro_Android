@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
+import android.os.Build;
 
 import com.elvishew.xlog.XLog;
 import com.moko.ble.lib.MokoBleManager;
@@ -16,6 +17,7 @@ import com.moko.support.entity.OrderServices;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 final class MokoBleConfig extends MokoBleManager {
 
@@ -54,11 +56,14 @@ final class MokoBleConfig extends MokoBleManager {
         mMokoResponseCallback.onCharacteristicRead(characteristic, value);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void discovered(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         UUID lastCharacteristicUUID = characteristic.getUuid();
-        if (paramsCharacteristic.getUuid().equals(lastCharacteristicUUID))
+        if (paramsCharacteristic.getUuid().equals(lastCharacteristicUUID)) {
+            gatt.requestMtu(247);
             mMokoResponseCallback.onServicesDiscovered(gatt);
+        }
     }
 
     @Override

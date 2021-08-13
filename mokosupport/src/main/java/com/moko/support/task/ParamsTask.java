@@ -251,23 +251,23 @@ public class ParamsTask extends OrderTask {
             data = new byte[DATA_LENGTH_MAX + 6];
             data[0] = (byte) 0xEE;
             data[1] = (byte) 0x01;
-            data[2] = (byte) 0x01;
-            data[3] = (byte) remainPack;
-            data[4] = (byte) key.getParamsKey();
+            data[2] = (byte) key.getParamsKey();
+            data[3] = (byte) 0x01;
+            data[4] = (byte) remainPack;
             data[5] = (byte) DATA_LENGTH_MAX;
             for (int i = 0; i < DATA_LENGTH_MAX; i++, dataOrigin++) {
-                data[i + 4] = dataBytes[dataOrigin];
+                data[i + 6] = dataBytes[dataOrigin];
             }
         } else {
             data = new byte[dataLength + 6];
             data[0] = (byte) 0xEE;
             data[1] = (byte) 0x01;
-            data[2] = (byte) 0x01;
-            data[3] = (byte) remainPack;
-            data[4] = (byte) key.getParamsKey();
+            data[2] = (byte) key.getParamsKey();
+            data[3] = (byte) 0x01;
+            data[4] = (byte) remainPack;
             data[5] = (byte) dataLength;
             for (int i = 0; i < dataLength; i++) {
-                data[i + 4] = dataBytes[i];
+                data[i + 6] = dataBytes[i];
             }
         }
     }
@@ -286,23 +286,23 @@ public class ParamsTask extends OrderTask {
             data = new byte[DATA_LENGTH_MAX + 6];
             data[0] = (byte) 0xEE;
             data[1] = (byte) 0x01;
-            data[2] = (byte) 0x01;
-            data[3] = (byte) remainPack;
-            data[4] = (byte) key.getParamsKey();
+            data[2] = (byte) key.getParamsKey();
+            data[3] = (byte) 0x01;
+            data[4] = (byte) remainPack;
             data[5] = (byte) DATA_LENGTH_MAX;
             for (int i = 0; i < DATA_LENGTH_MAX; i++, dataOrigin++) {
-                data[i + 4] = dataBytes[dataOrigin];
+                data[i + 6] = dataBytes[dataOrigin];
             }
         } else {
             data = new byte[dataLength + 6];
             data[0] = (byte) 0xEE;
             data[1] = (byte) 0x01;
-            data[2] = (byte) 0x01;
-            data[3] = (byte) remainPack;
-            data[4] = (byte) key.getParamsKey();
+            data[2] = (byte) key.getParamsKey();
+            data[3] = (byte) 0x01;
+            data[4] = (byte) remainPack;
             data[5] = (byte) dataLength;
             for (int i = 0; i < dataLength; i++) {
-                data[i + 4] = dataBytes[i];
+                data[i + 6] = dataBytes[i];
             }
         }
     }
@@ -338,23 +338,23 @@ public class ParamsTask extends OrderTask {
             data = new byte[DATA_LENGTH_MAX + 6];
             data[0] = (byte) 0xEE;
             data[1] = (byte) 0x01;
-            data[2] = (byte) 0x01;
-            data[3] = (byte) remainPack;
-            data[4] = (byte) cmd;
+            data[2] = (byte) cmd;
+            data[3] = (byte) 0x00;
+            data[4] = (byte) remainPack;
             data[5] = (byte) DATA_LENGTH_MAX;
             for (int i = 0; i < DATA_LENGTH_MAX; i++, dataOrigin++) {
-                data[i + 4] = dataBytes[dataOrigin];
+                data[i + 6] = dataBytes[dataOrigin];
             }
         } else {
             data = new byte[length + 6];
             data[0] = (byte) 0xEE;
             data[1] = (byte) 0x01;
-            data[2] = (byte) 0x01;
-            data[3] = (byte) remainPack;
-            data[4] = (byte) cmd;
+            data[2] = (byte) cmd;
+            data[3] = (byte) 0x00;
+            data[4] = (byte) remainPack;
             data[5] = (byte) length;
             for (int i = 0; i < length; i++, dataOrigin++) {
-                data[i + 4] = dataBytes[dataOrigin];
+                data[i + 6] = dataBytes[dataOrigin];
             }
         }
         MokoSupport.getInstance().sendDirectOrder(this);

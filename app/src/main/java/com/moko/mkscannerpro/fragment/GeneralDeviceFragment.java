@@ -19,9 +19,9 @@ import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class GeneralFragment extends Fragment {
+public class GeneralDeviceFragment extends Fragment {
 
-    private static final String TAG = GeneralFragment.class.getSimpleName();
+    private static final String TAG = GeneralDeviceFragment.class.getSimpleName();
     @BindView(R.id.cb_clean_session)
     CheckBox cbCleanSession;
     @BindView(R.id.rb_qos_1)
@@ -41,11 +41,11 @@ public class GeneralFragment extends Fragment {
     private int qos;
     private int keepAlive;
 
-    public GeneralFragment() {
+    public GeneralDeviceFragment() {
     }
 
-    public static GeneralFragment newInstance() {
-        GeneralFragment fragment = new GeneralFragment();
+    public static GeneralDeviceFragment newInstance() {
+        GeneralDeviceFragment fragment = new GeneralDeviceFragment();
         return fragment;
     }
 
@@ -59,7 +59,7 @@ public class GeneralFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView: ");
-        View view = inflater.inflate(R.layout.fragment_general_app, container, false);
+        View view = inflater.inflate(R.layout.fragment_general_device, container, false);
         ButterKnife.bind(this, view);
         activity = (BaseActivity) getActivity();
         cbCleanSession.setChecked(cleanSession);
