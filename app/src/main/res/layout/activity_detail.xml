@@ -88,7 +88,7 @@
         android:layout_marginRight="12dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:layout_width="0dp"
@@ -156,6 +156,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
         android:layout_weight="1.0"
-        android:overScrollMode="never" />
+        android:overScrollMode="never"
+        android:visibility="gone" />
 
 </LinearLayout>
