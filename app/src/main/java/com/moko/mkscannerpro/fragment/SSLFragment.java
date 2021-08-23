@@ -118,17 +118,14 @@ public class SSLFragment extends Fragment {
             tvCertification.setText(values.get(selected));
         }
         if (selected == 0) {
-            connectMode = 1;
             llCa.setVisibility(View.GONE);
             llClientKey.setVisibility(View.GONE);
             llClientCert.setVisibility(View.GONE);
         } else if (selected == 1) {
-            connectMode = 2;
             llCa.setVisibility(View.VISIBLE);
             llClientKey.setVisibility(View.GONE);
             llClientCert.setVisibility(View.GONE);
         } else if (selected == 2) {
-            connectMode = 3;
             llCa.setVisibility(View.VISIBLE);
             llClientKey.setVisibility(View.VISIBLE);
             llClientCert.setVisibility(View.VISIBLE);
