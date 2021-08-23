@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:button="@null"
-        android:drawableRight="@drawable/checkbox_open"
+        android:drawableRight="@drawable/selector_cb_btn"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:text="Bluetooth advertising indicator" />
@@ -52,7 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:button="@null"
-        android:drawableRight="@drawable/checkbox_open"
+        android:drawableRight="@drawable/selector_cb_btn"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:text="Bluetooth connected indicator" />
@@ -64,7 +64,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:button="@null"
-        android:drawableRight="@drawable/checkbox_open"
+        android:drawableRight="@drawable/selector_cb_btn"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:text="Server connecting indicator" />
@@ -76,7 +76,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:button="@null"
-        android:drawableRight="@drawable/checkbox_open"
+        android:drawableRight="@drawable/selector_cb_btn"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:text="Server connected indicator" />

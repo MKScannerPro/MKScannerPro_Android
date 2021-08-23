@@ -1,6 +1,7 @@
 package com.moko.mkscannerpro.fragment;
 
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class UserDeviceFragment extends Fragment {
-
+    private final String FILTER_ASCII = "[^ -~]";
     private static final String TAG = UserDeviceFragment.class.getSimpleName();
     @BindView(R.id.et_mqtt_username)
     EditText etMqttUsername;
@@ -48,6 +49,15 @@ public class UserDeviceFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_device, container, false);
         ButterKnife.bind(this, view);
         activity = (BaseActivity) getActivity();
+        InputFilter filter = (source, start, end, dest, dstart, dend) -> {
+            if ((source + "").matches(FILTER_ASCII)) {
+                return "";
+            }
+
+            return null;
+        };
+        etMqttUsername.setFilters(new InputFilter[]{new InputFilter.LengthFilter(256), filter});
+        etMqttPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(256), filter});
         etMqttUsername.setText(username);
         etMqttPassword.setText(password);
         return view;

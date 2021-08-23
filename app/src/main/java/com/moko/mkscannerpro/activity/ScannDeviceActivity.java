@@ -22,6 +22,7 @@ import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.adapter.DeviceInfoAdapter;
 import com.moko.mkscannerpro.base.BaseActivity;
 import com.moko.mkscannerpro.dialog.PasswordDialog;
+import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.support.MokoBleScanner;
 import com.moko.support.MokoSupport;
@@ -80,6 +81,7 @@ public class ScannDeviceActivity extends BaseActivity implements MokoScanDeviceC
         rvDevices.setAdapter(mAdapter);
         mokoBleScanner = new MokoBleScanner(this);
         mHandler = new Handler(Looper.getMainLooper());
+        mSavedPassword = SPUtiles.getStringValue(this, AppConstants.SP_KEY_PASSWORD, "");
         if (animation == null) {
             startScan();
         }
@@ -277,6 +279,7 @@ public class ScannDeviceActivity extends BaseActivity implements MokoScanDeviceC
                             int result = value[4] & 0xFF;
                             if (1 == result) {
                                 mSavedPassword = mPassword;
+                                SPUtiles.setStringValue(this, AppConstants.SP_KEY_PASSWORD, mSavedPassword);
                                 XLog.i("Success");
 
                                 // 跳转配置页面

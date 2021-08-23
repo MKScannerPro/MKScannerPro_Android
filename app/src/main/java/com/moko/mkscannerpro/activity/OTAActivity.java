@@ -3,6 +3,7 @@ package com.moko.mkscannerpro.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -43,6 +44,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class OTAActivity extends BaseActivity {
+    private final String FILTER_ASCII = "[^ -~]";
 
     public static String TAG = OTAActivity.class.getSimpleName();
     @BindView(R.id.et_host_content)
@@ -60,6 +62,7 @@ public class OTAActivity extends BaseActivity {
     private ArrayList<String> mValues;
     private int mSelected;
     private Handler mHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +71,15 @@ public class OTAActivity extends BaseActivity {
         if (getIntent().getExtras() != null) {
             mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
         }
+        InputFilter inputFilter = (source, start, end, dest, dstart, dend) -> {
+            if ((source + "").matches(FILTER_ASCII)) {
+                return "";
+            }
+
+            return null;
+        };
+        etHostContent.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), inputFilter});
+        etHostCatalogue.setFilters(new InputFilter[]{new InputFilter.LengthFilter(100), inputFilter});
         mHandler = new Handler(Looper.getMainLooper());
         String mqttConfigAppStr = SPUtiles.getStringValue(OTAActivity.this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);

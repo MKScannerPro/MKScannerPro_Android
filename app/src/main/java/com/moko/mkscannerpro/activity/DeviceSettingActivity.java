@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,26 +52,35 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class DeviceSettingActivity extends BaseActivity {
-
+    private final String FILTER_ASCII = "[^ -~]";
     public static String TAG = DeviceSettingActivity.class.getSimpleName();
     @BindView(R.id.tv_name)
     TextView tvName;
-
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
     private Handler mHandler;
+    private InputFilter filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_setting);
         ButterKnife.bind(this);
+        filter = (source, start, end, dest, dstart, dend) -> {
+            if ((source + "").matches(FILTER_ASCII)) {
+                return "";
+            }
+
+            return null;
+        };
+
         if (getIntent().getExtras() != null) {
             mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
             tvName.setText(mMokoDevice.nickName);
         }
+
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mHandler = new Handler(Looper.getMainLooper());
@@ -176,14 +184,6 @@ public class DeviceSettingActivity extends BaseActivity {
     public void back(View view) {
         finish();
     }
-
-    private InputFilter filter = new InputFilter() {
-        @Override
-        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-            if (source.equals(" ") || source.toString().contentEquals("\n")) return "";
-            else return null;
-        }
-    };
 
 
     public void onEditName(View view) {

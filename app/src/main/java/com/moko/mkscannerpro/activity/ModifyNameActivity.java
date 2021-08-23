@@ -27,19 +27,13 @@ import butterknife.ButterKnife;
 
 
 public class ModifyNameActivity extends BaseActivity {
-    public static String TAG = "ModifyNameActivity";
+    private final String FILTER_ASCII = "[^ -~]";
+    public static String TAG = ModifyNameActivity.class.getSimpleName();
 
     @BindView(R.id.et_nick_name)
     EditText etNickName;
     private MokoDevice device;
-
-    private InputFilter filter = new InputFilter() {
-        @Override
-        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-            if (source.equals(" ") || source.toString().contentEquals("\n")) return "";
-            else return null;
-        }
-    };
+    private InputFilter filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +41,13 @@ public class ModifyNameActivity extends BaseActivity {
         setContentView(R.layout.activity_modify_device_name);
         ButterKnife.bind(this);
         device = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
+        filter = (source, start, end, dest, dstart, dend) -> {
+            if ((source + "").matches(FILTER_ASCII)) {
+                return "";
+            }
+
+            return null;
+        };
         etNickName.setText(device.nickName);
         etNickName.setSelection(etNickName.getText().toString().length());
         etNickName.setFilters(new InputFilter[]{filter, new InputFilter.LengthFilter(20)});

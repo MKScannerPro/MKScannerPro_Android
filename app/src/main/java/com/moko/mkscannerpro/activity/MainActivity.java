@@ -30,7 +30,6 @@ import com.moko.mkscannerpro.utils.Utils;
 import com.moko.support.MQTTConstants;
 import com.moko.support.MQTTSupport;
 import com.moko.support.entity.MsgNotify;
-import com.moko.support.entity.NetworkingStatus;
 import com.moko.support.event.DeviceDeletedEvent;
 import com.moko.support.event.DeviceModifyNameEvent;
 import com.moko.support.event.DeviceOnlineEvent;
@@ -45,7 +44,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -318,16 +316,16 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         JsonObject object = new Gson().fromJson(message, JsonObject.class);
         JsonElement element = object.get("msg_id");
         int msg_id = element.getAsInt();
-        if (msg_id != MQTTConstants.NOTIFY_MSG_ID_NETWORKING_STATUS)
+        if (msg_id != MQTTConstants.NOTIFY_MSG_ID_NETWORKING_STATUS
+                && msg_id != MQTTConstants.NOTIFY_MSG_ID_BLE_SCAN_RESULT)
             return;
-        Type type = new TypeToken<MsgNotify<JSONObject>>() {
+        Type type = new TypeToken<MsgNotify<Object>>() {
         }.getType();
-        MsgNotify<NetworkingStatus> msgNotify = new Gson().fromJson(message, type);
+        MsgNotify<Object> msgNotify = new Gson().fromJson(message, type);
         final String deviceId = msgNotify.device_info.device_id;
         for (final MokoDevice device : devices) {
             if (device.deviceId.equals(deviceId)) {
                 device.isOnline = true;
-                EventBus.getDefault().post(new DeviceOnlineEvent(deviceId, true));
                 if (mHandler.hasMessages(device.id)) {
                     mHandler.removeMessages(device.id);
                 }

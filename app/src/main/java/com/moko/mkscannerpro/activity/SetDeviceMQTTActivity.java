@@ -67,7 +67,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
-
+    private final String FILTER_ASCII = "[^ -~]";
     @BindView(R.id.et_mqtt_host)
     EditText etMqttHost;
     @BindView(R.id.et_mqtt_port)
@@ -115,6 +115,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
     private boolean isSettingSuccess;
     private boolean isDeviceConnectSuccess;
     private Handler mHandler;
+    private InputFilter filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +143,19 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
             mqttDeviceConfig.topicPublish = "";
             mqttDeviceConfig.topicSubscribe = "";
         }
+        filter = (source, start, end, dest, dstart, dend) -> {
+            if ((source + "").matches(FILTER_ASCII)) {
+                return "";
+            }
+
+            return null;
+        };
+        etMqttHost.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
+        etMqttClientId.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
+        etMqttSubscribeTopic.setFilters(new InputFilter[]{new InputFilter.LengthFilter(128), filter});
+        etMqttPublishTopic.setFilters(new InputFilter[]{new InputFilter.LengthFilter(128), filter});
+        etDeviceId.setFilters(new InputFilter[]{new InputFilter.LengthFilter(32), filter});
+        etNtpUrl.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
         createFragment();
         initData();
         adapter = new MQTTFragmentAdapter(this);
@@ -464,20 +478,13 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
         showWifiInputDialog();
     }
 
-
-    private InputFilter filter = new InputFilter() {
-        @Override
-        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-            if (source.toString().contentEquals("\n")) return "";
-            else return null;
-        }
-    };
-
     private void showWifiInputDialog() {
         View wifiInputView = LayoutInflater.from(this).inflate(R.layout.wifi_input_content, null);
         final EditText etSSID = wifiInputView.findViewById(R.id.et_ssid);
-        etSSID.setFilters(new InputFilter[]{filter});
         final EditText etPassword = wifiInputView.findViewById(R.id.et_password);
+        etSSID.setFilters(new InputFilter[]{new InputFilter.LengthFilter(32), filter});
+        etPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
+
         CustomDialog dialog = new CustomDialog.Builder(this)
                 .setContentView(wifiInputView)
                 .setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {

@@ -119,7 +119,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="80dp"
             android:background="@drawable/shape_corner_btn_bg_white"
-            android:hint="1-64 Characters"
+            android:hint="0-65535"
             android:inputType="number"
             android:maxLength="5"
             android:paddingLeft="5dp"

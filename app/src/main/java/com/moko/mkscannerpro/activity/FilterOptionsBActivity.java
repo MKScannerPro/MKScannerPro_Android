@@ -139,7 +139,7 @@ public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSe
 
             return null;
         };
-        etAdvName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(29), inputFilter});
+        etAdvName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10), inputFilter});
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -600,11 +600,11 @@ public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSe
                     ToastUtils.showToast(this, "Para Error");
                     return false;
                 }
-                if (min > 62) {
+                if (min > 29) {
                     ToastUtils.showToast(this, "Range Error");
                     return false;
                 }
-                if (max > 62) {
+                if (max > 29) {
                     ToastUtils.showToast(this, "Range Error");
                     return false;
                 }

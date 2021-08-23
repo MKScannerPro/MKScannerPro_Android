@@ -83,7 +83,7 @@ public class DataReportTimeoutActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            etReportTimeout.setText(String.valueOf(result.data.timeout));
+            etReportTimeout.setText(String.valueOf(result.data.timeout / 50));
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_DATA_REPORT_TIMEOUT) {
             Type type = new TypeToken<MsgConfigResult>() {
@@ -129,7 +129,7 @@ public class DataReportTimeoutActivity extends BaseActivity {
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
         DataReportTimeout reportTimeout = new DataReportTimeout();
-        reportTimeout.timeout = timeout;
+        reportTimeout.timeout = timeout * 50;
         String message = MQTTMessageAssembler.assembleWriteDataReportTimeout(deviceInfo, reportTimeout);
         try {
             MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_DATA_REPORT_TIMEOUT, appMqttConfig.qos);

@@ -227,8 +227,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:hint="1~29 Characters"
-                android:maxLength="29"
+                android:hint="1~10 Characters"
+                android:maxLength="10"
                 android:textColor="@color/black_333333"
                 android:textColorHint="@color/grey_ebebeb"
                 android:textSize="15sp"
@@ -253,7 +253,6 @@
                 android:text="Filter by iBeacon Proximity UUID"
                 android:textColor="@color/black_333333"
                 android:textSize="15sp"
-
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/et_adv_name" />
 
