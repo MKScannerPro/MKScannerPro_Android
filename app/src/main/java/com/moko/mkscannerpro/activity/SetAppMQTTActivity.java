@@ -160,9 +160,9 @@ public class SetAppMQTTActivity extends BaseActivity implements RadioGroup.OnChe
 
     private void back() {
         AlertMessageDialog dialog = new AlertMessageDialog();
-        dialog.setMessage("Whether to save the modified parameters?");
-        dialog.setConfirm("Save");
-        dialog.setCancel("Discard");
+        dialog.setMessage("Please confirm whether to save the modified parameters?");
+        dialog.setConfirm("YES");
+        dialog.setCancel("NO");
         dialog.setOnAlertConfirmListener(() -> {
             onSave(null);
         });
