@@ -359,7 +359,6 @@
                     android:id="@+id/et_ntp_url"
                     android:layout_width="0dp"
                     android:layout_height="50dp"
-                    android:layout_marginTop="10dp"
                     android:background="@drawable/shape_radius_edit_bg"
                     android:hint="0-64 Characters"
                     android:maxLength="64"
@@ -372,7 +371,7 @@
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/et_device_id"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintWidth_percent="0.75" />
 
                 <TextView
