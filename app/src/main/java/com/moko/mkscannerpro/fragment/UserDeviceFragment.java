@@ -16,7 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class UserDeviceFragment extends Fragment {
-    private final String FILTER_ASCII = "[^ -~]";
+    private final String FILTER_ASCII = "[ -~]*";
     private static final String TAG = UserDeviceFragment.class.getSimpleName();
     @BindView(R.id.et_mqtt_username)
     EditText etMqttUsername;
@@ -50,7 +50,7 @@ public class UserDeviceFragment extends Fragment {
         ButterKnife.bind(this, view);
         activity = (BaseActivity) getActivity();
         InputFilter filter = (source, start, end, dest, dstart, dend) -> {
-            if ((source + "").matches(FILTER_ASCII)) {
+            if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
             }
 

@@ -67,7 +67,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
-    private final String FILTER_ASCII = "[^ -~]";
+    private final String FILTER_ASCII = "[ -~]*";
     @BindView(R.id.et_mqtt_host)
     EditText etMqttHost;
     @BindView(R.id.et_mqtt_port)
@@ -144,7 +144,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
             mqttDeviceConfig.topicSubscribe = "";
         }
         filter = (source, start, end, dest, dstart, dend) -> {
-            if ((source + "").matches(FILTER_ASCII)) {
+            if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
             }
 

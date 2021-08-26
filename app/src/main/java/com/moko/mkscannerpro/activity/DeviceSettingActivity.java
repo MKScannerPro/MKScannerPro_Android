@@ -52,7 +52,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class DeviceSettingActivity extends BaseActivity {
-    private final String FILTER_ASCII = "[^ -~]";
+    private final String FILTER_ASCII = "[ -~]*";
     public static String TAG = DeviceSettingActivity.class.getSimpleName();
     @BindView(R.id.tv_name)
     TextView tvName;
@@ -69,7 +69,7 @@ public class DeviceSettingActivity extends BaseActivity {
         setContentView(R.layout.activity_device_setting);
         ButterKnife.bind(this);
         filter = (source, start, end, dest, dstart, dend) -> {
-            if ((source + "").matches(FILTER_ASCII)) {
+            if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
             }
 

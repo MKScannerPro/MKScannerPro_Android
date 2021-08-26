@@ -27,7 +27,7 @@ import butterknife.ButterKnife;
 
 
 public class ModifyNameActivity extends BaseActivity {
-    private final String FILTER_ASCII = "[^ -~]";
+    private final String FILTER_ASCII = "[ -~]*";
     public static String TAG = ModifyNameActivity.class.getSimpleName();
 
     @BindView(R.id.et_nick_name)
@@ -42,7 +42,7 @@ public class ModifyNameActivity extends BaseActivity {
         ButterKnife.bind(this);
         device = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
         filter = (source, start, end, dest, dstart, dend) -> {
-            if ((source + "").matches(FILTER_ASCII)) {
+            if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
             }
 

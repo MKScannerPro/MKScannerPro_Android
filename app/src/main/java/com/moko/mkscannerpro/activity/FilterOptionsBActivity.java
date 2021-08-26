@@ -29,7 +29,6 @@ import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.support.MQTTConstants;
 import com.moko.support.MQTTSupport;
-import com.moko.support.entity.DataTypeEnum;
 import com.moko.support.entity.FilterCondition;
 import com.moko.support.entity.MsgConfigResult;
 import com.moko.support.entity.MsgDeviceInfo;
@@ -50,7 +49,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
-    private final String FILTER_ASCII = "[^ -~]";
+    private final String FILTER_ASCII = "[ -~]*";
     @BindView(R.id.sb_rssi_filter)
     SeekBar sbRssiFilter;
     @BindView(R.id.tv_rssi_filter_value)
@@ -133,7 +132,7 @@ public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSe
 
         sbRssiFilter.setOnSeekBarChangeListener(this);
         InputFilter inputFilter = (source, start, end, dest, dstart, dend) -> {
-            if ((source + "").matches(FILTER_ASCII)) {
+            if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
             }
 
@@ -576,11 +575,6 @@ public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSe
                     return false;
                 }
                 final int dataType = Integer.parseInt(dataTypeStr, 16);
-                final DataTypeEnum dataTypeEnum = DataTypeEnum.fromDataType(dataType);
-                if (dataTypeEnum == null) {
-                    ToastUtils.showToast(this, "Para Error");
-                    return false;
-                }
                 if (TextUtils.isEmpty(rawDataStr)) {
                     ToastUtils.showToast(this, "Para Error");
                     return false;

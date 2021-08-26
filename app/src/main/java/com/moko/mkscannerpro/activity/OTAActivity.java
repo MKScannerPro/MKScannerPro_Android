@@ -44,7 +44,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class OTAActivity extends BaseActivity {
-    private final String FILTER_ASCII = "[^ -~]";
+    private final String FILTER_ASCII = "[ -~]*";
 
     public static String TAG = OTAActivity.class.getSimpleName();
     @BindView(R.id.et_host_content)
@@ -72,7 +72,7 @@ public class OTAActivity extends BaseActivity {
             mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
         }
         InputFilter inputFilter = (source, start, end, dest, dstart, dend) -> {
-            if ((source + "").matches(FILTER_ASCII)) {
+            if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
             }
 

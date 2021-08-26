@@ -3,7 +3,6 @@ package com.moko.mkscannerpro.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -39,7 +38,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class SetAppMQTTActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
-    private final String FILTER_ASCII = "[^ -~]";
+    private final String FILTER_ASCII = "[ -~]*";
     @BindView(R.id.et_mqtt_host)
     EditText etMqttHost;
     @BindView(R.id.et_mqtt_port)
@@ -81,10 +80,9 @@ public class SetAppMQTTActivity extends BaseActivity implements RadioGroup.OnChe
             mqttConfig = gson.fromJson(MQTTConfigStr, MQTTConfig.class);
         }
         InputFilter filter = (source, start, end, dest, dstart, dend) -> {
-            if ((source + "").matches(FILTER_ASCII)) {
+            if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
             }
-
             return null;
         };
         etMqttHost.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
