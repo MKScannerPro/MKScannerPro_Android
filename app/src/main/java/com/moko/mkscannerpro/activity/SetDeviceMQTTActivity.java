@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,9 +33,7 @@ import com.moko.mkscannerpro.dialog.CustomDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.fragment.GeneralDeviceFragment;
-import com.moko.mkscannerpro.fragment.GeneralDeviceFragment;
 import com.moko.mkscannerpro.fragment.SSLDeviceFragment;
-import com.moko.mkscannerpro.fragment.UserDeviceFragment;
 import com.moko.mkscannerpro.fragment.UserDeviceFragment;
 import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
@@ -549,7 +546,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
             if (!TextUtils.isEmpty(mqttDeviceConfig.ntpUrl)) {
                 orderTasks.add(OrderTaskAssembler.setNTPUrl(mqttDeviceConfig.ntpUrl));
             }
-            orderTasks.add(OrderTaskAssembler.setNTPTimeZone(mqttDeviceConfig.timeZone));
+            orderTasks.add(OrderTaskAssembler.setNTPTimezone(mqttDeviceConfig.timeZone));
             orderTasks.add(OrderTaskAssembler.exitConfigMode());
             MokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
         } catch (Exception e) {

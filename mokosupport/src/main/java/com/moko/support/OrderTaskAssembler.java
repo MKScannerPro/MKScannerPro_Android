@@ -151,7 +151,7 @@ public class OrderTaskAssembler {
         return task;
     }
 
-    public static OrderTask setNTPTimeZone(@IntRange(from = -12, to = 12) int timeZone) {
+    public static OrderTask setNTPTimezone(@IntRange(from = -12, to = 12) int timeZone) {
         ParamsTask task = new ParamsTask();
         task.setNTPTimeZone(timeZone);
         return task;
