@@ -127,7 +127,7 @@ public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSe
         ButterKnife.bind(this);
 
         tvTitle.setText("Filter Condition B");
-        tvCondition.setText("Filter Condition BB");
+        tvCondition.setText("Filter Condition B");
         tvConditionTips.setText(getString(R.string.condition_tips, "B", "B"));
 
         sbRssiFilter.setOnSeekBarChangeListener(this);

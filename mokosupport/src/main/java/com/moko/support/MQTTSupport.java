@@ -98,6 +98,8 @@ public class MQTTSupport {
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                if (isWindowLocked())
+                    return;
                 XLog.w(String.format("%s:%s", TAG, "connect failure"));
                 EventBus.getDefault().post(new MQTTConnectionFailureEvent());
             }
@@ -484,8 +486,6 @@ public class MQTTSupport {
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                if (isWindowLocked())
-                    return;
                 XLog.w(String.format("%s:%s->%s", TAG, topic, "publish failure"));
                 EventBus.getDefault().post(new MQTTPublishFailureEvent(topic, msgId));
             }

@@ -267,9 +267,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
             }
             XLog.i(String.format("删除设备:%s", mokoDevice.name));
             DBTools.getInstance(MainActivity.this).deleteDevice(mokoDevice);
-            Intent i = new Intent(AppConstants.ACTION_DELETE_DEVICE);
-            i.putExtra(AppConstants.EXTRA_DELETE_DEVICE_ID, mokoDevice.id);
-            MainActivity.this.sendBroadcast(i);
+            EventBus.getDefault().post(new DeviceDeletedEvent(mokoDevice.id));
             devices.remove(mokoDevice);
             adapter.replaceData(devices);
             if (devices.isEmpty()) {
