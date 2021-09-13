@@ -119,12 +119,8 @@ public class SettingForDeviceActivity extends BaseActivity {
 
             if (result.data.connect_type == 0) {
                 tvType.setText(getString(R.string.mqtt_connct_mode_tcp));
-            }
-            if (result.data.connect_type == 1) {
-                tvType.setText(getString(R.string.mqtt_connct_mode_ssl_one_way));
-            }
-            if (result.data.connect_type == 3) {
-                tvType.setText(getString(R.string.mqtt_connct_mode_ssl_two_way));
+            } else {
+                tvType.setText("SSL");
             }
             tvSubscribeTopic.setText(result.data.subscribe_topic);
             tvPublishTopic.setText(result.data.publish_topic);
