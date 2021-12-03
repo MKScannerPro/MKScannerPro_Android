@@ -9,6 +9,7 @@ public class DeviceInfo implements Serializable {
     public int rssi;
     public String mac;
     public String scanRecord;
+    public int deviceType;
     public ScanResult scanResult;
 
     @Override

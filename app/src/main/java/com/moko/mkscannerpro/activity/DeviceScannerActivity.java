@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.ParcelUuid;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -30,6 +31,7 @@ import com.moko.support.OrderTaskAssembler;
 import com.moko.support.callback.MokoScanDeviceCallback;
 import com.moko.support.entity.DeviceInfo;
 import com.moko.support.entity.OrderCHAR;
+import com.moko.support.entity.OrderServices;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -38,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -45,9 +48,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import no.nordicsemi.android.support.v18.scanner.ScanRecord;
+import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 
-public class ScannDeviceActivity extends BaseActivity implements MokoScanDeviceCallback, BaseQuickAdapter.OnItemClickListener {
+public class DeviceScannerActivity extends BaseActivity implements MokoScanDeviceCallback, BaseQuickAdapter.OnItemClickListener {
 
 
     @BindView(R.id.iv_refresh)
@@ -65,6 +70,7 @@ public class ScannDeviceActivity extends BaseActivity implements MokoScanDeviceC
     private String mSavedPassword;
     private String mSelectedName;
     private String mSelectedMac;
+    private int mSelectedDeviceType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +113,13 @@ public class ScannDeviceActivity extends BaseActivity implements MokoScanDeviceC
 
     @Override
     public void onScanDevice(DeviceInfo deviceInfo) {
+        ScanResult scanResult = deviceInfo.scanResult;
+        ScanRecord scanRecord = scanResult.getScanRecord();
+        Map<ParcelUuid, byte[]> map = scanRecord.getServiceData();
+        if (map == null || map.isEmpty()) return;
+        byte[] data = map.get(new ParcelUuid(OrderServices.SERVICE_ADV.getUuid()));
+        if (data == null || data.length != 1) return;
+        deviceInfo.deviceType = data[0] & 0xFF;
         mDeviceMap.put(deviceInfo.mac, deviceInfo);
     }
 
@@ -208,6 +221,7 @@ public class ScannDeviceActivity extends BaseActivity implements MokoScanDeviceC
                     mPassword = password;
                     mSelectedName = deviceInfo.name;
                     mSelectedMac = deviceInfo.mac;
+                    mSelectedDeviceType = deviceInfo.deviceType;
                     if (animation != null) {
                         mHandler.removeMessages(0);
                         mokoBleScanner.stopScanDevice();
@@ -286,6 +300,7 @@ public class ScannDeviceActivity extends BaseActivity implements MokoScanDeviceC
                                 Intent intent = new Intent(this, SetDeviceMQTTActivity.class);
                                 intent.putExtra(AppConstants.EXTRA_KEY_SELECTED_DEVICE_MAC, mSelectedMac);
                                 intent.putExtra(AppConstants.EXTRA_KEY_SELECTED_DEVICE_NAME, mSelectedName);
+                                intent.putExtra(AppConstants.EXTRA_KEY_SELECTED_DEVICE_TYPE, mSelectedDeviceType);
                                 startActivity(intent);
                             }
                             if (0 == result) {

@@ -19,6 +19,9 @@ public class MQTTConstants {
     public static final int CONFIG_MSG_ID_CONN_TIMEOUT = 1016;
     public static final int CONFIG_MSG_ID_BLE_SCAN_TIMEOUT = 1017;
     public static final int CONFIG_MSG_ID_REBOOT = 1018;
+    public static final int CONFIG_MSG_ID_FILTER_RELATIONSHIP = 1025;
+    public static final int CONFIG_MSG_ID_FILTER_PHY = 1026;
+    public static final int CONFIG_MSG_ID_FILTER_RSSI = 1027;
     // READ
     public static final int READ_MSG_ID_BLE_PASSWORD = 2000;
     public static final int READ_MSG_ID_DEVICE_INFO = 2003;
@@ -36,6 +39,9 @@ public class MQTTConstants {
     public static final int READ_MSG_ID_CONFIG_INFO = 2015;
     public static final int READ_MSG_ID_CONN_TIMEOUT = 2016;
     public static final int READ_MSG_ID_BLE_SCAN_TIMEOUT = 2017;
+    public static final int READ_MSG_ID_FILTER_RELATIONSHIP = 2025;
+    public static final int READ_MSG_ID_FILTER_PHY = 2026;
+    public static final int READ_MSG_ID_FILTER_RSSI = 2027;
     // NOTIFY
     public static final int NOTIFY_MSG_ID_OTA_RESULT = 3001;
     public static final int NOTIFY_MSG_ID_RESET_RESULT = 3002;

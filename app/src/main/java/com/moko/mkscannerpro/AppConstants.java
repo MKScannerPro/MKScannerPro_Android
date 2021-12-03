@@ -40,6 +40,7 @@ public class AppConstants {
     public static final String EXTRA_KEY_MQTT_CONFIG_APP = "EXTRA_KEY_MQTT_CONFIG_APP";
     public static final String EXTRA_KEY_SELECTED_DEVICE_MAC = "EXTRA_KEY_SELECTED_DEVICE_MAC";
     public static final String EXTRA_KEY_SELECTED_DEVICE_NAME = "EXTRA_KEY_SELECTED_DEVICE_NAME";
+    public static final String EXTRA_KEY_SELECTED_DEVICE_TYPE = "EXTRA_KEY_SELECTED_DEVICE_TYPE";
     // request_code
     public static final int REQUEST_CODE_TEMP_TARGET = 100;
     public static final int REQUEST_CODE_TIMER = 101;

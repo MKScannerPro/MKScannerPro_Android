@@ -106,6 +106,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
     private String mWifiPassword;
     private String mSelectedDeviceName;
     private String mSelectedDeviceMac;
+    private int mSelectedDeviceType;
     private boolean savedParamsError;
     private CustomDialog mqttConnDialog;
     private DonutProgress donutProgress;
@@ -123,6 +124,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
         mqttAppConfig = new Gson().fromJson(MQTTConfigStr, MQTTConfig.class);
         mSelectedDeviceName = getIntent().getStringExtra(AppConstants.EXTRA_KEY_SELECTED_DEVICE_NAME);
         mSelectedDeviceMac = getIntent().getStringExtra(AppConstants.EXTRA_KEY_SELECTED_DEVICE_MAC);
+        mSelectedDeviceType = getIntent().getIntExtra(AppConstants.EXTRA_KEY_SELECTED_DEVICE_TYPE, 0);
         if (TextUtils.isEmpty(MQTTConfigStr)) {
             mqttDeviceConfig = new MQTTConfig();
         } else {
@@ -139,6 +141,13 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
             mqttDeviceConfig.clientCertPath = "";
             mqttDeviceConfig.topicPublish = "";
             mqttDeviceConfig.topicSubscribe = "";
+        }
+        if (mSelectedDeviceType > 1) {
+            // MK107 Pro
+            mqttDeviceConfig.qos = 0;
+        } else {
+            // MK107
+            mqttDeviceConfig.qos = 1;
         }
         filter = (source, start, end, dest, dstart, dend) -> {
             if (!(source + "").matches(FILTER_ASCII)) {
@@ -173,16 +182,39 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
         vpMqtt.setOffscreenPageLimit(3);
         rgMqtt.setOnCheckedChangeListener(this);
         mTimeZones = new ArrayList<>();
-        for (int i = 0; i <= 24; i++) {
-            if (i < 12) {
-                mTimeZones.add(String.format("UTC-%02d", 12 - i));
-            } else if (i == 12) {
-                mTimeZones.add("UTC+00");
-            } else {
-                mTimeZones.add(String.format("UTC+%02d", i - 12));
+        if (mSelectedDeviceType > 1) {
+            // MK107 Pro
+            for (int i = -24; i <= 28; i++) {
+                if (i < 0) {
+                    if (i % 2 == 0) {
+                        mTimeZones.add(String.format("UTC%02d", i / 2));
+                    } else {
+                        mTimeZones.add(String.format("UTC%02d:30", (i - 1) / 2));
+                    }
+                } else if (i == 0) {
+                    mTimeZones.add("UTC");
+                } else {
+                    if (i % 2 == 0) {
+                        mTimeZones.add(String.format("UTC+%02d", i / 2));
+                    } else {
+                        mTimeZones.add(String.format("UTC+%02d:30", (i - 1) / 2));
+                    }
+                }
             }
+            mSelectedTimeZone = 0;
+        } else {
+            // MK107
+            for (int i = 0; i <= 24; i++) {
+                if (i < 12) {
+                    mTimeZones.add(String.format("UTC-%02d", 12 - i));
+                } else if (i == 12) {
+                    mTimeZones.add("UTC+00");
+                } else {
+                    mTimeZones.add(String.format("UTC+%02d", i - 12));
+                }
+            }
+            mSelectedTimeZone = 12;
         }
-        mSelectedTimeZone = 12;
         tvTimeZone.setText(mTimeZones.get(mSelectedTimeZone));
         mHandler = new Handler(Looper.getMainLooper());
     }
@@ -243,6 +275,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
                                 case KEY_MQTT_DEVICE_ID:
                                 case KEY_NTP_URL:
                                 case KEY_NTP_TIME_ZONE:
+                                case KEY_NTP_TIME_ZONE_NEW:
                                 case KEY_MQTT_CONNECT_MODE:
                                 case KEY_MQTT_USERNAME:
                                 case KEY_MQTT_PASSWORD:
@@ -332,6 +365,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
                         mokoDevice.topicSubscribe = mqttDeviceConfig.topicSubscribe;
                         mokoDevice.topicPublish = mqttDeviceConfig.topicPublish;
                         mokoDevice.deviceId = mqttDeviceConfig.deviceId;
+                        mokoDevice.deviceType = mSelectedDeviceType;
                         DBTools.getInstance(SetDeviceMQTTActivity.this).insertDevice(mokoDevice);
                     } else {
                         mokoDevice.name = mSelectedDeviceName;
@@ -340,6 +374,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
                         mokoDevice.topicSubscribe = mqttDeviceConfig.topicSubscribe;
                         mokoDevice.topicPublish = mqttDeviceConfig.topicPublish;
                         mokoDevice.deviceId = mqttDeviceConfig.deviceId;
+                        mokoDevice.deviceType = mSelectedDeviceType;
                         DBTools.getInstance(SetDeviceMQTTActivity.this).updateDevice(mokoDevice);
                     }
                     Intent modifyIntent = new Intent(SetDeviceMQTTActivity.this, ModifyNameActivity.class);
@@ -546,7 +581,11 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
             if (!TextUtils.isEmpty(mqttDeviceConfig.ntpUrl)) {
                 orderTasks.add(OrderTaskAssembler.setNTPUrl(mqttDeviceConfig.ntpUrl));
             }
-            orderTasks.add(OrderTaskAssembler.setNTPTimezone(mqttDeviceConfig.timeZone));
+            if (mSelectedDeviceType > 1) {
+                orderTasks.add(OrderTaskAssembler.setNTPTimezoneNew(mqttDeviceConfig.timeZone));
+            } else {
+                orderTasks.add(OrderTaskAssembler.setNTPTimezone(mqttDeviceConfig.timeZone));
+            }
             orderTasks.add(OrderTaskAssembler.exitConfigMode());
             MokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
         } catch (Exception e) {

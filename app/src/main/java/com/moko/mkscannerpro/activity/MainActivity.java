@@ -212,7 +212,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
                 startActivity(new Intent(this, SetAppMQTTActivity.class));
                 return;
             }
-            startActivity(new Intent(this, ScannDeviceActivity.class));
+            startActivity(new Intent(this, DeviceScannerActivity.class));
         } else {
             String ssid = Utils.getWifiSSID(this);
             ToastUtils.showToast(this, String.format("SSID:%s, the network cannot available,please check", ssid));

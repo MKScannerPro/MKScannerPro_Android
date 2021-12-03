@@ -92,6 +92,7 @@
     <string name="beaconx_pro_t_h"><![CDATA[BeaconX Pro - T&H]]></string>
     <string name="rssi_filter">*The device will uplink valid ADV data with RSSI no less than %ddBm.</string>
     <string name="condition_tips">*Turn on the Filter Condition %s ,all filtration of this page will take effect.Turn off the Filter Condition %s, all filtration of this page will not take effect.</string>
+    <string name="filter_adv_name_raw_data"><![CDATA[ADV name&Raw data]]></string>
 
 
 </resources>

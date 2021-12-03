@@ -18,4 +18,5 @@ public class MokoDevice implements Serializable {
     public String topicPublish;
     public String topicSubscribe;
     public boolean isOnline;
+    public int deviceType;
 }

@@ -157,6 +157,12 @@ public class OrderTaskAssembler {
         return task;
     }
 
+    public static OrderTask setNTPTimezoneNew(@IntRange(from = -24, to = 28) int timeZone) {
+        ParamsTask task = new ParamsTask();
+        task.setNTPTimeZoneNew(timeZone);
+        return task;
+    }
+
     public static OrderTask setConnectionTimeout(@IntRange(from = 0, to = 1440) int timeout) {
         ParamsTask task = new ParamsTask();
         task.setConnectionTimeout(timeout);

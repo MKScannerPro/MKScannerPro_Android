@@ -223,6 +223,16 @@ public class ParamsTask extends OrderTask {
         };
     }
 
+    public void setNTPTimeZoneNew(@IntRange(from = -24, to = 28) int timeZone) {
+        data = new byte[]{
+                (byte) 0xED,
+                (byte) 0x01,
+                (byte) ParamsKeyEnum.KEY_NTP_TIME_ZONE.getParamsKey(),
+                (byte) 0x01,
+                (byte) timeZone
+        };
+    }
+
     public void setConnectionTimeout(@IntRange(from = 0, to = 1440) int timeout) {
         byte[] dataBytes = MokoUtils.toByteArray(timeout, 2);
         data = new byte[]{
