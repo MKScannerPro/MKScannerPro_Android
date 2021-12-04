@@ -8,11 +8,12 @@ import com.moko.support.entity.ConnectionTimeout;
 import com.moko.support.entity.DataReportTimeout;
 import com.moko.support.entity.DuplicateDataFilter;
 import com.moko.support.entity.FilterCondition;
-import com.moko.support.entity.FilterType;
 import com.moko.support.entity.FilterPHY;
 import com.moko.support.entity.FilterRSSI;
 import com.moko.support.entity.FilterRelationWrite;
 import com.moko.support.entity.FilterRelationship;
+import com.moko.support.entity.FilterSwitch;
+import com.moko.support.entity.FilterType;
 import com.moko.support.entity.IndicatorLightStatus;
 import com.moko.support.entity.MsgConfigReq;
 import com.moko.support.entity.MsgDeviceInfo;
@@ -420,6 +421,35 @@ public class MQTTMessageAssembler {
         configReq.device_info = deviceInfo;
         configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_ADV_NAME;
         configReq.data = filterType;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleReadFilterRawDataSwitch(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_FILTER_RAW_DATA_SWITCH;
+        String message = new Gson().toJson(readReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteFilterBXPAcc(MsgDeviceInfo deviceInfo, FilterSwitch filterSwitch) {
+        MsgConfigReq<FilterSwitch> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_BXP_ACC;
+        configReq.data = filterSwitch;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteFilterBXPTH(MsgDeviceInfo deviceInfo, FilterSwitch filterSwitch) {
+        MsgConfigReq<FilterSwitch> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_BXP_TH;
+        configReq.data = filterSwitch;
         String message = new Gson().toJson(configReq);
         XLog.e("app_to_device--->" + message);
         return message;

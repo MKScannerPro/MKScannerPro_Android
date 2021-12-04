@@ -24,6 +24,8 @@ public class MQTTConstants {
     public static final int CONFIG_MSG_ID_FILTER_RSSI = 1027;
     public static final int CONFIG_MSG_ID_FILTER_MAC_ADDRESS = 1028;
     public static final int CONFIG_MSG_ID_FILTER_ADV_NAME = 1029;
+    public static final int CONFIG_MSG_ID_FILTER_BXP_ACC = 1037;
+    public static final int CONFIG_MSG_ID_FILTER_BXP_TH = 1038;
     // READ
     public static final int READ_MSG_ID_BLE_PASSWORD = 2000;
     public static final int READ_MSG_ID_DEVICE_INFO = 2003;
@@ -46,6 +48,7 @@ public class MQTTConstants {
     public static final int READ_MSG_ID_FILTER_RSSI = 2027;
     public static final int READ_MSG_ID_FILTER_MAC_ADDRESS = 2028;
     public static final int READ_MSG_ID_FILTER_ADV_NAME = 2029;
+    public static final int READ_MSG_ID_FILTER_RAW_DATA_SWITCH = 2030;
     // NOTIFY
     public static final int NOTIFY_MSG_ID_OTA_RESULT = 3001;
     public static final int NOTIFY_MSG_ID_RESET_RESULT = 3002;

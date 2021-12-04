@@ -114,6 +114,7 @@
         <activity android:name=".activity.ScannerUploadOptionProActivity" />
         <activity android:name=".activity.FilterMacAddressActivity" />
         <activity android:name=".activity.FilterAdvNameActivity" />
+        <activity android:name=".activity.FilterRawDataSwitchActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
