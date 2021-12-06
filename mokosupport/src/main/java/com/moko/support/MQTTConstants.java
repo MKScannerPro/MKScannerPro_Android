@@ -28,6 +28,8 @@ public class MQTTConstants {
     public static final int CONFIG_MSG_ID_FILTER_UID = 1032;
     public static final int CONFIG_MSG_ID_FILTER_URL = 1033;
     public static final int CONFIG_MSG_ID_FILTER_TLM = 1034;
+    public static final int CONFIG_MSG_ID_FILTER_MKIBEACON = 1035;
+    public static final int CONFIG_MSG_ID_FILTER_MKIBEACON_ACC = 1036;
     public static final int CONFIG_MSG_ID_FILTER_BXP_ACC = 1037;
     public static final int CONFIG_MSG_ID_FILTER_BXP_TH = 1038;
     // READ
@@ -57,6 +59,8 @@ public class MQTTConstants {
     public static final int READ_MSG_ID_FILTER_UID = 2032;
     public static final int READ_MSG_ID_FILTER_URL = 2033;
     public static final int READ_MSG_ID_FILTER_TLM = 2034;
+    public static final int READ_MSG_ID_FILTER_MKIBEACON = 2035;
+    public static final int READ_MSG_ID_FILTER_MKIBEACON_ACC = 2036;
     // NOTIFY
     public static final int NOTIFY_MSG_ID_OTA_RESULT = 3001;
     public static final int NOTIFY_MSG_ID_RESET_RESULT = 3002;

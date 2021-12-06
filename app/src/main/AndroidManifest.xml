@@ -119,6 +119,8 @@
         <activity android:name=".activity.FilterUIDActivity" />
         <activity android:name=".activity.FilterUrlActivity" />
         <activity android:name=".activity.FilterTLMActivity" />
+        <activity android:name=".activity.FilterMKIBeaconActivity" />
+        <activity android:name=".activity.FilterMKIBeaconAccActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

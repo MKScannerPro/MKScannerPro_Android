@@ -496,6 +496,7 @@ public class MQTTMessageAssembler {
         XLog.e("app_to_device--->" + message);
         return message;
     }
+
     public static String assembleReadFilterUrl(MsgDeviceInfo deviceInfo) {
         MsgReadReq readReq = new MsgReadReq();
         readReq.device_info = deviceInfo;
@@ -514,6 +515,7 @@ public class MQTTMessageAssembler {
         XLog.e("app_to_device--->" + message);
         return message;
     }
+
     public static String assembleReadFilterTLM(MsgDeviceInfo deviceInfo) {
         MsgReadReq readReq = new MsgReadReq();
         readReq.device_info = deviceInfo;
@@ -528,6 +530,44 @@ public class MQTTMessageAssembler {
         configReq.device_info = deviceInfo;
         configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_TLM;
         configReq.data = filterTLM;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleReadFilterMKIBeacon(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_FILTER_MKIBEACON;
+        String message = new Gson().toJson(readReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteFilterMKIBeacon(MsgDeviceInfo deviceInfo, FilterIBeacon filterIBeacon) {
+        MsgConfigReq<FilterIBeacon> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_MKIBEACON;
+        configReq.data = filterIBeacon;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleReadFilterMKIBeaconAcc(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_FILTER_MKIBEACON_ACC;
+        String message = new Gson().toJson(readReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteFilterMKIBeaconAcc(MsgDeviceInfo deviceInfo, FilterIBeacon filterIBeacon) {
+        MsgConfigReq<FilterIBeacon> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_MKIBEACON_ACC;
+        configReq.data = filterIBeacon;
         String message = new Gson().toJson(configReq);
         XLog.e("app_to_device--->" + message);
         return message;
