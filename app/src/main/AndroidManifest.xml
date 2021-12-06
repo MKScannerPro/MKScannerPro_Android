@@ -116,6 +116,9 @@
         <activity android:name=".activity.FilterAdvNameActivity" />
         <activity android:name=".activity.FilterRawDataSwitchActivity" />
         <activity android:name=".activity.FilterIBeaconActivity" />
+        <activity android:name=".activity.FilterUIDActivity" />
+        <activity android:name=".activity.FilterUrlActivity" />
+        <activity android:name=".activity.FilterTLMActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -259,4 +259,61 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
         i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
         startActivity(i);
     }
+
+    public void onFilterByUid(View view) {
+        if (isWindowLocked())
+            return;
+        if (!MQTTSupport.getInstance().isConnected()) {
+            ToastUtils.showToast(this, R.string.network_error);
+            return;
+        }
+        if (!mMokoDevice.isOnline) {
+            ToastUtils.showToast(this, R.string.device_offline);
+            return;
+        }
+        Intent i = new Intent(this, FilterUIDActivity.class);
+        i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
+        startActivity(i);
+    }
+
+    public void onFilterByUrl(View view) {
+        if (isWindowLocked())
+            return;
+        if (!MQTTSupport.getInstance().isConnected()) {
+            ToastUtils.showToast(this, R.string.network_error);
+            return;
+        }
+        if (!mMokoDevice.isOnline) {
+            ToastUtils.showToast(this, R.string.device_offline);
+            return;
+        }
+        Intent i = new Intent(this, FilterUrlActivity.class);
+        i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
+        startActivity(i);
+    }
+
+    public void onFilterByTlm(View view) {
+        if (isWindowLocked())
+            return;
+        if (!MQTTSupport.getInstance().isConnected()) {
+            ToastUtils.showToast(this, R.string.network_error);
+            return;
+        }
+        if (!mMokoDevice.isOnline) {
+            ToastUtils.showToast(this, R.string.device_offline);
+            return;
+        }
+        Intent i = new Intent(this, FilterTLMActivity.class);
+        i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
+        startActivity(i);
+    }
+
+    public void onFilterByMKiBeacon(View view) {
+    }
+
+    public void onFilterByMKiBeaconAcc(View view) {
+    }
+
+    public void onFilterByOther(View view) {
+    }
 }

@@ -14,7 +14,10 @@ import com.moko.support.entity.FilterRSSI;
 import com.moko.support.entity.FilterRelationWrite;
 import com.moko.support.entity.FilterRelationship;
 import com.moko.support.entity.FilterSwitch;
+import com.moko.support.entity.FilterTLM;
 import com.moko.support.entity.FilterType;
+import com.moko.support.entity.FilterUid;
+import com.moko.support.entity.FilterUrl;
 import com.moko.support.entity.IndicatorLightStatus;
 import com.moko.support.entity.MsgConfigReq;
 import com.moko.support.entity.MsgDeviceInfo;
@@ -470,6 +473,61 @@ public class MQTTMessageAssembler {
         configReq.device_info = deviceInfo;
         configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_IBEACON;
         configReq.data = filterIBeacon;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleReadFilterUid(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_FILTER_UID;
+        String message = new Gson().toJson(readReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteFilterUid(MsgDeviceInfo deviceInfo, FilterUid filterUid) {
+        MsgConfigReq<FilterUid> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_UID;
+        configReq.data = filterUid;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+    public static String assembleReadFilterUrl(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_FILTER_URL;
+        String message = new Gson().toJson(readReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteFilterUrl(MsgDeviceInfo deviceInfo, FilterUrl filterUrl) {
+        MsgConfigReq<FilterUrl> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_URL;
+        configReq.data = filterUrl;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+    public static String assembleReadFilterTLM(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_FILTER_TLM;
+        String message = new Gson().toJson(readReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteFilterTLM(MsgDeviceInfo deviceInfo, FilterTLM filterTLM) {
+        MsgConfigReq<FilterTLM> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_TLM;
+        configReq.data = filterTLM;
         String message = new Gson().toJson(configReq);
         XLog.e("app_to_device--->" + message);
         return message;
