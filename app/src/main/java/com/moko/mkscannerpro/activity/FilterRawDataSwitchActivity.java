@@ -1,6 +1,7 @@
 package com.moko.mkscannerpro.activity;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -241,5 +242,21 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+    }
+
+    public void onFilterByIBeacon(View view) {
+        if (isWindowLocked())
+            return;
+        if (!MQTTSupport.getInstance().isConnected()) {
+            ToastUtils.showToast(this, R.string.network_error);
+            return;
+        }
+        if (!mMokoDevice.isOnline) {
+            ToastUtils.showToast(this, R.string.device_offline);
+            return;
+        }
+        Intent i = new Intent(this, FilterIBeaconActivity.class);
+        i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
+        startActivity(i);
     }
 }

@@ -8,6 +8,7 @@ import com.moko.support.entity.ConnectionTimeout;
 import com.moko.support.entity.DataReportTimeout;
 import com.moko.support.entity.DuplicateDataFilter;
 import com.moko.support.entity.FilterCondition;
+import com.moko.support.entity.FilterIBeacon;
 import com.moko.support.entity.FilterPHY;
 import com.moko.support.entity.FilterRSSI;
 import com.moko.support.entity.FilterRelationWrite;
@@ -450,6 +451,25 @@ public class MQTTMessageAssembler {
         configReq.device_info = deviceInfo;
         configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_BXP_TH;
         configReq.data = filterSwitch;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleReadFilterIBeacon(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_FILTER_IBEACON;
+        String message = new Gson().toJson(readReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteFilterIBeacon(MsgDeviceInfo deviceInfo, FilterIBeacon filterIBeacon) {
+        MsgConfigReq<FilterIBeacon> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_IBEACON;
+        configReq.data = filterIBeacon;
         String message = new Gson().toJson(configReq);
         XLog.e("app_to_device--->" + message);
         return message;

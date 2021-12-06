@@ -115,6 +115,7 @@
         <activity android:name=".activity.FilterMacAddressActivity" />
         <activity android:name=".activity.FilterAdvNameActivity" />
         <activity android:name=".activity.FilterRawDataSwitchActivity" />
+        <activity android:name=".activity.FilterIBeaconActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
