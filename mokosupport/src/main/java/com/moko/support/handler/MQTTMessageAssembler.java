@@ -592,4 +592,23 @@ public class MQTTMessageAssembler {
         XLog.e("app_to_device--->" + message);
         return message;
     }
+
+    public static String assembleReadUploadDataOptionPro(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_UPLOAD_DATA_OPTION_PRO;
+        String message = new Gson().toJson(readReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteUploadDataOptionPro(MsgDeviceInfo deviceInfo, UploadDataOption uploadDataOption) {
+        MsgConfigReq<UploadDataOption> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_UPLOAD_DATA_OPTION_PRO;
+        configReq.data = uploadDataOption;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
 }

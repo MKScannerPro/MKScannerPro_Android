@@ -19,6 +19,7 @@ public class MQTTConstants {
     public static final int CONFIG_MSG_ID_CONN_TIMEOUT = 1016;
     public static final int CONFIG_MSG_ID_BLE_SCAN_TIMEOUT = 1017;
     public static final int CONFIG_MSG_ID_REBOOT = 1018;
+    public static final int CONFIG_MSG_ID_UPLOAD_DATA_OPTION_PRO = 1024;
     public static final int CONFIG_MSG_ID_FILTER_RELATIONSHIP = 1025;
     public static final int CONFIG_MSG_ID_FILTER_PHY = 1026;
     public static final int CONFIG_MSG_ID_FILTER_RSSI = 1027;
@@ -50,6 +51,7 @@ public class MQTTConstants {
     public static final int READ_MSG_ID_CONFIG_INFO = 2015;
     public static final int READ_MSG_ID_CONN_TIMEOUT = 2016;
     public static final int READ_MSG_ID_BLE_SCAN_TIMEOUT = 2017;
+    public static final int READ_MSG_ID_UPLOAD_DATA_OPTION_PRO = 2024;
     public static final int READ_MSG_ID_FILTER_RELATIONSHIP = 2025;
     public static final int READ_MSG_ID_FILTER_PHY = 2026;
     public static final int READ_MSG_ID_FILTER_RSSI = 2027;

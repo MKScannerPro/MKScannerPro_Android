@@ -370,7 +370,7 @@ public class ScannerUploadOptionProActivity extends BaseActivity implements Seek
             ToastUtils.showToast(this, R.string.device_offline);
             return;
         }
-        Intent i = new Intent(this, UploadDataOptionActivity.class);
+        Intent i = new Intent(this, UploadDataOptionProActivity.class);
         i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
         startActivity(i);
     }

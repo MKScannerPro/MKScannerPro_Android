@@ -12,4 +12,6 @@ public class UploadDataOption {
     public int type;
     public int rssi;
     public int raw;
+    public int adv;
+    public int rsp;
 }

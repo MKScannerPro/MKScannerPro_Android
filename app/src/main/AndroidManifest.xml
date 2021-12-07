@@ -122,6 +122,7 @@
         <activity android:name=".activity.FilterMKIBeaconActivity" />
         <activity android:name=".activity.FilterMKIBeaconAccActivity" />
         <activity android:name=".activity.FilterOtherActivity" />
+        <activity android:name=".activity.UploadDataOptionProActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
