@@ -23,6 +23,7 @@ import com.moko.support.entity.IndicatorLightStatus;
 import com.moko.support.entity.MsgConfigReq;
 import com.moko.support.entity.MsgDeviceInfo;
 import com.moko.support.entity.MsgReadReq;
+import com.moko.support.entity.NTPServer;
 import com.moko.support.entity.NetworkReportPeriod;
 import com.moko.support.entity.OTAParams;
 import com.moko.support.entity.ResetState;
@@ -607,6 +608,44 @@ public class MQTTMessageAssembler {
         configReq.device_info = deviceInfo;
         configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_UPLOAD_DATA_OPTION_PRO;
         configReq.data = uploadDataOption;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleReadSystemTimePro(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_SYSTEM_TIME;
+        String message = new Gson().toJson(readReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteSystemTimePro(MsgDeviceInfo deviceInfo, SystemTime timeout) {
+        MsgConfigReq<SystemTime> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_SYSTEM_TIME;
+        configReq.data = timeout;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleReadNTPServer(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_NTP_SERVER;
+        String message = new Gson().toJson(readReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteNTPServer(MsgDeviceInfo deviceInfo, NTPServer filterUrl) {
+        MsgConfigReq<NTPServer> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_NTP_SERVER;
+        configReq.data = filterUrl;
         String message = new Gson().toJson(configReq);
         XLog.e("app_to_device--->" + message);
         return message;

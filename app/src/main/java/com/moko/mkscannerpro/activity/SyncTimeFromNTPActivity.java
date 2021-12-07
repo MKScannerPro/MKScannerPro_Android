@@ -27,6 +27,7 @@ import com.moko.support.entity.FilterUrl;
 import com.moko.support.entity.MsgConfigResult;
 import com.moko.support.entity.MsgDeviceInfo;
 import com.moko.support.entity.MsgReadResult;
+import com.moko.support.entity.NTPServer;
 import com.moko.support.event.DeviceOnlineEvent;
 import com.moko.support.event.MQTTMessageArrivedEvent;
 import com.moko.support.handler.MQTTMessageAssembler;
@@ -40,13 +41,14 @@ import java.lang.reflect.Type;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class FilterUrlActivity extends BaseActivity {
+public class SyncTimeFromNTPActivity extends BaseActivity {
     private final String FILTER_ASCII = "[ -~]*";
+    @BindView(R.id.cb_sync_switch)
+    CheckBox cbSyncSwitch;
+    @BindView(R.id.et_ntp_server)
+    EditText etNtpServer;
 
-    @BindView(R.id.cb_url)
-    CheckBox cbUrl;
-    @BindView(R.id.et_url)
-    EditText etUrl;
+
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -55,7 +57,7 @@ public class FilterUrlActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter_url);
+        setContentView(R.layout.activity_sync_from_ntp);
         ButterKnife.bind(this);
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
@@ -74,8 +76,8 @@ public class FilterUrlActivity extends BaseActivity {
 
             return null;
         };
-        etUrl.setFilters(new InputFilter[]{new InputFilter.LengthFilter(255), inputFilter});
-        getFilterUrl();
+        etNtpServer.setFilters(new InputFilter[]{new InputFilter.LengthFilter(255), inputFilter});
+        getNtpServer();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -88,19 +90,19 @@ public class FilterUrlActivity extends BaseActivity {
         JsonObject object = new Gson().fromJson(message, JsonObject.class);
         JsonElement element = object.get("msg_id");
         int msg_id = element.getAsInt();
-        if (msg_id == MQTTConstants.READ_MSG_ID_FILTER_URL) {
-            Type type = new TypeToken<MsgReadResult<FilterUrl>>() {
+        if (msg_id == MQTTConstants.READ_MSG_ID_NTP_SERVER) {
+            Type type = new TypeToken<MsgReadResult<NTPServer>>() {
             }.getType();
-            MsgReadResult<FilterUrl> result = new Gson().fromJson(message, type);
+            MsgReadResult<NTPServer> result = new Gson().fromJson(message, type);
             if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
                 return;
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            cbUrl.setChecked(result.data.onOff == 1);
-            etUrl.setText(result.data.url);
+            cbSyncSwitch.setChecked(result.data.onOff == 1);
+            etNtpServer.setText(result.data.host);
         }
-        if (msg_id == MQTTConstants.CONFIG_MSG_ID_FILTER_URL) {
+        if (msg_id == MQTTConstants.CONFIG_MSG_ID_NTP_SERVER) {
             Type type = new TypeToken<MsgConfigResult>() {
             }.getType();
             MsgConfigResult result = new Gson().fromJson(message, type);
@@ -133,7 +135,7 @@ public class FilterUrlActivity extends BaseActivity {
         finish();
     }
 
-    private void getFilterUrl() {
+    private void getNtpServer() {
         String appTopic;
         if (TextUtils.isEmpty(appMqttConfig.topicPublish)) {
             appTopic = mMokoDevice.topicSubscribe;
@@ -143,9 +145,9 @@ public class FilterUrlActivity extends BaseActivity {
         MsgDeviceInfo deviceInfo = new MsgDeviceInfo();
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
-        String message = MQTTMessageAssembler.assembleReadFilterUrl(deviceInfo);
+        String message = MQTTMessageAssembler.assembleReadNTPServer(deviceInfo);
         try {
-            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.READ_MSG_ID_FILTER_URL, appMqttConfig.qos);
+            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.READ_MSG_ID_NTP_SERVER, appMqttConfig.qos);
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -178,13 +180,13 @@ public class FilterUrlActivity extends BaseActivity {
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
 
-        FilterUrl filterUrl = new FilterUrl();
-        filterUrl.onOff = cbUrl.isChecked() ? 1 : 0;
-        filterUrl.url = etUrl.getText().toString();
+        NTPServer ntpServer = new NTPServer();
+        ntpServer.onOff = cbSyncSwitch.isChecked() ? 1 : 0;
+        ntpServer.host = etNtpServer.getText().toString();
 
-        String message = MQTTMessageAssembler.assembleWriteFilterUrl(deviceInfo, filterUrl);
+        String message = MQTTMessageAssembler.assembleWriteNTPServer(deviceInfo, ntpServer);
         try {
-            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_FILTER_URL, appMqttConfig.qos);
+            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_NTP_SERVER, appMqttConfig.qos);
         } catch (MqttException e) {
             e.printStackTrace();
         }

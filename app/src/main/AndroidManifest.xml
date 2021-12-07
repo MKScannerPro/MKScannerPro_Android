@@ -123,6 +123,8 @@
         <activity android:name=".activity.FilterMKIBeaconAccActivity" />
         <activity android:name=".activity.FilterOtherActivity" />
         <activity android:name=".activity.UploadDataOptionProActivity" />
+        <activity android:name=".activity.SyncTimeFromNTPActivity" />
+        <activity android:name=".activity.SystemTimeProActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

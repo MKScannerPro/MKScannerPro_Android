@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.elvishew.xlog.XLog;
@@ -56,6 +57,10 @@ public class DeviceSettingActivity extends BaseActivity {
     public static String TAG = DeviceSettingActivity.class.getSimpleName();
     @BindView(R.id.tv_name)
     TextView tvName;
+    @BindView(R.id.rl_scan_timeout_option)
+    RelativeLayout rlScanTimeoutOption;
+    @BindView(R.id.rl_modify_mqtt_settings)
+    RelativeLayout rlModifyMqttSettings;
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -80,7 +85,14 @@ public class DeviceSettingActivity extends BaseActivity {
             mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
             tvName.setText(mMokoDevice.nickName);
         }
-
+        if (mMokoDevice.deviceType > 1) {
+            // MK107 Pro
+            rlScanTimeoutOption.setVisibility(View.GONE);
+            rlModifyMqttSettings.setVisibility(View.VISIBLE);
+        } else {
+            rlScanTimeoutOption.setVisibility(View.VISIBLE);
+            rlModifyMqttSettings.setVisibility(View.GONE);
+        }
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mHandler = new Handler(Looper.getMainLooper());
@@ -304,6 +316,22 @@ public class DeviceSettingActivity extends BaseActivity {
         startActivity(i);
     }
 
+    public void onModifyMqttSettings(View view) {
+        if (isWindowLocked())
+            return;
+        if (!MQTTSupport.getInstance().isConnected()) {
+            ToastUtils.showToast(this, R.string.network_error);
+            return;
+        }
+        if (!mMokoDevice.isOnline) {
+            ToastUtils.showToast(this, R.string.device_offline);
+            return;
+        }
+        Intent i = new Intent(this, ScanTimeoutActivity.class);
+        i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
+        startActivity(i);
+    }
+
     public void onSystemTime(View view) {
         if (isWindowLocked())
             return;
@@ -313,6 +341,13 @@ public class DeviceSettingActivity extends BaseActivity {
         }
         if (!mMokoDevice.isOnline) {
             ToastUtils.showToast(this, R.string.device_offline);
+            return;
+        }
+        if (mMokoDevice.deviceType > 1) {
+            // MK107 Pro
+            Intent i = new Intent(this, SystemTimeProActivity.class);
+            i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
+            startActivity(i);
             return;
         }
         Intent i = new Intent(this, SystemTimeActivity.class);
