@@ -9,6 +9,7 @@ import com.moko.support.entity.DataReportTimeout;
 import com.moko.support.entity.DuplicateDataFilter;
 import com.moko.support.entity.FilterCondition;
 import com.moko.support.entity.FilterIBeacon;
+import com.moko.support.entity.FilterOther;
 import com.moko.support.entity.FilterPHY;
 import com.moko.support.entity.FilterRSSI;
 import com.moko.support.entity.FilterRelationWrite;
@@ -568,6 +569,25 @@ public class MQTTMessageAssembler {
         configReq.device_info = deviceInfo;
         configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_MKIBEACON_ACC;
         configReq.data = filterIBeacon;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleReadFilterOther(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_FILTER_OTHER;
+        String message = new Gson().toJson(readReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteFilterOther(MsgDeviceInfo deviceInfo, FilterOther filterOther) {
+        MsgConfigReq<FilterOther> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_FILTER_OTHER;
+        configReq.data = filterOther;
         String message = new Gson().toJson(configReq);
         XLog.e("app_to_device--->" + message);
         return message;

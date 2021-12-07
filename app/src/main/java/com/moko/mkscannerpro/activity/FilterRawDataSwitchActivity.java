@@ -341,5 +341,18 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
     }
 
     public void onFilterByOther(View view) {
+        if (isWindowLocked())
+            return;
+        if (!MQTTSupport.getInstance().isConnected()) {
+            ToastUtils.showToast(this, R.string.network_error);
+            return;
+        }
+        if (!mMokoDevice.isOnline) {
+            ToastUtils.showToast(this, R.string.device_offline);
+            return;
+        }
+        Intent i = new Intent(this, FilterOtherActivity.class);
+        i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
+        startActivity(i);
     }
 }
