@@ -125,6 +125,7 @@
         <activity android:name=".activity.UploadDataOptionProActivity" />
         <activity android:name=".activity.SyncTimeFromNTPActivity" />
         <activity android:name=".activity.SystemTimeProActivity" />
+        <activity android:name=".activity.ModifyMQTTSettingsActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -20,6 +20,8 @@ import com.moko.support.entity.FilterType;
 import com.moko.support.entity.FilterUid;
 import com.moko.support.entity.FilterUrl;
 import com.moko.support.entity.IndicatorLightStatus;
+import com.moko.support.entity.MQTTReconnect;
+import com.moko.support.entity.MQTTSettings;
 import com.moko.support.entity.MsgConfigReq;
 import com.moko.support.entity.MsgDeviceInfo;
 import com.moko.support.entity.MsgReadReq;
@@ -646,6 +648,26 @@ public class MQTTMessageAssembler {
         configReq.device_info = deviceInfo;
         configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_NTP_SERVER;
         configReq.data = filterUrl;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteMQTTSettings(MsgDeviceInfo deviceInfo, MQTTSettings mqttSettings) {
+        MsgConfigReq<MQTTSettings> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_MQTT_SETTINGS;
+        configReq.data = mqttSettings;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteDeviceReconnect(MsgDeviceInfo deviceInfo, MQTTReconnect mqttReconnect) {
+        MsgConfigReq<MQTTReconnect> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_MQTT_RECONNECT;
+        configReq.data = mqttReconnect;
         String message = new Gson().toJson(configReq);
         XLog.e("app_to_device--->" + message);
         return message;

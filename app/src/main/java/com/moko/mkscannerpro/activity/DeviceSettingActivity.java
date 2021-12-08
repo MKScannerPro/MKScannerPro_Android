@@ -327,7 +327,7 @@ public class DeviceSettingActivity extends BaseActivity {
             ToastUtils.showToast(this, R.string.device_offline);
             return;
         }
-        Intent i = new Intent(this, ScanTimeoutActivity.class);
+        Intent i = new Intent(this, ModifyMQTTSettingsActivity.class);
         i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
         startActivity(i);
     }

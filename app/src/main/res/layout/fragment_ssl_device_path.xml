@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white_ffffff"
+    android:minHeight="170dp"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    android:paddingBottom="12dp">
+
+    <CheckBox
+        android:id="@+id/cb_ssl"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:button="@null"
+        android:drawableRight="@drawable/selector_cb_btn"
+        android:text="SSL/TLS"
+        android:textColor="@color/black_333333"
+        android:textSize="15sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_certificate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cb_ssl">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:onClick="selectCertificate"
+            android:text="Certificate"
+            android:textColor="@color/black_333333"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_certification"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_certification" />
+
+        <TextView
+            android:id="@+id/tv_certification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_corner_btn_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:minWidth="70dp"
+            android:onClick="onSelectCertificate"
+            android:padding="12dp"
+            android:text="CA signed server certificate"
+            android:textColor="@color/white_ffffff"
+            android:textSize="15sp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_cert_server"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minHeight="110dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_certification">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="Host"
+                android:textColor="@color/black_333333"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="@id/et_mqtt_host"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/et_mqtt_host" />
+
+            <EditText
+                android:id="@+id/et_mqtt_host"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:background="@drawable/shape_radius_edit_bg"
+                android:hint="1-64 Characters"
+                android:maxLength="64"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@color/black_333333"
+                android:textSize="15sp"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.8" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="Port"
+                android:textColor="@color/black_333333"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="@id/et_mqtt_port"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/et_mqtt_port" />
+
+            <EditText
+                android:id="@+id/et_mqtt_port"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/shape_radius_edit_bg"
+                android:hint="0-65535"
+                android:inputType="number"
+                android:maxLength="5"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@color/black_333333"
+                android:textSize="15sp"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintLeft_toLeftOf="@id/et_mqtt_host"
+                app:layout_constraintRight_toRightOf="@id/et_mqtt_host"
+                app:layout_constraintTop_toBottomOf="@id/et_mqtt_host" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_ca"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minHeight="50dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cl_cert_server">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="CA File Path"
+                android:textColor="@color/black_333333"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/et_ca_path"
+                android:layout_width="0dp"
+                android:layout_weight="1.0"
+                android:layout_height="50dp"
+                android:background="@drawable/shape_radius_edit_bg"
+                android:hint="1-100 Characters"
+                android:maxLength="100"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@color/black_333333"
+                android:textSize="15sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_client_key"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minHeight="50dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_ca">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="Client Key File"
+                android:textColor="@color/black_333333"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/et_client_key_path"
+                android:layout_width="0dp"
+                android:layout_weight="1.0"
+                android:layout_height="50dp"
+                android:background="@drawable/shape_radius_edit_bg"
+                android:hint="1-100 Characters"
+                android:maxLength="100"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@color/black_333333"
+                android:textSize="15sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_client_cert"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minHeight="50dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_client_key">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="Client Cert File"
+                android:textColor="@color/black_333333"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/et_client_cert_path"
+                android:layout_width="0dp"
+                android:layout_weight="1.0"
+                android:layout_height="50dp"
+                android:background="@drawable/shape_radius_edit_bg"
+                android:hint="1-100 Characters"
+                android:maxLength="100"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@color/black_333333"
+                android:textSize="15sp"/>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

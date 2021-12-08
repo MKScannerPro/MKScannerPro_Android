@@ -36,6 +36,8 @@ public class MQTTConstants {
     public static final int CONFIG_MSG_ID_FILTER_BXP_ACC = 1037;
     public static final int CONFIG_MSG_ID_FILTER_BXP_TH = 1038;
     public static final int CONFIG_MSG_ID_FILTER_OTHER = 1039;
+    public static final int CONFIG_MSG_ID_MQTT_RECONNECT = 1040;
+    public static final int CONFIG_MSG_ID_MQTT_SETTINGS = 1041;
     // READ
     public static final int READ_MSG_ID_BLE_PASSWORD = 2000;
     public static final int READ_MSG_ID_DEVICE_INFO = 2003;

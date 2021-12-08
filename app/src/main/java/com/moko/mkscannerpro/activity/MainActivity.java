@@ -190,6 +190,28 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
                     rlEmpty.setVisibility(View.VISIBLE);
                 }
             }
+            if (ModifyMQTTSettingsActivity.TAG.equals(from)) {
+                if (!TextUtils.isEmpty(deviceId)) {
+                    MokoDevice mokoDevice = DBTools.getInstance(this).selectDevice(deviceId);
+                    for (final MokoDevice device : devices) {
+                        if (deviceId.equals(device.deviceId)) {
+                            if (!device.topicPublish.equals(mokoDevice.topicPublish)) {
+                                // 取消订阅
+                                try {
+                                    MQTTSupport.getInstance().unSubscribe(device.topicPublish);
+                                } catch (MqttException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            device.mqttInfo = mokoDevice.mqttInfo;
+                            device.topicPublish = mokoDevice.topicPublish;
+                            device.topicSubscribe = mokoDevice.topicSubscribe;
+                            break;
+                        }
+                    }
+                }
+                adapter.replaceData(devices);
+            }
         }
     }
 
