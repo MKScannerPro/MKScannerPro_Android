@@ -27,6 +27,9 @@ import com.moko.support.entity.MsgDeviceInfo;
 import com.moko.support.entity.MsgReadReq;
 import com.moko.support.entity.NTPServer;
 import com.moko.support.entity.NetworkReportPeriod;
+import com.moko.support.entity.OTABothWayParams;
+import com.moko.support.entity.OTAMaterParams;
+import com.moko.support.entity.OTAOneWayParams;
 import com.moko.support.entity.OTAParams;
 import com.moko.support.entity.ResetState;
 import com.moko.support.entity.Restart;
@@ -669,6 +672,54 @@ public class MQTTMessageAssembler {
         configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_MQTT_RECONNECT;
         configReq.data = mqttReconnect;
         String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteOTASlave(MsgDeviceInfo deviceInfo) {
+        MsgConfigReq configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_OTA_SLAVE;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteOTAMater(MsgDeviceInfo deviceInfo, OTAMaterParams otaMaterParams) {
+        MsgConfigReq<OTAMaterParams> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_OTA_MATER;
+        configReq.data = otaMaterParams;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteOTAOneWay(MsgDeviceInfo deviceInfo, OTAOneWayParams otaOneWayParams) {
+        MsgConfigReq<OTAOneWayParams> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_OTA_ONE_WAY;
+        configReq.data = otaOneWayParams;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleWriteOTABothWay(MsgDeviceInfo deviceInfo, OTABothWayParams otaBothwayParams) {
+        MsgConfigReq<OTABothWayParams> configReq = new MsgConfigReq();
+        configReq.device_info = deviceInfo;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_OTA_BOTH_WAY;
+        configReq.data = otaBothwayParams;
+        String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleReadSlaveDeviceInfo(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_SLAVE_DEVICE_INFO;
+        String message = new Gson().toJson(readReq);
         XLog.e("app_to_device--->" + message);
         return message;
     }

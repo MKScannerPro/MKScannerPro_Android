@@ -26,6 +26,7 @@ dependencies {
     api files('libs/mokoBleLib.jar')
     api 'com.google.code.gson:gson:2.8.5'
     api 'no.nordicsemi.android.support.v18:scanner:1.4.3'
+    api 'no.nordicsemi.android:dfu:0.6.2'
     api 'org.greenrobot:eventbus:3.2.0'
     api 'com.elvishew:xlog:1.6.1'
     implementation 'no.nordicsemi.android:ble:2.2.4'

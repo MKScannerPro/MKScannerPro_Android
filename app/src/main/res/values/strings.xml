@@ -35,6 +35,7 @@
     <string name="mqtt_verify_port">Port range is 0~65535</string>
     <string name="mqtt_verify_port_empty">Port error</string>
     <string name="mqtt_verify_catalogue">Catalogue error</string>
+    <string name="mqtt_verify_file_path">File Path error</string>
     <string name="mqtt_verify_ca">CA error</string>
     <string name="mqtt_verify_topic_subscribe">Subscribed Topic error</string>
     <string name="mqtt_verify_topic_publish">Published Topic error</string>

@@ -126,7 +126,9 @@
         <activity android:name=".activity.SyncTimeFromNTPActivity" />
         <activity android:name=".activity.SystemTimeProActivity" />
         <activity android:name=".activity.ModifyMQTTSettingsActivity" />
+        <activity android:name=".activity.OTAProActivity" />
 
+        <service android:name=".service.DfuService" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.moko.mkscannerpro.fileprovider"

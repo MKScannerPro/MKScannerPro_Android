@@ -366,6 +366,13 @@ public class DeviceSettingActivity extends BaseActivity {
             ToastUtils.showToast(this, R.string.device_offline);
             return;
         }
+        if (mMokoDevice.deviceType > 1) {
+            // MK107 Pro
+            Intent i = new Intent(this, OTAProActivity.class);
+            i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
+            startActivity(i);
+            return;
+        }
         Intent intent = new Intent(this, OTAActivity.class);
         intent.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
         startActivity(intent);

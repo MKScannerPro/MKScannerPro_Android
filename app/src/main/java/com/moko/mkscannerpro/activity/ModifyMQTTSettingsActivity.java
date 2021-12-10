@@ -316,7 +316,7 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
         reconnect.reconnect = 1;
         String message = MQTTMessageAssembler.assembleWriteDeviceReconnect(deviceInfo, reconnect);
         try {
-            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_MQTT_SETTINGS, appMqttConfig.qos);
+            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_MQTT_RECONNECT, appMqttConfig.qos);
         } catch (MqttException e) {
             e.printStackTrace();
         }
