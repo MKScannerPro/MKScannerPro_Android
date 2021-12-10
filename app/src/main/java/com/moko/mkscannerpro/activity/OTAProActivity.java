@@ -45,7 +45,7 @@ import com.moko.support.entity.MsgDeviceInfo;
 import com.moko.support.entity.MsgNotify;
 import com.moko.support.entity.MsgReadResult;
 import com.moko.support.entity.OTABothWayParams;
-import com.moko.support.entity.OTAMaterParams;
+import com.moko.support.entity.OTAMasterParams;
 import com.moko.support.entity.OTAOneWayParams;
 import com.moko.support.entity.OTAResult;
 import com.moko.support.entity.OrderServices;
@@ -82,14 +82,14 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
     public static String TAG = OTAProActivity.class.getSimpleName();
     @BindView(R.id.tv_update_type)
     TextView tvUpdateType;
-    @BindView(R.id.et_mater_host)
-    EditText etMaterHost;
-    @BindView(R.id.et_mater_port)
-    EditText etMaterPort;
-    @BindView(R.id.et_mater_file_path)
-    EditText etMaterFilePath;
-    @BindView(R.id.ll_mater_firmware)
-    LinearLayout llMaterFirmware;
+    @BindView(R.id.et_master_host)
+    EditText etMasterHost;
+    @BindView(R.id.et_master_port)
+    EditText etMasterPort;
+    @BindView(R.id.et_master_file_path)
+    EditText etMasterFilePath;
+    @BindView(R.id.ll_master_firmware)
+    LinearLayout llMasterFirmware;
     @BindView(R.id.tv_slave_file_path)
     TextView tvSlaveFilePath;
     @BindView(R.id.cl_slave_firmware)
@@ -139,10 +139,10 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
 
             return null;
         };
-        etMaterHost.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), inputFilter});
+        etMasterHost.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), inputFilter});
         etOneWayHost.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), inputFilter});
         etBothWayHost.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), inputFilter});
-        etMaterFilePath.setFilters(new InputFilter[]{new InputFilter.LengthFilter(100), inputFilter});
+        etMasterFilePath.setFilters(new InputFilter[]{new InputFilter.LengthFilter(100), inputFilter});
         etOneWayCaFilePath.setFilters(new InputFilter[]{new InputFilter.LengthFilter(100), inputFilter});
         etBothWayCaFilePath.setFilters(new InputFilter[]{new InputFilter.LengthFilter(100), inputFilter});
         etBothWayClientKeyFilePath.setFilters(new InputFilter[]{new InputFilter.LengthFilter(100), inputFilter});
@@ -151,7 +151,7 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
         String mqttConfigAppStr = SPUtiles.getStringValue(OTAProActivity.this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mValues = new ArrayList<>();
-        mValues.add("Mater Firmware");
+        mValues.add("Master Firmware");
         mValues.add("Slave Firmware");
         mValues.add("CA certificate");
         mValues.add("Client certificate");
@@ -207,7 +207,7 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
             mSlaveDeviceMac = stringBuffer.toString().toUpperCase();
             startScan();
         }
-        if (msg_id == MQTTConstants.CONFIG_MSG_ID_OTA_MATER
+        if (msg_id == MQTTConstants.CONFIG_MSG_ID_OTA_MASTER
                 || msg_id == MQTTConstants.CONFIG_MSG_ID_OTA_ONE_WAY
                 || msg_id == MQTTConstants.CONFIG_MSG_ID_OTA_BOTH_WAY) {
             Type type = new TypeToken<MsgConfigResult>() {
@@ -264,9 +264,9 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
             return;
         }
         if (mSelected == 0) {
-            String hostStr = etMaterHost.getText().toString();
-            String portStr = etMaterPort.getText().toString();
-            String materStr = etMaterFilePath.getText().toString();
+            String hostStr = etMasterHost.getText().toString();
+            String portStr = etMasterPort.getText().toString();
+            String masterStr = etMasterFilePath.getText().toString();
             if (TextUtils.isEmpty(hostStr)) {
                 ToastUtils.showToast(this, R.string.mqtt_verify_host);
                 return;
@@ -275,7 +275,7 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
                 ToastUtils.showToast(this, R.string.mqtt_verify_port_empty);
                 return;
             }
-            if (TextUtils.isEmpty(materStr)) {
+            if (TextUtils.isEmpty(masterStr)) {
                 ToastUtils.showToast(this, R.string.mqtt_verify_file_path);
                 return;
             }
@@ -332,7 +332,7 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
         }, 50 * 1000);
         showLoadingProgressDialog();
         if (mSelected == 0) {
-            setOTAMater();
+            setOTAMaster();
         }
         if (mSelected == 1) {
             setOTASlave();
@@ -352,25 +352,25 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
             mSelected = value;
             switch (value) {
                 case 0:
-                    llMaterFirmware.setVisibility(View.VISIBLE);
+                    llMasterFirmware.setVisibility(View.VISIBLE);
                     clSlaveFirmware.setVisibility(View.GONE);
                     llOneWay.setVisibility(View.GONE);
                     llBothWay.setVisibility(View.GONE);
                     break;
                 case 1:
-                    llMaterFirmware.setVisibility(View.GONE);
+                    llMasterFirmware.setVisibility(View.GONE);
                     clSlaveFirmware.setVisibility(View.VISIBLE);
                     llOneWay.setVisibility(View.GONE);
                     llBothWay.setVisibility(View.GONE);
                     break;
                 case 2:
-                    llMaterFirmware.setVisibility(View.GONE);
+                    llMasterFirmware.setVisibility(View.GONE);
                     clSlaveFirmware.setVisibility(View.GONE);
                     llOneWay.setVisibility(View.VISIBLE);
                     llBothWay.setVisibility(View.GONE);
                     break;
                 case 3:
-                    llMaterFirmware.setVisibility(View.GONE);
+                    llMasterFirmware.setVisibility(View.GONE);
                     clSlaveFirmware.setVisibility(View.GONE);
                     llOneWay.setVisibility(View.GONE);
                     llBothWay.setVisibility(View.VISIBLE);
@@ -381,10 +381,10 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
         dialog.show(getSupportFragmentManager());
     }
 
-    private void setOTAMater() {
-        String hostStr = etMaterHost.getText().toString();
-        String portStr = etMaterPort.getText().toString();
-        String materStr = etMaterFilePath.getText().toString();
+    private void setOTAMaster() {
+        String hostStr = etMasterHost.getText().toString();
+        String portStr = etMasterPort.getText().toString();
+        String masterStr = etMasterFilePath.getText().toString();
         String appTopic;
         if (TextUtils.isEmpty(appMqttConfig.topicPublish)) {
             appTopic = mMokoDevice.topicSubscribe;
@@ -394,13 +394,13 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
         MsgDeviceInfo deviceInfo = new MsgDeviceInfo();
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
-        OTAMaterParams params = new OTAMaterParams();
+        OTAMasterParams params = new OTAMasterParams();
         params.host = hostStr;
         params.port = Integer.parseInt(portStr);
-        params.firmware_way = materStr;
-        String message = MQTTMessageAssembler.assembleWriteOTAMater(deviceInfo, params);
+        params.firmware_way = masterStr;
+        String message = MQTTMessageAssembler.assembleWriteOTAMaster(deviceInfo, params);
         try {
-            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_OTA_MATER, appMqttConfig.qos);
+            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_OTA_MASTER, appMqttConfig.qos);
         } catch (MqttException e) {
             e.printStackTrace();
         }

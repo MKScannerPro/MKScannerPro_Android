@@ -59,7 +59,7 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:singleLine="true"
-            android:text="Mater Firmware"
+            android:text="Master Firmware"
             android:textColor="@color/white_ffffff"
             android:textSize="15sp" />
     </RelativeLayout>
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/ll_mater_firmware"
+            android:id="@+id/ll_master_firmware"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -92,7 +92,7 @@
                     android:textSize="15sp" />
 
                 <EditText
-                    android:id="@+id/et_mater_host"
+                    android:id="@+id/et_master_host"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_centerVertical="true"
@@ -125,7 +125,7 @@
                     android:textSize="15sp" />
 
                 <EditText
-                    android:id="@+id/et_mater_port"
+                    android:id="@+id/et_master_port"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_centerVertical="true"
@@ -159,7 +159,7 @@
                     android:textSize="15sp" />
 
                 <EditText
-                    android:id="@+id/et_mater_file_path"
+                    android:id="@+id/et_master_file_path"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_centerVertical="true"

@@ -39,7 +39,7 @@ public class MQTTConstants {
     public static final int CONFIG_MSG_ID_MQTT_RECONNECT = 1040;
     public static final int CONFIG_MSG_ID_MQTT_SETTINGS = 1041;
     public static final int CONFIG_MSG_ID_OTA_SLAVE = 1042;
-    public static final int CONFIG_MSG_ID_OTA_MATER = 1043;
+    public static final int CONFIG_MSG_ID_OTA_MASTER = 1043;
     public static final int CONFIG_MSG_ID_OTA_ONE_WAY = 1044;
     public static final int CONFIG_MSG_ID_OTA_BOTH_WAY = 1045;
     // READ
@@ -59,6 +59,7 @@ public class MQTTConstants {
     public static final int READ_MSG_ID_CONFIG_INFO = 2015;
     public static final int READ_MSG_ID_CONN_TIMEOUT = 2016;
     public static final int READ_MSG_ID_BLE_SCAN_TIMEOUT = 2017;
+    public static final int READ_MSG_ID_MASTER_DEVICE_INFO = 2019;
     public static final int READ_MSG_ID_SLAVE_DEVICE_INFO = 2020;
     public static final int READ_MSG_ID_NTP_SERVER = 2021;
     public static final int READ_MSG_ID_SYSTEM_TIME = 2022;

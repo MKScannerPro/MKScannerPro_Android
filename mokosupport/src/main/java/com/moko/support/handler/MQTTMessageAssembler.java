@@ -28,7 +28,7 @@ import com.moko.support.entity.MsgReadReq;
 import com.moko.support.entity.NTPServer;
 import com.moko.support.entity.NetworkReportPeriod;
 import com.moko.support.entity.OTABothWayParams;
-import com.moko.support.entity.OTAMaterParams;
+import com.moko.support.entity.OTAMasterParams;
 import com.moko.support.entity.OTAOneWayParams;
 import com.moko.support.entity.OTAParams;
 import com.moko.support.entity.ResetState;
@@ -685,11 +685,11 @@ public class MQTTMessageAssembler {
         return message;
     }
 
-    public static String assembleWriteOTAMater(MsgDeviceInfo deviceInfo, OTAMaterParams otaMaterParams) {
-        MsgConfigReq<OTAMaterParams> configReq = new MsgConfigReq();
+    public static String assembleWriteOTAMaster(MsgDeviceInfo deviceInfo, OTAMasterParams otaMasterParams) {
+        MsgConfigReq<OTAMasterParams> configReq = new MsgConfigReq();
         configReq.device_info = deviceInfo;
-        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_OTA_MATER;
-        configReq.data = otaMaterParams;
+        configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_OTA_MASTER;
+        configReq.data = otaMasterParams;
         String message = new Gson().toJson(configReq);
         XLog.e("app_to_device--->" + message);
         return message;
@@ -711,6 +711,15 @@ public class MQTTMessageAssembler {
         configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_OTA_BOTH_WAY;
         configReq.data = otaBothwayParams;
         String message = new Gson().toJson(configReq);
+        XLog.e("app_to_device--->" + message);
+        return message;
+    }
+
+    public static String assembleReadMasterDeviceInfo(MsgDeviceInfo deviceInfo) {
+        MsgReadReq readReq = new MsgReadReq();
+        readReq.device_info = deviceInfo;
+        readReq.msg_id = MQTTConstants.READ_MSG_ID_MASTER_DEVICE_INFO;
+        String message = new Gson().toJson(readReq);
         XLog.e("app_to_device--->" + message);
         return message;
     }
