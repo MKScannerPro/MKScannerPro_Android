@@ -116,7 +116,7 @@ public class FilterOtherActivity extends BaseActivity {
                     for (int i = 0, l = filterOther.size(); i < l; i++) {
                         FilterCondition.RawDataBean rawDataBean = filterOther.get(i);
                         View v = LayoutInflater.from(FilterOtherActivity.this).inflate(R.layout.item_other_filter, llFilterCondition, false);
-                        EditText tvCondition = v.findViewById(R.id.tv_condition);
+                        TextView tvCondition = v.findViewById(R.id.tv_condition);
                         EditText etDataType = v.findViewById(R.id.et_data_type);
                         EditText etMin = v.findViewById(R.id.et_min);
                         EditText etMax = v.findViewById(R.id.et_max);
@@ -235,7 +235,7 @@ public class FilterOtherActivity extends BaseActivity {
             return;
         }
         View v = LayoutInflater.from(this).inflate(R.layout.item_other_filter, llFilterCondition, false);
-        EditText tvCondition = v.findViewById(R.id.tv_condition);
+        TextView tvCondition = v.findViewById(R.id.tv_condition);
         if (count == 0) {
             tvCondition.setText("Condition A");
         } else if (count == 1) {
@@ -333,12 +333,12 @@ public class FilterOtherActivity extends BaseActivity {
     }
 
     private boolean isValid() {
-        final int count = clOtherRelationship.getChildCount();
+        final int count = llFilterCondition.getChildCount();
         if (count > 0) {
             // 发送设置的过滤RawData
             filterOther.clear();
             for (int i = 0; i < count; i++) {
-                View v = clOtherRelationship.getChildAt(i);
+                View v = llFilterCondition.getChildAt(i);
                 EditText etDataType = v.findViewById(R.id.et_data_type);
                 EditText etMin = v.findViewById(R.id.et_min);
                 EditText etMax = v.findViewById(R.id.et_max);

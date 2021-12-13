@@ -1,5 +1,6 @@
 package com.moko.mkscannerpro.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
 
@@ -43,10 +44,11 @@ public class IOUtils {
      * 获取默认的文件路径
      *
      * @return
+     * @param context
      */
-    public static String getDefaultFilePath() {
+    public static String getDefaultFilePath(Context context) {
         String filepath = "";
-        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "MKScannerPro",
+        File file = new File(context.getExternalFilesDir(null).getAbsolutePath() + File.separator + "MKScannerPro",
                 CRASH_FILE);
         try {
             if (file.exists()) {
@@ -117,34 +119,35 @@ public class IOUtils {
      *
      * @return
      */
-    public static String getCrashLog() {
-        try {
-            File file = new File(getDefaultFilePath());
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileInputStream is = new FileInputStream(file);
-            byte[] b = new byte[is.available()];
-            is.read(b);
-            String result = new String(b);
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
+//    public static String getCrashLog() {
+//        try {
+//            File file = new File(getDefaultFilePath(null));
+//            if (!file.exists()) {
+//                file.createNewFile();
+//            }
+//            FileInputStream is = new FileInputStream(file);
+//            byte[] b = new byte[is.available()];
+//            is.read(b);
+//            String result = new String(b);
+//            return result;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return "";
+//    }
 
     /**
      * 写文件内容
      *
      * @param info
+     * @param context
      */
-    public static void setCrashLog(String info) {
+    public static void setCrashLog(String info, Context context) {
         if (!isSdCardExist()) {
             return;
         }
         try {
-            File file = new File(getDefaultFilePath());
+            File file = new File(getDefaultFilePath(context));
             if (!file.exists()) {
                 file.createNewFile();
             }

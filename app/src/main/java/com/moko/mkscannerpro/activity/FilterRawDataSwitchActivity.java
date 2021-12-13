@@ -38,6 +38,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
+import androidx.annotation.Nullable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -257,7 +258,7 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
         }
         Intent i = new Intent(this, FilterIBeaconActivity.class);
         i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
-        startActivity(i);
+        startActivityForResult(i, AppConstants.REQUEST_CODE_FILTER_RAW_DATA);
     }
 
     public void onFilterByUid(View view) {
@@ -273,7 +274,7 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
         }
         Intent i = new Intent(this, FilterUIDActivity.class);
         i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
-        startActivity(i);
+        startActivityForResult(i, AppConstants.REQUEST_CODE_FILTER_RAW_DATA);
     }
 
     public void onFilterByUrl(View view) {
@@ -289,7 +290,7 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
         }
         Intent i = new Intent(this, FilterUrlActivity.class);
         i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
-        startActivity(i);
+        startActivityForResult(i, AppConstants.REQUEST_CODE_FILTER_RAW_DATA);
     }
 
     public void onFilterByTlm(View view) {
@@ -305,7 +306,7 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
         }
         Intent i = new Intent(this, FilterTLMActivity.class);
         i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
-        startActivity(i);
+        startActivityForResult(i, AppConstants.REQUEST_CODE_FILTER_RAW_DATA);
     }
 
     public void onFilterByMKiBeacon(View view) {
@@ -321,7 +322,7 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
         }
         Intent i = new Intent(this, FilterMKIBeaconActivity.class);
         i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
-        startActivity(i);
+        startActivityForResult(i, AppConstants.REQUEST_CODE_FILTER_RAW_DATA);
     }
 
     public void onFilterByMKiBeaconAcc(View view) {
@@ -337,7 +338,7 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
         }
         Intent i = new Intent(this, FilterMKIBeaconAccActivity.class);
         i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
-        startActivity(i);
+        startActivityForResult(i, AppConstants.REQUEST_CODE_FILTER_RAW_DATA);
     }
 
     public void onFilterByOther(View view) {
@@ -353,6 +354,19 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
         }
         Intent i = new Intent(this, FilterOtherActivity.class);
         i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
-        startActivity(i);
+        startActivityForResult(i, AppConstants.REQUEST_CODE_FILTER_RAW_DATA);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AppConstants.REQUEST_CODE_FILTER_RAW_DATA) {
+            showLoadingProgressDialog();
+            mHandler.postDelayed(() -> {
+                dismissLoadingProgressDialog();
+                finish();
+            }, 30 * 1000);
+            getFilterRawDataSwitch();
+        }
     }
 }

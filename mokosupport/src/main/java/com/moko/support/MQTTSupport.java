@@ -2,8 +2,8 @@ package com.moko.support;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
@@ -452,7 +452,7 @@ public class MQTTSupport {
             @Override
             public void messageArrived(String topic, MqttMessage message) {
                 String messageInfo = new String(message.getPayload());
-                XLog.w(String.format("Message:%s:%s", topic, messageInfo));
+                Log.w("MKScannerPro", String.format("Message:%s:%s", topic, messageInfo));
                 EventBus.getDefault().post(new MQTTMessageArrivedEvent(topic, new String(message.getPayload())));
             }
         });

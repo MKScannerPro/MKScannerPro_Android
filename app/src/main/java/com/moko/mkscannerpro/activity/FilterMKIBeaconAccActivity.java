@@ -97,10 +97,10 @@ public class FilterMKIBeaconAccActivity extends BaseActivity {
             mHandler.removeMessages(0);
             cbIbeacon.setChecked(result.data.onOff == 1);
             etIbeaconUuid.setText(result.data.uuid);
-            etIbeaconMajorMin.setText(result.data.min_major);
-            etIbeaconMajorMax.setText(result.data.max_major);
-            etIbeaconMinorMin.setText(result.data.min_minor);
-            etIbeaconMinorMax.setText(result.data.max_minor);
+            etIbeaconMajorMin.setText(String.valueOf(result.data.min_major));
+            etIbeaconMajorMax.setText(String.valueOf(result.data.max_major));
+            etIbeaconMinorMin.setText(String.valueOf(result.data.min_minor));
+            etIbeaconMinorMax.setText(String.valueOf(result.data.max_minor));
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_FILTER_MKIBEACON_ACC) {
             Type type = new TypeToken<MsgConfigResult>() {
@@ -188,6 +188,7 @@ public class FilterMKIBeaconAccActivity extends BaseActivity {
         filterIBeacon.max_major = Integer.parseInt(etIbeaconMajorMax.getText().toString());
         filterIBeacon.min_minor = Integer.parseInt(etIbeaconMinorMin.getText().toString());
         filterIBeacon.max_minor = Integer.parseInt(etIbeaconMinorMax.getText().toString());
+        filterIBeacon.uuid = etIbeaconUuid.getText().toString();
 
         String message = MQTTMessageAssembler.assembleWriteFilterMKIBeaconAcc(deviceInfo, filterIBeacon);
         try {

@@ -36,9 +36,9 @@ public class MQTTSettings {
     public String subscribe_topic;
     public String publish_topic;
     public String client_id;
-    public String ssl_host;
+    public String ssl_host = "";
     public int ssl_port;
-    public String ca_way;
-    public String client_cer_way;
-    public String client_key_way;
+    public String ca_way = "";
+    public String client_cer_way = "";
+    public String client_key_way = "";
 }

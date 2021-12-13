@@ -23,7 +23,7 @@ public class Utils {
         String devicePath;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             // 优先保存到SD卡中
-            devicePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "MKScannerPro" + File.separator + fileName;
+            devicePath = context.getExternalFilesDir(null).getAbsolutePath() + File.separator + "MKScannerPro" + File.separator + fileName;
         } else {
             // 如果SD卡不存在，就保存到本应用的目录下
             devicePath = context.getFilesDir().getAbsolutePath() + File.separator + "MKScannerPro" + File.separator + fileName;

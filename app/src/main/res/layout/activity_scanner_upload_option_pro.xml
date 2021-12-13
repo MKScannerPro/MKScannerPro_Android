@@ -200,21 +200,22 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
             android:background="@color/white_ffffff"
             android:paddingLeft="12dp"
             android:paddingTop="5dp"
-            android:layout_marginTop="1dp"
             android:paddingRight="12dp"
             android:paddingBottom="5dp">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Filter Relationship"
                 android:textColor="@color/black_333333"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_filter_relationship"
                 app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/tv_filter_relationship"
                 app:layout_constraintTop_toTopOf="@id/tv_filter_relationship" />
 
             <TextView

@@ -112,10 +112,13 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         tvTitle.setText(getString(R.string.mqtt_connect_failed));
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.POSTING, priority = 100)
     public void onMQTTMessageArrivedEvent(MQTTMessageArrivedEvent event) {
-        // 更新所有设备的网络状态
-        updateDeviceNetwokStatus(event);
+        if (isWindowLocked()) return;
+        runOnUiThread(() -> {
+            // 更新所有设备的网络状态
+            updateDeviceNetwokStatus(event);
+        });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

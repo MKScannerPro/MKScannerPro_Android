@@ -58,6 +58,7 @@ public class AppConstants {
     public static final int REQUEST_CODE_SET_DEVICE_MQTT = 126;
     public static final int REQUEST_CODE_MQTT_CONFIG_APP = 127;
     public static final int REQUEST_CODE_FILTER_CONDITION = 128;
+    public static final int REQUEST_CODE_FILTER_RAW_DATA = 129;
 
     public static final int PERMISSION_REQUEST_CODE = 1;
     // result_code

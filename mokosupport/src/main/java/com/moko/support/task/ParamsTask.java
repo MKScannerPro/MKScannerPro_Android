@@ -223,11 +223,11 @@ public class ParamsTask extends OrderTask {
         };
     }
 
-    public void setNTPTimeZoneNew(@IntRange(from = -24, to = 28) int timeZone) {
+    public void setNTPTimeZonePro(@IntRange(from = -24, to = 28) int timeZone) {
         data = new byte[]{
                 (byte) 0xED,
                 (byte) 0x01,
-                (byte) ParamsKeyEnum.KEY_NTP_TIME_ZONE.getParamsKey(),
+                (byte) ParamsKeyEnum.KEY_NTP_TIME_ZONE_PRO.getParamsKey(),
                 (byte) 0x01,
                 (byte) timeZone
         };

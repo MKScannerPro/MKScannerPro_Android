@@ -169,7 +169,13 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
             if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
                 return;
             }
-            setDeviceReconnect();
+            if (result.result_code == 0) {
+                setDeviceReconnect();
+            } else {
+                dismissLoadingProgressDialog();
+                mHandler.removeMessages(0);
+                ToastUtils.showToast(this, "Set up failed");
+            }
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_MQTT_RECONNECT) {
             Type type = new TypeToken<MsgConfigResult>() {

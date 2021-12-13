@@ -36,6 +36,7 @@ import com.moko.support.entity.Restart;
 import com.moko.support.entity.ScanConfig;
 import com.moko.support.entity.ScanTimeout;
 import com.moko.support.entity.SystemTime;
+import com.moko.support.entity.SystemTimePro;
 import com.moko.support.entity.TypeFilter;
 import com.moko.support.entity.UploadDataOption;
 
@@ -627,11 +628,11 @@ public class MQTTMessageAssembler {
         return message;
     }
 
-    public static String assembleWriteSystemTimePro(MsgDeviceInfo deviceInfo, SystemTime timeout) {
-        MsgConfigReq<SystemTime> configReq = new MsgConfigReq();
+    public static String assembleWriteSystemTimePro(MsgDeviceInfo deviceInfo, SystemTimePro systemTimePro) {
+        MsgConfigReq<SystemTimePro> configReq = new MsgConfigReq();
         configReq.device_info = deviceInfo;
         configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_SYSTEM_TIME;
-        configReq.data = timeout;
+        configReq.data = systemTimePro;
         String message = new Gson().toJson(configReq);
         XLog.e("app_to_device--->" + message);
         return message;
@@ -677,9 +678,10 @@ public class MQTTMessageAssembler {
     }
 
     public static String assembleWriteOTASlave(MsgDeviceInfo deviceInfo) {
-        MsgConfigReq configReq = new MsgConfigReq();
+        MsgConfigReq<Object> configReq = new MsgConfigReq();
         configReq.device_info = deviceInfo;
         configReq.msg_id = MQTTConstants.CONFIG_MSG_ID_OTA_SLAVE;
+        configReq.data = new Object();
         String message = new Gson().toJson(configReq);
         XLog.e("app_to_device--->" + message);
         return message;

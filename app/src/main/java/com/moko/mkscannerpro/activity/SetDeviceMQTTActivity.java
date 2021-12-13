@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.ble.lib.MokoConstants;
 import com.moko.ble.lib.event.ConnectStatusEvent;
@@ -42,7 +44,6 @@ import com.moko.support.MQTTSupport;
 import com.moko.support.MokoSupport;
 import com.moko.support.OrderTaskAssembler;
 import com.moko.support.entity.MsgNotify;
-import com.moko.support.entity.NetworkingStatus;
 import com.moko.support.entity.OrderCHAR;
 import com.moko.support.entity.ParamsKeyEnum;
 import com.moko.support.event.MQTTMessageArrivedEvent;
@@ -187,15 +188,17 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
             for (int i = -24; i <= 28; i++) {
                 if (i < 0) {
                     if (i % 2 == 0) {
-                        mTimeZones.add(String.format("UTC%02d", i / 2));
+                        int j = Math.abs(i / 2);
+                        mTimeZones.add(String.format("UTC-%02d:00", j));
                     } else {
-                        mTimeZones.add(String.format("UTC%02d:30", (i - 1) / 2));
+                        int j = Math.abs((i + 1) / 2);
+                        mTimeZones.add(String.format("UTC-%02d:30", j));
                     }
                 } else if (i == 0) {
                     mTimeZones.add("UTC");
                 } else {
                     if (i % 2 == 0) {
-                        mTimeZones.add(String.format("UTC+%02d", i / 2));
+                        mTimeZones.add(String.format("UTC+%02d:00", i / 2));
                     } else {
                         mTimeZones.add(String.format("UTC+%02d:30", (i - 1) / 2));
                     }
@@ -275,7 +278,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
                                 case KEY_MQTT_DEVICE_ID:
                                 case KEY_NTP_URL:
                                 case KEY_NTP_TIME_ZONE:
-                                case KEY_NTP_TIME_ZONE_NEW:
+                                case KEY_NTP_TIME_ZONE_PRO:
                                 case KEY_MQTT_CONNECT_MODE:
                                 case KEY_MQTT_USERNAME:
                                 case KEY_MQTT_PASSWORD:
@@ -334,11 +337,14 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
         }
         if (TextUtils.isEmpty(message))
             return;
-        Type type = new TypeToken<MsgNotify<NetworkingStatus>>() {
-        }.getType();
-        MsgNotify<NetworkingStatus> msgNotify = new Gson().fromJson(message, type);
-        if (msgNotify.msg_id != MQTTConstants.NOTIFY_MSG_ID_NETWORKING_STATUS)
+        JsonObject object = new Gson().fromJson(message, JsonObject.class);
+        JsonElement element = object.get("msg_id");
+        int msg_id = element.getAsInt();
+        if (msg_id != MQTTConstants.NOTIFY_MSG_ID_NETWORKING_STATUS)
             return;
+        Type type = new TypeToken<MsgNotify<Object>>() {
+        }.getType();
+        MsgNotify<Object> msgNotify = new Gson().fromJson(message, type);
         final String deviceId = msgNotify.device_info.device_id;
         if (!mqttDeviceConfig.deviceId.equals(deviceId)) {
             return;
@@ -582,7 +588,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
                 orderTasks.add(OrderTaskAssembler.setNTPUrl(mqttDeviceConfig.ntpUrl));
             }
             if (mSelectedDeviceType > 1) {
-                orderTasks.add(OrderTaskAssembler.setNTPTimezoneNew(mqttDeviceConfig.timeZone));
+                orderTasks.add(OrderTaskAssembler.setNTPTimezonePro(mqttDeviceConfig.timeZone));
             } else {
                 orderTasks.add(OrderTaskAssembler.setNTPTimezone(mqttDeviceConfig.timeZone));
             }

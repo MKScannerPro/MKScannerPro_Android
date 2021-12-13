@@ -112,7 +112,7 @@ public class FilterMacAddressActivity extends BaseActivity {
                         View v = LayoutInflater.from(FilterMacAddressActivity.this).inflate(R.layout.item_mac_address_filter, llMacAddress, false);
                         TextView title = v.findViewById(R.id.tv_mac_address_title);
                         EditText etMacAddress = v.findViewById(R.id.et_mac_address);
-                        title.setText(String.format("MAC %d", i));
+                        title.setText(String.format("MAC %d", i + 1));
                         etMacAddress.setText(macAddress);
                         llMacAddress.addView(v);
                     }
@@ -197,6 +197,8 @@ public class FilterMacAddressActivity extends BaseActivity {
             return;
         }
         View v = LayoutInflater.from(this).inflate(R.layout.item_mac_address_filter, llMacAddress, false);
+        TextView title = v.findViewById(R.id.tv_mac_address_title);
+        title.setText(String.format("MAC %d", count + 1));
         llMacAddress.addView(v);
     }
 
@@ -255,6 +257,7 @@ public class FilterMacAddressActivity extends BaseActivity {
                 ToastUtils.showToast(this, "Para Error");
                 return false;
             }
+            filterMacAddress.clear();
             for (int i = 0; i < count; i++) {
                 View v = llMacAddress.getChildAt(i);
                 EditText etMacAddress = v.findViewById(R.id.et_mac_address);

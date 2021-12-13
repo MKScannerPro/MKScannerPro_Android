@@ -122,6 +122,7 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
     private int mSelected;
     private Handler mHandler;
     private String mSlaveDeviceMac;
+    private Uri mFirmwareUri;
     private MokoBleScanner mokoBleScanner;
 
     @Override
@@ -198,7 +199,7 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            StringBuffer stringBuffer = new StringBuffer(result.device_info.mac);
+            StringBuffer stringBuffer = new StringBuffer(result.data.slave_mac);
             stringBuffer.insert(2, ":");
             stringBuffer.insert(5, ":");
             stringBuffer.insert(8, ":");
@@ -231,8 +232,14 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
             if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
                 return;
             }
-            // 获取MAC地址后开始搜索设备
-            getSlaveMac();
+            if (result.result_code == 0) {
+                // 获取MAC地址后开始搜索设备
+                getSlaveMac();
+            } else {
+                dismissLoadingProgressDialog();
+                mHandler.removeMessages(0);
+                ToastUtils.showToast(this, "Set up failed");
+            }
         }
     }
 
@@ -530,6 +537,7 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
         final File file = new File(filePath);
         if (file.exists()) {
             if (requestCode == REQUEST_CODE_SELECT_FIRMWARE) {
+                mFirmwareUri = uri;
                 tvSlaveFilePath.setText(filePath);
             }
         } else {
@@ -542,7 +550,6 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
         showLoadingProgressDialog();
         mokoBleScanner.startScanDevice(this);
         mHandler.postDelayed(() -> {
-            ToastUtils.showToast(this, "");
             dismissLoadingProgressDialog();
             mokoBleScanner.stopScanDevice();
         }, 1000 * 20);
@@ -588,12 +595,16 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
             String firmwareFilePath = tvSlaveFilePath.getText().toString();
             final File firmwareFile = new File(firmwareFilePath);
             if (firmwareFile.exists()) {
-                final DfuServiceInitiator starter = new DfuServiceInitiator(mSlaveDeviceMac)
-                        .setKeepBond(false)
-                        .setDisableNotification(true);
-                starter.setZip(null, firmwareFilePath);
-                starter.start(this, DfuService.class);
-                showDFUProgressDialog("Waiting...");
+                try {
+                    final DfuServiceInitiator starter = new DfuServiceInitiator(mSlaveDeviceMac)
+                            .setKeepBond(false)
+                            .setDisableNotification(true);
+                    starter.setZip(mFirmwareUri);
+                    starter.start(this, DfuService.class);
+                    showDFUProgressDialog("Waiting...");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } else {
                 Toast.makeText(this, "file is not exists!", Toast.LENGTH_SHORT).show();
             }
@@ -695,7 +706,9 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
 
         @Override
         public void onError(String deviceAddress, int error, int errorType, String message) {
+            dismissDFUProgressDialog();
             XLog.i("DFU Error:" + message);
+            ToastUtils.showToast(OTAProActivity.this, R.string.update_failed);
         }
     };
 

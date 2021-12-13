@@ -26,6 +26,8 @@ import com.moko.support.entity.MsgConfigResult;
 import com.moko.support.entity.MsgDeviceInfo;
 import com.moko.support.entity.MsgReadResult;
 import com.moko.support.entity.SystemTime;
+import com.moko.support.entity.SystemTimePro;
+import com.moko.support.entity.SystemTimeProRead;
 import com.moko.support.entity.SystemTimeRead;
 import com.moko.support.event.DeviceOnlineEvent;
 import com.moko.support.event.MQTTMessageArrivedEvent;
@@ -69,17 +71,19 @@ public class SystemTimeProActivity extends BaseActivity {
         for (int i = -24; i <= 28; i++) {
             if (i < 0) {
                 if (i % 2 == 0) {
-                    mTimeZones.add(String.format("UTC%d", i / 2));
+                    int j = Math.abs(i / 2);
+                    mTimeZones.add(String.format("UTC-%02d:00", j));
                 } else {
-                    mTimeZones.add(String.format("UTC%d:30", (i - 1) / 2));
+                    int j = Math.abs((i + 1) / 2);
+                    mTimeZones.add(String.format("UTC-%02d:30", j));
                 }
             } else if (i == 0) {
                 mTimeZones.add("UTC");
             } else {
                 if (i % 2 == 0) {
-                    mTimeZones.add(String.format("UTC+%d", i / 2));
+                    mTimeZones.add(String.format("UTC+%02d:00", i / 2));
                 } else {
-                    mTimeZones.add(String.format("UTC+%d:30", (i - 1) / 2));
+                    mTimeZones.add(String.format("UTC+%02d:30", (i - 1) / 2));
                 }
             }
         }
@@ -104,9 +108,9 @@ public class SystemTimeProActivity extends BaseActivity {
         JsonElement element = object.get("msg_id");
         int msg_id = element.getAsInt();
         if (msg_id == MQTTConstants.READ_MSG_ID_SYSTEM_TIME) {
-            Type type = new TypeToken<MsgReadResult<SystemTimeRead>>() {
+            Type type = new TypeToken<MsgReadResult<SystemTimeProRead>>() {
             }.getType();
-            MsgReadResult<SystemTimeRead> result = new Gson().fromJson(message, type);
+            MsgReadResult<SystemTimeProRead> result = new Gson().fromJson(message, type);
             if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
                 return;
             }
@@ -115,7 +119,7 @@ public class SystemTimeProActivity extends BaseActivity {
             String timestamp = result.data.timestamp;
             String date = timestamp.substring(0, 10);
             String time = timestamp.substring(11, 16);
-            mSelectedTimeZone = result.data.time_zone + 24;
+            mSelectedTimeZone = result.data.timezone + 24;
             tvTimeZone.setText(mTimeZones.get(mSelectedTimeZone));
             tvDeviceTime.setText(String.format("Device time:%s %s %s", date, time, mTimeZones.get(mSelectedTimeZone)));
             if (mSyncTimeHandler.hasMessages(0))
@@ -177,8 +181,8 @@ public class SystemTimeProActivity extends BaseActivity {
         MsgDeviceInfo deviceInfo = new MsgDeviceInfo();
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
-        SystemTime systemTime = new SystemTime();
-        systemTime.time_zone = mSelectedTimeZone - 24;
+        SystemTimePro systemTime = new SystemTimePro();
+        systemTime.timezone = mSelectedTimeZone - 24;
         systemTime.timestamp = Calendar.getInstance().getTimeInMillis() / 1000;
         String message = MQTTMessageAssembler.assembleWriteSystemTimePro(deviceInfo, systemTime);
         try {

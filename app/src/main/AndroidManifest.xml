@@ -28,9 +28,11 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name="com.moko.mkscannerpro.activity.SetDeviceMQTTActivity"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.moko.mkscannerpro.activity.SetAppMQTTActivity"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.moko.mkscannerpro.activity.ModifyNameActivity"
@@ -117,10 +119,12 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activity.FilterMacAddressActivity"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activity.FilterAdvNameActivity"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
         <activity
@@ -153,6 +157,7 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activity.FilterOtherActivity"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
         <activity
@@ -169,6 +174,7 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activity.ModifyMQTTSettingsActivity"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
         <activity

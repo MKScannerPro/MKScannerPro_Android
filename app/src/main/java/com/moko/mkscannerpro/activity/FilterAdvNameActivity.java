@@ -127,7 +127,7 @@ public class FilterAdvNameActivity extends BaseActivity {
                         TextView title = v.findViewById(R.id.tv_adv_name_title);
                         EditText etAdvName = v.findViewById(R.id.et_adv_name);
                         etAdvName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20), filter});
-                        title.setText(String.format("ADV Name%d", i));
+                        title.setText(String.format("ADV Name%d", i + 1));
                         etAdvName.setText(advName);
                         llDavName.addView(v);
                     }
@@ -212,6 +212,8 @@ public class FilterAdvNameActivity extends BaseActivity {
             return;
         }
         View v = LayoutInflater.from(this).inflate(R.layout.item_adv_name_filter, llDavName, false);
+        TextView title = v.findViewById(R.id.tv_adv_name_title);
+        title.setText(String.format("ADV Name%d", count + 1));
         EditText etAdvName = v.findViewById(R.id.et_adv_name);
         etAdvName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20), filter});
         llDavName.addView(v);
@@ -272,6 +274,7 @@ public class FilterAdvNameActivity extends BaseActivity {
                 ToastUtils.showToast(this, "Para Error");
                 return false;
             }
+            filterAdvName.clear();
             for (int i = 0; i < count; i++) {
                 View v = llDavName.getChildAt(i);
                 EditText etAdvName = v.findViewById(R.id.et_adv_name);
