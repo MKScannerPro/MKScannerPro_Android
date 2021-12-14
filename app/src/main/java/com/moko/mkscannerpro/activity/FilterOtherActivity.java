@@ -282,6 +282,7 @@ public class FilterOtherActivity extends BaseActivity {
                 mValues = new ArrayList<>();
                 if (count == 1) {
                     clOtherRelationship.setVisibility(View.GONE);
+                    return;
                 }
                 if (count == 2) {
                     mValues.add("A");

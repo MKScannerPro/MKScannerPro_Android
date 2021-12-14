@@ -40,13 +40,13 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/grey_f2f2f2"
-        android:paddingBottom="20dp">
+        android:background="@color/grey_f2f2f2">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
 
             <CheckBox
                 android:id="@+id/cb_type_ibeacon"
