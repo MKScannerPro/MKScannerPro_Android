@@ -155,7 +155,6 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
         mValues.add("Master Firmware");
         mValues.add("Slave Firmware");
         mValues.add("CA certificate");
-        mValues.add("Client certificate");
         mValues.add("Self signed server certificates ");
         tvUpdateType.setText(mValues.get(mSelected));
         mokoBleScanner = new MokoBleScanner(this);

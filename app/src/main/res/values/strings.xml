@@ -23,8 +23,8 @@
     <string name="mqtt_connct_mode_ssl_two_way">Two-way SSL</string>
     <string name="mqtt_qos">Qos</string>
     <string name="mqtt_keep_alive">Keep Alive</string>
-    <string name="mqtt_client_id">Client Id</string>
     <string name="mqtt_device_id">Device Id</string>
+    <string name="mqtt_client_id">Client Id</string>
     <string name="mqtt_topic_subscribe">Subscribed Topic</string>
     <string name="mqtt_topic_publish">Published Topic</string>
     <string name="mqtt_username">Username</string>
