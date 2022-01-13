@@ -165,7 +165,7 @@ public class OTAActivity extends BaseActivity {
             ToastUtils.showToast(this, R.string.mqtt_verify_host);
             return;
         }
-        if (!TextUtils.isEmpty(portStr) && Integer.parseInt(portStr) > 65535) {
+        if (TextUtils.isEmpty(portStr) || Integer.parseInt(portStr) > 65535) {
             ToastUtils.showToast(this, R.string.mqtt_verify_port_empty);
             return;
         }

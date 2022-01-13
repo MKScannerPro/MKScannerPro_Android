@@ -283,11 +283,6 @@ public class FilterAdvNameActivity extends BaseActivity {
                     ToastUtils.showToast(this, "Para Error");
                     return false;
                 }
-                int length = advName.length();
-                if (length % 2 != 0) {
-                    ToastUtils.showToast(this, "Para Error");
-                    return false;
-                }
                 filterAdvName.add(advName);
             }
         } else {

@@ -204,7 +204,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
                     }
                 }
             }
-            mSelectedTimeZone = 0;
+            mSelectedTimeZone = 24;
         } else {
             // MK107
             for (int i = 0; i <= 24; i++) {
@@ -500,7 +500,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
         mqttDeviceConfig.clientCertPath = sslFragment.getClientCertPath();
         mqttDeviceConfig.deviceId = deviceId;
         mqttDeviceConfig.ntpUrl = ntpUrl;
-        mqttDeviceConfig.timeZone = mSelectedTimeZone - 12;
+        mqttDeviceConfig.timeZone = mSelectedDeviceType > 1 ? mSelectedTimeZone - 24 : mSelectedTimeZone - 12;
 
         if (!mqttDeviceConfig.topicPublish.isEmpty() && !mqttDeviceConfig.topicSubscribe.isEmpty()
                 && mqttDeviceConfig.topicPublish.equals(mqttDeviceConfig.topicSubscribe)) {

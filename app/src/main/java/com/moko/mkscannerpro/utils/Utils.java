@@ -10,7 +10,10 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Environment;
+
+import com.moko.mkscannerpro.BaseApplication;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +26,7 @@ public class Utils {
         String devicePath;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             // 优先保存到SD卡中
-            devicePath = context.getExternalFilesDir(null).getAbsolutePath() + File.separator + "MKScannerPro" + File.separator + fileName;
+            devicePath = BaseApplication.PATH_LOGCAT + File.separator + fileName;
         } else {
             // 如果SD卡不存在，就保存到本应用的目录下
             devicePath = context.getFilesDir().getAbsolutePath() + File.separator + "MKScannerPro" + File.separator + fileName;
@@ -44,9 +47,10 @@ public class Utils {
     }
 
     /**
-     * @Date 2017/4/6
+     * @Date 2021/12/27
      * @Author wenzheng.liu
-     * @Description 发送邮件
+     * @Description 兼容Android 11
+     * @ClassPath com.moko.mkscannerpro.utils.Utils
      */
     public static void sendEmail(Context context, String address, String body, String subject, String tips, File... files) {
         if (files.length == 0) {
@@ -55,12 +59,22 @@ public class Utils {
         Intent intent;
         if (files.length == 1) {
             intent = new Intent(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(files[0]));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                Uri fileUri = IOUtils.insertDownloadFile(context, files[0]);
+                intent.putExtra(Intent.EXTRA_STREAM, fileUri);
+            } else {
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(files[0]));
+            }
             intent.putExtra(Intent.EXTRA_TEXT, body);
         } else {
             ArrayList<Uri> uris = new ArrayList<>();
             for (int i = 0; i < files.length; i++) {
-                uris.add(Uri.fromFile(files[i]));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    Uri fileUri = IOUtils.insertDownloadFile(context, files[i]);
+                    uris.add(fileUri);
+                } else {
+                    uris.add(Uri.fromFile(files[i]));
+                }
             }
             intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);

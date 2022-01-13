@@ -39,6 +39,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -113,7 +114,7 @@ public class MQTTSupport {
         };
     }
 
-    public void connectMqtt(String mqttAppConfigStr) {
+    public void connectMqtt(String mqttAppConfigStr) throws FileNotFoundException {
         if (TextUtils.isEmpty(mqttAppConfigStr))
             return;
         MQTTConfig mqttConfig = new Gson().fromJson(mqttAppConfigStr, MQTTConfig.class);
@@ -201,6 +202,9 @@ public class MQTTSupport {
                         // 双向验证
                         try {
                             connOpts.setSocketFactory(getSocketFactory(mqttConfig.caPath, mqttConfig.clientKeyPath, mqttConfig.clientCertPath));
+                            connOpts.setHttpsHostnameVerificationEnabled(false);
+                        } catch (FileNotFoundException fileNotFoundException) {
+                            throw fileNotFoundException;
                         } catch (Exception e) {
                             // 读取stacktrace信息
                             final Writer result = new StringWriter();

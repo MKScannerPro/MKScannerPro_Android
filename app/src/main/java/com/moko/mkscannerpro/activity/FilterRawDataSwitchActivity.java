@@ -109,17 +109,17 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            tvFilterByIbeacon.setText(result.data.ibeacon == 1 ? "NO" : "OFF");
-            tvFilterByUid.setText(result.data.eddystone_uid == 1 ? "NO" : "OFF");
-            tvFilterByUrl.setText(result.data.eddystone_url == 1 ? "NO" : "OFF");
-            tvFilterByTlm.setText(result.data.eddystone_tlm == 1 ? "NO" : "OFF");
-            tvFilterByMkibeacon.setText(result.data.mkibeacon == 1 ? "NO" : "OFF");
-            tvFilterByMkibeaconAcc.setText(result.data.mkibeacon_acc == 1 ? "NO" : "OFF");
+            tvFilterByIbeacon.setText(result.data.ibeacon == 1 ? "ON" : "OFF");
+            tvFilterByUid.setText(result.data.eddystone_uid == 1 ? "ON" : "OFF");
+            tvFilterByUrl.setText(result.data.eddystone_url == 1 ? "ON" : "OFF");
+            tvFilterByTlm.setText(result.data.eddystone_tlm == 1 ? "ON" : "OFF");
+            tvFilterByMkibeacon.setText(result.data.mkibeacon == 1 ? "ON" : "OFF");
+            tvFilterByMkibeaconAcc.setText(result.data.mkibeacon_acc == 1 ? "ON" : "OFF");
             isBXPAccOpen = result.data.bxp_acc == 1;
             isBXPTHOpen = result.data.bxp_th == 1;
             ivFilterByBxpAcc.setImageResource(isBXPAccOpen ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
             ivFilterByBxpTh.setImageResource(isBXPTHOpen ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
-            tvFilterByOther.setText(result.data.unknown == 1 ? "NO" : "OFF");
+            tvFilterByOther.setText(result.data.unknown == 1 ? "ON" : "OFF");
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_FILTER_BXP_ACC
                 || msg_id == MQTTConstants.CONFIG_MSG_ID_FILTER_BXP_TH) {
@@ -129,11 +129,12 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
             if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
                 return;
             }
-            dismissLoadingProgressDialog();
-            mHandler.removeMessages(0);
             if (result.result_code == 0) {
+                getFilterRawDataSwitch();
                 ToastUtils.showToast(this, "Set up succeed");
             } else {
+                dismissLoadingProgressDialog();
+                mHandler.removeMessages(0);
                 ToastUtils.showToast(this, "Set up failed");
             }
         }

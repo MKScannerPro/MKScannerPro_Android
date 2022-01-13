@@ -224,7 +224,7 @@ public class FilterMKIBeaconAccActivity extends BaseActivity {
                 ToastUtils.showToast(this, "Para Error");
                 return false;
             }
-        } else if (!TextUtils.isEmpty(minorMin) || !TextUtils.isEmpty(majorMax)) {
+        } else if (TextUtils.isEmpty(majorMin) || TextUtils.isEmpty(majorMax)) {
             ToastUtils.showToast(this, "Para Error");
             return false;
         }
@@ -242,7 +242,7 @@ public class FilterMKIBeaconAccActivity extends BaseActivity {
                 ToastUtils.showToast(this, "Para Error");
                 return false;
             }
-        } else if (!TextUtils.isEmpty(majorMin) || !TextUtils.isEmpty(minorMax)) {
+        } else if (TextUtils.isEmpty(minorMin) || TextUtils.isEmpty(minorMax)) {
             ToastUtils.showToast(this, "Para Error");
             return false;
         }

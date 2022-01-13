@@ -29,6 +29,7 @@ import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.support.MQTTConstants;
 import com.moko.support.MQTTSupport;
+import com.moko.support.entity.DataTypeEnum;
 import com.moko.support.entity.FilterCondition;
 import com.moko.support.entity.MsgConfigResult;
 import com.moko.support.entity.MsgDeviceInfo;
@@ -575,6 +576,9 @@ public class FilterOptionsAActivity extends BaseActivity implements SeekBar.OnSe
                     return false;
                 }
                 final int dataType = Integer.parseInt(dataTypeStr, 16);
+                final DataTypeEnum dataTypeEnum = DataTypeEnum.fromDataType(dataType);
+                if (dataTypeEnum == null)
+                    return false;
                 if (TextUtils.isEmpty(rawDataStr)) {
                     ToastUtils.showToast(this, "Para Error");
                     return false;

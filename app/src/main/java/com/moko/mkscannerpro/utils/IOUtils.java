@@ -1,8 +1,19 @@
 package com.moko.mkscannerpro.utils;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
+
+import com.elvishew.xlog.XLog;
+import com.moko.mkscannerpro.BaseApplication;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +22,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
+import androidx.annotation.RequiresApi;
 
 public class IOUtils {
     public static final String CRASH_FILE = "crash_log.txt";
@@ -34,7 +47,7 @@ public class IOUtils {
         boolean exist = isSdCardExist();
         String sdpath = "";
         if (exist) {
-            sdpath = Environment.getExternalStorageDirectory().getAbsolutePath();
+            sdpath = BaseApplication.PATH_LOGCAT;
         }
         return sdpath;
 
@@ -43,13 +56,14 @@ public class IOUtils {
     /**
      * 获取默认的文件路径
      *
-     * @return
      * @param context
+     * @return
      */
     public static String getDefaultFilePath(Context context) {
         String filepath = "";
-        File file = new File(context.getExternalFilesDir(null).getAbsolutePath() + File.separator + "MKScannerPro",
-                CRASH_FILE);
+        File file;
+        // 优先保存到SD卡中
+        file = new File(BaseApplication.PATH_LOGCAT, CRASH_FILE);
         try {
             if (file.exists()) {
                 filepath = file.getAbsolutePath();
@@ -70,8 +84,7 @@ public class IOUtils {
      */
     public static String getFilePath(String fileName) {
         String filepath = "";
-        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "MKScannerPro",
-                fileName);
+        File file = new File(BaseApplication.PATH_LOGCAT, fileName);
         try {
             if (file.exists()) {
                 filepath = file.getAbsolutePath();
@@ -170,5 +183,89 @@ public class IOUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * 保存文件到公共集合目录
+     *
+     * @param context
+     * @param displayName：显示的文件名字
+     * @return 返回插入数据对应的uri
+     */
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    public static void queryAndDeleteFile(Context context, String displayName) {
+        Uri external = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
+        ContentResolver resolver = context.getContentResolver();
+        String[] projection = new String[]{MediaStore.DownloadColumns._ID};
+        String selection = MediaStore.DownloadColumns.DISPLAY_NAME + "=?";
+        String[] args = new String[]{displayName};
+        Cursor cursor = resolver.query(external, projection, selection, args, null);
+        Uri fileUri = null;
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                fileUri = ContentUris.withAppendedId(external, cursor.getLong(0));
+                resolver.delete(fileUri, null, null);
+            }
+            cursor.close();
+        }
+    }
+
+    /**
+     * 保存文件到公共集合目录
+     *
+     * @param context
+     * @return 返回插入数据对应的uri
+     */
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    public static Uri insertDownloadFile(Context context, File file) {
+        // 保存前先检查文件是否已存在
+        queryAndDeleteFile(context, file.getName());
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.DownloadColumns.DISPLAY_NAME, file.getName());
+        values.put(MediaStore.DownloadColumns.TITLE, file.getName());
+        values.put(MediaStore.DownloadColumns.MIME_TYPE, "*/*");
+        values.put(MediaStore.DownloadColumns.RELATIVE_PATH, "Download/MKScannerPro");
+        Uri external = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
+        Uri uri = null;
+        ContentResolver cr = context.getContentResolver();
+        FileOutputStream fos = null;
+        FileInputStream fis = null;
+        try {
+            uri = cr.insert(external, values);
+            if (uri == null) {
+                return null;
+            }
+            byte[] buffer = new byte[1024];
+            ParcelFileDescriptor parcelFileDescriptor = cr.openFileDescriptor(uri, "w");
+            fos = new FileOutputStream(parcelFileDescriptor.getFileDescriptor());
+            fis = new FileInputStream(file.getAbsoluteFile());
+            while (true) {
+                int numRead = fis.read(buffer);
+                if (numRead == -1) {
+                    break;
+                }
+                fos.write(buffer, 0, numRead);
+            }
+            fos.flush();
+        } catch (Exception e) {
+            XLog.e("Failed to insert download file", e);
+            if (uri != null) {
+                cr.delete(uri, null, null);
+                uri = null;
+            }
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+                if (fis != null) {
+                    fis.close();
+                }
+            } catch (IOException e) {
+                XLog.e("fail in close: " + e.getCause());
+            }
+        }
+        return uri;
     }
 }

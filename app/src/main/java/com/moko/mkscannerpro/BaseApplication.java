@@ -3,6 +3,7 @@ package com.moko.mkscannerpro;
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 
 import com.elvishew.xlog.LogConfiguration;
@@ -43,7 +44,11 @@ public class BaseApplication extends Application {
         // 初始化Xlog
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             // 优先保存到SD卡中
-            PATH_LOGCAT = getExternalFilesDir(null).getAbsolutePath() + File.separator + LOG_FOLDER;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                PATH_LOGCAT = getExternalFilesDir(null).getAbsolutePath() + File.separator + LOG_FOLDER;
+            } else {
+                PATH_LOGCAT = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + LOG_FOLDER;
+            }
         } else {
             // 如果SD卡不存在，就保存到本应用的目录下
             PATH_LOGCAT = getFilesDir().getAbsolutePath() + File.separator + LOG_FOLDER;

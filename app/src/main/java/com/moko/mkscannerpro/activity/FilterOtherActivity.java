@@ -27,9 +27,9 @@ import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.support.MQTTConstants;
 import com.moko.support.MQTTSupport;
+import com.moko.support.entity.DataTypeEnum;
 import com.moko.support.entity.FilterCondition;
 import com.moko.support.entity.FilterOther;
-import com.moko.support.entity.FilterType;
 import com.moko.support.entity.MsgConfigResult;
 import com.moko.support.entity.MsgDeviceInfo;
 import com.moko.support.entity.MsgReadResult;
@@ -353,7 +353,9 @@ public class FilterOtherActivity extends BaseActivity {
                     ToastUtils.showToast(this, "Para Error");
                     return false;
                 }
-                final int dataType = Integer.parseInt(dataTypeStr, 16);
+                final int dataType = Integer.parseInt(dataTypeStr, 16);final DataTypeEnum dataTypeEnum = DataTypeEnum.fromDataType(dataType);
+                if (dataTypeEnum == null)
+                    return false;
                 if (TextUtils.isEmpty(rawDataStr)) {
                     ToastUtils.showToast(this, "Para Error");
                     return false;

@@ -112,14 +112,17 @@ public class SSLDevicePathFragment extends Fragment {
             llCa.setVisibility(View.GONE);
             llClientKey.setVisibility(View.GONE);
             llClientCert.setVisibility(View.GONE);
+            clCertServer.setVisibility(View.GONE);
         } else if (selected == 1) {
             llCa.setVisibility(View.VISIBLE);
             llClientKey.setVisibility(View.GONE);
             llClientCert.setVisibility(View.GONE);
+            clCertServer.setVisibility(View.VISIBLE);
         } else if (selected == 2) {
             llCa.setVisibility(View.VISIBLE);
             llClientKey.setVisibility(View.VISIBLE);
             llClientCert.setVisibility(View.VISIBLE);
+            clCertServer.setVisibility(View.VISIBLE);
         }
         return view;
     }
@@ -154,16 +157,19 @@ public class SSLDevicePathFragment extends Fragment {
                 llCa.setVisibility(View.GONE);
                 llClientKey.setVisibility(View.GONE);
                 llClientCert.setVisibility(View.GONE);
+                clCertServer.setVisibility(View.GONE);
             } else if (selected == 1) {
                 connectMode = 2;
                 llCa.setVisibility(View.VISIBLE);
                 llClientKey.setVisibility(View.GONE);
                 llClientCert.setVisibility(View.GONE);
+                clCertServer.setVisibility(View.VISIBLE);
             } else if (selected == 2) {
                 connectMode = 3;
                 llCa.setVisibility(View.VISIBLE);
                 llClientKey.setVisibility(View.VISIBLE);
                 llClientCert.setVisibility(View.VISIBLE);
+                clCertServer.setVisibility(View.VISIBLE);
             }
         });
         dialog.show(activity.getSupportFragmentManager());
