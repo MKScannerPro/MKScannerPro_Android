@@ -32,8 +32,11 @@ import com.moko.support.MQTTConstants;
 import com.moko.support.MQTTSupport;
 import com.moko.support.entity.MQTTReconnect;
 import com.moko.support.entity.MQTTSettings;
+import com.moko.support.entity.ModifyMQTTResult;
 import com.moko.support.entity.MsgConfigResult;
 import com.moko.support.entity.MsgDeviceInfo;
+import com.moko.support.entity.MsgNotify;
+import com.moko.support.entity.OTAState;
 import com.moko.support.event.DeviceOnlineEvent;
 import com.moko.support.event.MQTTMessageArrivedEvent;
 import com.moko.support.handler.MQTTMessageAssembler;
@@ -163,13 +166,31 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
         JsonElement element = object.get("msg_id");
         int msg_id = element.getAsInt();
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_MQTT_SETTINGS) {
-            Type type = new TypeToken<MsgConfigResult>() {
+            Type type = new TypeToken<MsgConfigResult<OTAState>>() {
             }.getType();
-            MsgConfigResult result = new Gson().fromJson(message, type);
+            MsgConfigResult<OTAState> result = new Gson().fromJson(message, type);
             if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
                 return;
             }
+            mHandler.removeMessages(0);
             if (result.result_code == 0) {
+                if (result.data.ota_state != 0) {
+                    dismissLoadingProgressDialog();
+                    ToastUtils.showToast(this, "Device is upgrading, please try it again later！");
+                }
+            } else {
+                dismissLoadingProgressDialog();
+                ToastUtils.showToast(this, "Set up failed");
+            }
+        }
+        if (msg_id == MQTTConstants.NOTIFY_MSG_ID_MODIFY_MQTT_RESULT) {
+            Type type = new TypeToken<MsgNotify<ModifyMQTTResult>>() {
+            }.getType();
+            MsgNotify<ModifyMQTTResult> result = new Gson().fromJson(message, type);
+            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
+                return;
+            }
+            if (result.data.result == 1) {
                 setDeviceReconnect();
             } else {
                 dismissLoadingProgressDialog();

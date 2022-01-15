@@ -82,4 +82,5 @@ public class MQTTConstants {
     public static final int NOTIFY_MSG_ID_RESET_RESULT = 3002;
     public static final int NOTIFY_MSG_ID_NETWORKING_STATUS = 3003;
     public static final int NOTIFY_MSG_ID_BLE_SCAN_RESULT = 3004;
+    public static final int NOTIFY_MSG_ID_MODIFY_MQTT_RESULT = 3005;
 }

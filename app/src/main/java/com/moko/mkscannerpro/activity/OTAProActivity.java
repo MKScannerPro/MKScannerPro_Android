@@ -48,6 +48,7 @@ import com.moko.support.entity.OTABothWayParams;
 import com.moko.support.entity.OTAMasterParams;
 import com.moko.support.entity.OTAOneWayParams;
 import com.moko.support.entity.OTAResult;
+import com.moko.support.entity.OTAState;
 import com.moko.support.entity.OrderServices;
 import com.moko.support.entity.SlaveDeviceInfo;
 import com.moko.support.event.DeviceOnlineEvent;
@@ -210,19 +211,22 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_OTA_MASTER
                 || msg_id == MQTTConstants.CONFIG_MSG_ID_OTA_ONE_WAY
                 || msg_id == MQTTConstants.CONFIG_MSG_ID_OTA_BOTH_WAY) {
-            Type type = new TypeToken<MsgConfigResult>() {
+            Type type = new TypeToken<MsgConfigResult<OTAState>>() {
             }.getType();
-            MsgConfigResult result = new Gson().fromJson(message, type);
+            MsgConfigResult<OTAState> result = new Gson().fromJson(message, type);
             if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
                 return;
             }
-//            dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-//            if (result.result_code == 0) {
-//                ToastUtils.showToast(this, "Set up succeed");
-//            } else {
-//                ToastUtils.showToast(this, "Set up failed");
-//            }
+            if (result.result_code == 0) {
+                if (result.data.ota_state != 0) {
+                    dismissLoadingProgressDialog();
+                    ToastUtils.showToast(this, "Device is upgrading, please try it again later！");
+                }
+            } else {
+                dismissLoadingProgressDialog();
+                ToastUtils.showToast(this, "Set up failed");
+            }
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_OTA_SLAVE) {
             Type type = new TypeToken<MsgConfigResult>() {
