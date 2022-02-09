@@ -30,6 +30,7 @@ public enum ParamsKeyEnum implements Serializable {
     KEY_DEVICE_TYPE(0x17),
     KEY_CONNECTION_TIMEOUT(0x18),
     KEY_NTP_TIME_ZONE_PRO(0x19),
+    KEY_CHANNEL_DOMAIN(0x1A),
 
     KEY_MQTT_USERNAME(0x01),
     KEY_MQTT_PASSWORD(0x02),

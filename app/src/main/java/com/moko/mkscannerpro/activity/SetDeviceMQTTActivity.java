@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -92,6 +93,10 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
     EditText etNtpUrl;
     @BindView(R.id.tv_time_zone)
     TextView tvTimeZone;
+    @BindView(R.id.tv_channel_domain)
+    TextView tvChannelDomain;
+    @BindView(R.id.ll_channel_domain)
+    LinearLayout llChannelDomain;
     private GeneralDeviceFragment generalFragment;
     private UserDeviceFragment userFragment;
     private SSLDeviceFragment sslFragment;
@@ -103,6 +108,8 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
 
     private ArrayList<String> mTimeZones;
     private int mSelectedTimeZone;
+    private ArrayList<String> mChannelDomains;
+    private int mSelectedChannelDomain;
     private String mWifiSSID;
     private String mWifiPassword;
     private String mSelectedDeviceName;
@@ -144,7 +151,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
             mqttDeviceConfig.topicSubscribe = "";
         }
         if (mSelectedDeviceType > 1) {
-            // MK107 Pro
+            // MK107 Pro、MK107D Pro
             mqttDeviceConfig.qos = 0;
         } else {
             // MK107
@@ -219,6 +226,35 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
             mSelectedTimeZone = 12;
         }
         tvTimeZone.setText(mTimeZones.get(mSelectedTimeZone));
+        if (mSelectedDeviceType > 3) {
+            // MK107D Pro
+            llChannelDomain.setVisibility(View.VISIBLE);
+            mChannelDomains = new ArrayList<>();
+            mChannelDomains.add("Argentina,Mexico");
+            mChannelDomains.add("Australia,New Zealand");
+            mChannelDomains.add("Bahrain、Egypt、Israel、India");
+            mChannelDomains.add("Bolivia、Chile、China、El Salvador");
+            mChannelDomains.add("Canada");
+            mChannelDomains.add("Europe");
+            mChannelDomains.add("Indonesia");
+            mChannelDomains.add("Japan");
+            mChannelDomains.add("Jordan");
+            mChannelDomains.add("Korea、US");
+            mChannelDomains.add("Latin America-1");
+            mChannelDomains.add("Latin America-2");
+            mChannelDomains.add("Latin America-3");
+            mChannelDomains.add("Lebanon");
+            mChannelDomains.add("Malaysia");
+            mChannelDomains.add("Qatar");
+            mChannelDomains.add("Russia");
+            mChannelDomains.add("Singapore");
+            mChannelDomains.add("Taiwan");
+            mChannelDomains.add("Tunisia");
+            mChannelDomains.add("Venezuela");
+            mChannelDomains.add("Worldwide");
+            showLoadingProgressDialog();
+            MokoSupport.getInstance().sendOrder(OrderTaskAssembler.getChannelDomain());
+        }
         mHandler = new Handler(Looper.getMainLooper());
     }
 
@@ -285,6 +321,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
                                 case KEY_MQTT_CA:
                                 case KEY_MQTT_CLIENT_KEY:
                                 case KEY_MQTT_CLIENT_CERT:
+                                case KEY_CHANNEL_DOMAIN:
                                     if (result != 1) {
                                         savedParamsError = true;
                                     }
@@ -318,6 +355,12 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
                                         byte[] data = Arrays.copyOfRange(value, 4, 4 + length);
                                         String mac = MokoUtils.bytesToHexString(data);
                                         mSelectedDeviceMac = mac.toUpperCase();
+                                    }
+                                    break;
+                                case KEY_CHANNEL_DOMAIN:
+                                    if (length > 0) {
+                                        mSelectedChannelDomain = value[4] & 0xFF;
+                                        tvChannelDomain.setText(mChannelDomains.get(mSelectedChannelDomain));
                                     }
                                     break;
                             }
@@ -501,6 +544,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
         mqttDeviceConfig.deviceId = deviceId;
         mqttDeviceConfig.ntpUrl = ntpUrl;
         mqttDeviceConfig.timeZone = mSelectedDeviceType > 1 ? mSelectedTimeZone - 24 : mSelectedTimeZone - 12;
+        mqttDeviceConfig.channelDomain = mSelectedChannelDomain;
 
         if (!mqttDeviceConfig.topicPublish.isEmpty() && !mqttDeviceConfig.topicSubscribe.isEmpty()
                 && mqttDeviceConfig.topicPublish.equals(mqttDeviceConfig.topicSubscribe)) {
@@ -592,6 +636,9 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
             } else {
                 orderTasks.add(OrderTaskAssembler.setNTPTimezone(mqttDeviceConfig.timeZone));
             }
+            if (mSelectedDeviceType > 3) {
+                orderTasks.add(OrderTaskAssembler.setChannelDomain(mqttDeviceConfig.channelDomain));
+            }
             orderTasks.add(OrderTaskAssembler.exitConfigMode());
             MokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
         } catch (Exception e) {
@@ -631,6 +678,18 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
         dialog.setListener(value -> {
             mSelectedTimeZone = value;
             tvTimeZone.setText(mTimeZones.get(mSelectedTimeZone));
+        });
+        dialog.show(getSupportFragmentManager());
+    }
+
+    public void onSelectChannelDomainClick(View view) {
+        if (isWindowLocked())
+            return;
+        BottomDialog dialog = new BottomDialog();
+        dialog.setDatas(mChannelDomains, mSelectedChannelDomain);
+        dialog.setListener(value -> {
+            mSelectedChannelDomain = value;
+            tvChannelDomain.setText(mChannelDomains.get(value));
         });
         dialog.show(getSupportFragmentManager());
     }

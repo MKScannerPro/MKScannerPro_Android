@@ -21,4 +21,5 @@ public class MQTTConfig implements Serializable {
     public String deviceId = "";
     public String ntpUrl;
     public int timeZone;
+    public int channelDomain;
 }

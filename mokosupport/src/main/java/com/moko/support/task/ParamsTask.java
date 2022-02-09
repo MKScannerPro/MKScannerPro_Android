@@ -33,6 +33,7 @@ public class ParamsTask extends OrderTask {
             case KEY_SOFTWARE_VERSION:
             case KEY_FIRMWARE_VERSION:
             case KEY_DEVICE_TYPE:
+            case KEY_CHANNEL_DOMAIN:
                 createGetConfigData(key.getParamsKey());
                 break;
         }
@@ -230,6 +231,16 @@ public class ParamsTask extends OrderTask {
                 (byte) ParamsKeyEnum.KEY_NTP_TIME_ZONE_PRO.getParamsKey(),
                 (byte) 0x01,
                 (byte) timeZone
+        };
+    }
+
+    public void setChannelDomain(@IntRange(from = 0, to = 21) int channelDomain) {
+        data = new byte[]{
+                (byte) 0xED,
+                (byte) 0x01,
+                (byte) ParamsKeyEnum.KEY_CHANNEL_DOMAIN.getParamsKey(),
+                (byte) 0x01,
+                (byte) channelDomain
         };
     }
 

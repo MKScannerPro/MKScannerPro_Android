@@ -56,6 +56,12 @@ public class OrderTaskAssembler {
         return task;
     }
 
+    public static OrderTask getChannelDomain() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_CHANNEL_DOMAIN);
+        return task;
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////
     // WIRTE
@@ -160,6 +166,12 @@ public class OrderTaskAssembler {
     public static OrderTask setNTPTimezonePro(@IntRange(from = -24, to = 28) int timeZone) {
         ParamsTask task = new ParamsTask();
         task.setNTPTimeZonePro(timeZone);
+        return task;
+    }
+
+    public static OrderTask setChannelDomain(@IntRange(from = 0, to = 21) int timeZone) {
+        ParamsTask task = new ParamsTask();
+        task.setChannelDomain(timeZone);
         return task;
     }
 
