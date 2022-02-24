@@ -201,7 +201,7 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
     }
 
     private void setBXPAcc() {
-        isBXPAccOpen = !isBXPTHOpen;
+        isBXPAccOpen = !isBXPAccOpen;
         String appTopic;
         if (TextUtils.isEmpty(appMqttConfig.topicPublish)) {
             appTopic = mMokoDevice.topicSubscribe;

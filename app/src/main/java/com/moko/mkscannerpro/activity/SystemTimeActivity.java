@@ -112,10 +112,6 @@ public class SystemTimeActivity extends BaseActivity {
             if (mSyncTimeHandler.hasMessages(0))
                 mSyncTimeHandler.removeMessages(0);
             mSyncTimeHandler.postDelayed(() -> {
-                showLoadingProgressDialog();
-                mHandler.postDelayed(() -> {
-                    dismissLoadingProgressDialog();
-                }, 30 * 1000);
                 getSystemTime();
             }, 30 * 1000);
         }

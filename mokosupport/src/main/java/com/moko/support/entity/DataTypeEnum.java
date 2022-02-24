@@ -45,6 +45,7 @@ public enum DataTypeEnum implements Serializable {
     TYPE_2B(0x2B),// Mesh Beacon
     TYPE_2C(0x2C),// BIGInfo
     TYPE_2D(0x2D),// Broadcast_Code
+    TYPE_2E(0x2E),// Resolvable Set Identifier
     TYPE_3D(0x3D),// 3D Information Data
     TYPE_FF(0xFF),// Manufacturer Specific Data
     ;

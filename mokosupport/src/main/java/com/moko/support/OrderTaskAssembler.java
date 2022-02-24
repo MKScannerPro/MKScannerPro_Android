@@ -169,9 +169,9 @@ public class OrderTaskAssembler {
         return task;
     }
 
-    public static OrderTask setChannelDomain(@IntRange(from = 0, to = 21) int timeZone) {
+    public static OrderTask setChannelDomain(@IntRange(from = 0, to = 21) int channelDomain) {
         ParamsTask task = new ParamsTask();
-        task.setChannelDomain(timeZone);
+        task.setChannelDomain(channelDomain);
         return task;
     }
 

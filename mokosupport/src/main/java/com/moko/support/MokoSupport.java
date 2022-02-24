@@ -62,14 +62,14 @@ public class MokoSupport extends MokoBleLib {
     public void onDeviceConnected(BluetoothGatt gatt) {
         mCharacteristicMap = new MokoCharacteristicHandler().getCharacteristics(gatt);
         ConnectStatusEvent connectStatusEvent = new ConnectStatusEvent();
-        connectStatusEvent.setAction(com.moko.ble.lib.MokoConstants.ACTION_DISCOVER_SUCCESS);
+        connectStatusEvent.setAction(MokoConstants.ACTION_DISCOVER_SUCCESS);
         EventBus.getDefault().post(connectStatusEvent);
     }
 
     @Override
     public void onDeviceDisconnected(BluetoothDevice device) {
         ConnectStatusEvent connectStatusEvent = new ConnectStatusEvent();
-        connectStatusEvent.setAction(com.moko.ble.lib.MokoConstants.ACTION_DISCONNECTED);
+        connectStatusEvent.setAction(MokoConstants.ACTION_DISCONNECTED);
         EventBus.getDefault().post(connectStatusEvent);
     }
 
@@ -94,14 +94,14 @@ public class MokoSupport extends MokoBleLib {
     @Override
     public void orderFinish() {
         OrderTaskResponseEvent event = new OrderTaskResponseEvent();
-        event.setAction(com.moko.ble.lib.MokoConstants.ACTION_ORDER_FINISH);
+        event.setAction(MokoConstants.ACTION_ORDER_FINISH);
         EventBus.getDefault().post(event);
     }
 
     @Override
     public void orderTimeout(OrderTaskResponse response) {
         OrderTaskResponseEvent event = new OrderTaskResponseEvent();
-        event.setAction(com.moko.ble.lib.MokoConstants.ACTION_ORDER_TIMEOUT);
+        event.setAction(MokoConstants.ACTION_ORDER_TIMEOUT);
         event.setResponse(response);
         EventBus.getDefault().post(event);
     }
@@ -109,7 +109,7 @@ public class MokoSupport extends MokoBleLib {
     @Override
     public void orderResult(OrderTaskResponse response) {
         OrderTaskResponseEvent event = new OrderTaskResponseEvent();
-        event.setAction(com.moko.ble.lib.MokoConstants.ACTION_ORDER_RESULT);
+        event.setAction(MokoConstants.ACTION_ORDER_RESULT);
         event.setResponse(response);
         EventBus.getDefault().post(event);
     }

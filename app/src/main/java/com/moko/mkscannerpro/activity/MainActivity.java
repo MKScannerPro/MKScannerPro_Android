@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -147,10 +148,9 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
 
     @Subscribe(threadMode = ThreadMode.POSTING, priority = 100)
     public void onMQTTMessageArrivedEvent(MQTTMessageArrivedEvent event) {
-        if (isWindowLocked()) return;
         runOnUiThread(() -> {
             // 更新所有设备的网络状态
-            updateDeviceNetwokStatus(event);
+            updateDeviceNetworkStatus(event);
         });
     }
 
@@ -261,13 +261,13 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         if (isWindowLocked())
             return;
         if (TextUtils.isEmpty(MQTTAppConfigStr)) {
-            startActivity(new Intent(this, SetAppMQTTActivity.class));
+            startActivityForResult(new Intent(this, SetAppMQTTActivity.class), AppConstants.REQUEST_CODE_MQTT_CONFIG_APP);
             return;
         }
         if (Utils.isNetworkAvailable(this)) {
             MQTTConfig MQTTAppConfig = new Gson().fromJson(MQTTAppConfigStr, MQTTConfig.class);
             if (TextUtils.isEmpty(MQTTAppConfig.host)) {
-                startActivity(new Intent(this, SetAppMQTTActivity.class));
+                startActivityForResult(new Intent(this, SetAppMQTTActivity.class), AppConstants.REQUEST_CODE_MQTT_CONFIG_APP);
                 return;
             }
             startActivity(new Intent(this, DeviceScannerActivity.class));
@@ -361,7 +361,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         }
     }
 
-    private void updateDeviceNetwokStatus(MQTTMessageArrivedEvent event) {
+    private void updateDeviceNetworkStatus(MQTTMessageArrivedEvent event) {
         if (devices.isEmpty()) {
             return;
         }
@@ -374,6 +374,8 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         int msg_id = element.getAsInt();
         if (msg_id != MQTTConstants.NOTIFY_MSG_ID_NETWORKING_STATUS
                 && msg_id != MQTTConstants.NOTIFY_MSG_ID_BLE_SCAN_RESULT)
+            return;
+        if (msg_id == MQTTConstants.NOTIFY_MSG_ID_BLE_SCAN_RESULT && isDurationVoid())
             return;
         Type type = new TypeToken<MsgNotify<Object>>() {
         }.getType();
@@ -422,6 +424,19 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
                     mHandler.removeMessages(device.id);
                 }
             }
+        }
+    }
+
+    // 记录上次收到信息的时间,屏蔽无效事件
+    protected long mLastMessageTime = 0;
+
+    public boolean isDurationVoid() {
+        long current = SystemClock.elapsedRealtime();
+        if (current - mLastMessageTime > 500) {
+            mLastMessageTime = current;
+            return false;
+        } else {
+            return true;
         }
     }
 }

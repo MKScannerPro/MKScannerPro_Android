@@ -109,7 +109,7 @@ public class OTAActivity extends BaseActivity {
                 return;
             }
             dismissLoadingProgressDialog();
-//            mHandler.removeMessages(0);
+            mHandler.removeMessages(0);
             if (result.data.ota_result == 1) {
                 ToastUtils.showToast(this, R.string.update_success);
             } else {
@@ -124,7 +124,7 @@ public class OTAActivity extends BaseActivity {
                 return;
             }
 //            dismissLoadingProgressDialog();
-            mHandler.removeMessages(0);
+//            mHandler.removeMessages(0);
             if (result.result_code == 0) {
                 ToastUtils.showToast(this, "Set up succeed");
             } else {

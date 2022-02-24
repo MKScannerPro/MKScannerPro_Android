@@ -7,7 +7,7 @@ public class SetPasswordTask extends OrderTask {
     public byte[] data;
 
     public SetPasswordTask() {
-        super(OrderCHAR.CHAR_PASSWORD, OrderTask.RESPONSE_TYPE_WRITE_NO_RESPONSE);
+        super(OrderCHAR.CHAR_PASSWORD, OrderTask.RESPONSE_TYPE_WRITE);
     }
 
     public void setData(String password) {

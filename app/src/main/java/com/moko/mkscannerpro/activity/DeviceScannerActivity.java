@@ -274,6 +274,17 @@ public class DeviceScannerActivity extends BaseActivity implements MokoScanDevic
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onOrderTaskResponseEvent(OrderTaskResponseEvent event) {
         final String action = event.getAction();
+        if (MokoConstants.ACTION_ORDER_TIMEOUT.equals(action)) {
+            OrderTaskResponse response = event.getResponse();
+            OrderCHAR orderCHAR = (OrderCHAR) response.orderCHAR;
+            int responseType = response.responseType;
+            byte[] value = response.responseValue;
+            switch (orderCHAR) {
+                case CHAR_PASSWORD:
+                    MokoSupport.getInstance().disConnectBle();
+                    break;
+            }
+        }
         if (MokoConstants.ACTION_ORDER_RESULT.equals(action)) {
             OrderTaskResponse response = event.getResponse();
             OrderCHAR orderCHAR = (OrderCHAR) response.orderCHAR;

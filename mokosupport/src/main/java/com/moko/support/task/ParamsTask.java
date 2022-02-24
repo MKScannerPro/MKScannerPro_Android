@@ -15,7 +15,7 @@ public class ParamsTask extends OrderTask {
     public byte[] data;
 
     public ParamsTask() {
-        super(OrderCHAR.CHAR_PARAMS, OrderTask.RESPONSE_TYPE_WRITE_NO_RESPONSE);
+        super(OrderCHAR.CHAR_PARAMS, OrderTask.RESPONSE_TYPE_WRITE);
     }
 
     @Override
@@ -267,7 +267,7 @@ public class ParamsTask extends OrderTask {
             packetCount = dataLength / DATA_LENGTH_MAX;
         }
         remainPack = packetCount - 1;
-        delayTime = DEFAULT_DELAY_TIME + 100 * packetCount;
+        delayTime = DEFAULT_DELAY_TIME + 500 * packetCount;
         if (packetCount > 1) {
             data = new byte[DATA_LENGTH_MAX + 6];
             data[0] = (byte) 0xEE;
@@ -302,7 +302,7 @@ public class ParamsTask extends OrderTask {
             packetCount = dataLength / DATA_LENGTH_MAX;
         }
         remainPack = packetCount - 1;
-        delayTime = DEFAULT_DELAY_TIME + 100 * packetCount;
+        delayTime = DEFAULT_DELAY_TIME + 500 * packetCount;
         if (packetCount > 1) {
             data = new byte[DATA_LENGTH_MAX + 6];
             data[0] = (byte) 0xEE;
