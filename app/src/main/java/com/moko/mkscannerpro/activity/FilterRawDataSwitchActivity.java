@@ -97,9 +97,15 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
         final String message = event.getMessage();
         if (TextUtils.isEmpty(message))
             return;
-        JsonObject object = new Gson().fromJson(message, JsonObject.class);
-        JsonElement element = object.get("msg_id");
-        int msg_id = element.getAsInt();
+        int msg_id;
+        try {
+            JsonObject object = new Gson().fromJson(message, JsonObject.class);
+            JsonElement element = object.get("msg_id");
+            msg_id = element.getAsInt();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
         if (msg_id == MQTTConstants.READ_MSG_ID_FILTER_RAW_DATA_SWITCH) {
             Type type = new TypeToken<MsgReadResult<FilterRawDataSwitch>>() {
             }.getType();

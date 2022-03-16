@@ -369,9 +369,15 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         final String message = event.getMessage();
         if (TextUtils.isEmpty(message))
             return;
-        JsonObject object = new Gson().fromJson(message, JsonObject.class);
-        JsonElement element = object.get("msg_id");
-        int msg_id = element.getAsInt();
+        int msg_id;
+        try {
+            JsonObject object = new Gson().fromJson(message, JsonObject.class);
+            JsonElement element = object.get("msg_id");
+            msg_id = element.getAsInt();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
         if (msg_id != MQTTConstants.NOTIFY_MSG_ID_NETWORKING_STATUS
                 && msg_id != MQTTConstants.NOTIFY_MSG_ID_BLE_SCAN_RESULT)
             return;

@@ -160,9 +160,15 @@ public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSe
         final String message = event.getMessage();
         if (TextUtils.isEmpty(message))
             return;
-        JsonObject object = new Gson().fromJson(message, JsonObject.class);
-        JsonElement element = object.get("msg_id");
-        int msg_id = element.getAsInt();
+        int msg_id;
+        try {
+            JsonObject object = new Gson().fromJson(message, JsonObject.class);
+            JsonElement element = object.get("msg_id");
+            msg_id = element.getAsInt();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
         if (msg_id == MQTTConstants.READ_MSG_ID_FILTER_B) {
             Type type = new TypeToken<MsgReadResult<FilterCondition>>() {
             }.getType();
@@ -576,8 +582,8 @@ public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSe
                     return false;
                 }
                 final int dataType = Integer.parseInt(dataTypeStr, 16);
-                final DataTypeEnum dataTypeEnum = DataTypeEnum.fromDataType(dataType);
-                if (dataTypeEnum == null)
+//                final DataTypeEnum dataTypeEnum = DataTypeEnum.fromDataType(dataType);
+                if (dataType < 0 || dataType > 0xFF)
                     return false;
                 if (TextUtils.isEmpty(rawDataStr)) {
                     ToastUtils.showToast(this, "Para Error");
