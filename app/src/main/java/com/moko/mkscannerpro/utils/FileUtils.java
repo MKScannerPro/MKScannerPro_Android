@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.text.TextUtils;
 
 import com.moko.mkscannerpro.BaseApplication;
 
@@ -36,6 +37,11 @@ public class FileUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
                 && Build.VERSION.SDK_INT < Build.VERSION_CODES.R
                 && DocumentsContract.isDocumentUri(context, uri)) {
+            // LocalStorageProvider
+            if (isLocalStorageDocument(uri)) {
+                // The path is the id
+                return DocumentsContract.getDocumentId(uri);
+            }
             // ExternalStorageProvider
             if (isExternalStorageDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
@@ -116,6 +122,10 @@ public class FileUtils {
         }
         // MediaStore (and general)
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            // Return the remote address
+            if (isGooglePhotosUri(uri)) {
+                return uri.getLastPathSegment();
+            }
             //判断QQ文件管理器
             if (isQQMediaDocument(uri)) {
                 String path = uri.getPath();
@@ -127,6 +137,11 @@ public class FileUtils {
             if (isHuaweiMediaDocument(uri)) {
                 String path = uri.getPath();
                 File file = new File(path.substring("/root".length(), path.length()));
+                return file.exists() ? file.toString() : null;
+            }
+            String path = uri.getPath();
+            if (!TextUtils.isEmpty(path) && path.contains("/storage")) {
+                File file = new File(path.substring(path.indexOf("/storage")));
                 return file.exists() ? file.toString() : null;
             }
             return getDataColumn(context, uri, null, null);
@@ -168,6 +183,14 @@ public class FileUtils {
                 cursor.close();
         }
         return null;
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is local.
+     */
+    public static boolean isLocalStorageDocument(Uri uri) {
+        return "YOUR_AUTHORITY.provider".equals(uri.getAuthority());
     }
 
     /**
@@ -305,8 +328,17 @@ public class FileUtils {
      * @return
      */
     public static boolean isHuaweiMediaDocument(Uri uri) {
-        return "com.huawei.hidisk.fileprovider".equals(uri.getAuthority())
+        String path = uri.getPath();
+        return path.contains("/root") || "com.huawei.hidisk.fileprovider".equals(uri.getAuthority())
                 || "com.huawei.filemanager.share.fileprovider".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is Google Photos.
+     */
+    public static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 
     private static void saveFileFromUri(Context context, Uri uri, String destinationPath) {
@@ -354,7 +386,7 @@ public class FileUtils {
         String filename = null;
 
         if (mimeType == null && context != null) {
-            String path = getPath(context, uri);
+            String path = getLocalPath(context, uri);
             if (path == null) {
                 filename = getName(uri.toString());
             } else {
@@ -409,5 +441,21 @@ public class FileUtils {
         }
 
         return file;
+    }
+
+    /**
+     * Get a file path from a Uri. This will get the the path for Storage Access
+     * Framework Documents, as well as the _data field for the MediaStore and
+     * other file-based ContentProviders.<br>
+     * <br>
+     * Callers should check whether the path is local before assuming it
+     * represents a local file.
+     *
+     * @param context The context.
+     * @param uri     The Uri to query.
+     */
+    public static String getLocalPath(final Context context, final Uri uri) {
+        String absolutePath = getPath(context, uri);
+        return absolutePath != null ? absolutePath : uri.toString();
     }
 }

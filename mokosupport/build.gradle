@@ -29,7 +29,7 @@ dependencies {
     api 'no.nordicsemi.android:dfu:0.6.2'
     api 'org.greenrobot:eventbus:3.2.0'
     api 'com.elvishew:xlog:1.6.1'
-    implementation 'no.nordicsemi.android:ble:2.2.4'
+    implementation 'no.nordicsemi.android:ble:2.4.0'
     api 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.2'
     api 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.59'

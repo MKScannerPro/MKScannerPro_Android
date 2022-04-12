@@ -323,7 +323,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
             } catch (MqttException e) {
                 e.printStackTrace();
             }
-            XLog.i(String.format("删除设备:%s", mokoDevice.name));
+            XLog.i(String.format("删除设备:%s", mokoDevice.nickName));
             DBTools.getInstance(MainActivity.this).deleteDevice(mokoDevice);
             EventBus.getDefault().post(new DeviceDeletedEvent(mokoDevice.id));
             devices.remove(mokoDevice);

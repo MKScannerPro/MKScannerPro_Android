@@ -297,10 +297,10 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
         mMQTTSettings.mqtt_port = Integer.parseInt(port);
         mMQTTSettings.client_id = clientId;
         if ("{device_name}/{device_id}/app_to_device".equals(topicSubscribe)) {
-            topicSubscribe = String.format("%s/%s/app_to_device", mMokoDevice.name, mMokoDevice.deviceId);
+            topicSubscribe = String.format("%s/%s/app_to_device", mMokoDevice.nickName, mMokoDevice.deviceId);
         }
         if ("{device_name}/{device_id}/device_to_app".equals(topicPublish)) {
-            topicPublish = String.format("%s/%s/device_to_app", mMokoDevice.name, mMokoDevice.deviceId);
+            topicPublish = String.format("%s/%s/device_to_app", mMokoDevice.nickName, mMokoDevice.deviceId);
         }
         mMQTTSettings.subscribe_topic = topicSubscribe;
         mMQTTSettings.publish_topic = topicPublish;
