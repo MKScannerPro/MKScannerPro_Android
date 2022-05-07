@@ -8,8 +8,8 @@ android {
         applicationId "com.moko.mkscannerpro"
         minSdkVersion 18
         targetSdkVersion 30
-        versionCode 14
-        versionName "1.0.9"
+        versionCode 15
+        versionName "1.0.10"
     }
 
     buildTypes {

@@ -100,15 +100,6 @@ public class MQTTSupport {
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                 XLog.w(String.format("%s:%s", TAG, "connect failure"));
-                if (mqttAndroidClient != null) {
-                    mqttAndroidClient.close();
-                    try {
-                        mqttAndroidClient.disconnect();
-                    } catch (MqttException e) {
-                        e.printStackTrace();
-                    }
-                    mqttAndroidClient = null;
-                }
                 EventBus.getDefault().post(new MQTTConnectionFailureEvent());
             }
         };
