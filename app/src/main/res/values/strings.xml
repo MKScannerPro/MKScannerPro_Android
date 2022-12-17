@@ -59,11 +59,6 @@
     <string name="modify_device_name_empty">Device name can\'t be blank</string>
 
 
-    <string name="permission_storage_close_title">Storage permission is not available</string>
-    <string name="permission_storage_close_content">Please find it in cellphone setting- permission, and allow MKScannerPro use the Storage permission</string>
-    <string name="permission_storage_need_title">Please turn on Storage permissions</string>
-    <string name="permission_storage_need_content">MKScannerPro requires access to Storage permission. If the permissions are not on, MKScannerPro cannot be used normally.</string>
-
     <string name="more_modify_name_tips">Device name can\'t be blank</string>
     <string name="more_device_info">Device information</string>
 
@@ -83,13 +78,18 @@
     <string name="device_info_slave_mac">Slave Device Mac</string>
 
     <string name="ensure">OK</string>
+
+    <string name="permission_storage_close_content">Please find it in cellphone setting- permission, and allow MKScannerPro use the Storage and location permission</string>
+    <string name="permission_ble_close_content">Please find it in cellphone setting- permission, and allow MKScannerPro use the bluetooth and location permission</string>
     <string name="permission_open">OK</string>
+    <string name="permission_storage_need_content">MKScannerPro requires access to Storage and location permission. If the permissions are not on, MKScannerPro cannot be used normally.</string>
     <string name="location_need_title">Turn on Location permission</string>
-    <string name="location_need_content">After that, MKScannerPro could search the wifi</string>
-    <string name="permission_location_close_title">Location persission is not available</string>
-    <string name="permission_location_close_content">Please find it in cellphone setting- permission, and allow MKScannerPro use the Location and Storage permission</string>
-    <string name="permission_location_need_title">Turn on Location permission</string>
-    <string name="permission_location_need_content">After that, MKScannerPro could search the wifi</string>
+    <string name="location_need_content">After that, MKScannerPro could search and connect with the device</string>
+    <string name="permission_location_close_content">Please find it in cellphone setting- permission, and allow MKScannerPro use the Location permission</string>
+    <string name="permission_location_need_content">MKScannerPro requires access to Location permission. If the permissions are not on, MKScannerPro cannot be used normally.</string>
+    <string name="permission_ble_content">MKScannerPro requires access to bluetooth scan contract and location permission. If the permissions are not on, MKScannerPro cannot be used normally.</string>
+    
+    
     <string name="version_info">Version:%s</string>
     <string name="about_moko_name">MOKO TECHNOLOGY LTD.</string>
     <string name="company_website">www.mokosmart.com</string>

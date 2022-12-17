@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.moko.mkscannerpro">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,10 +12,11 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:requestLegacyExternalStorage="true"
         android:theme="@style/LaunchActivityTheme">
 
-        <activity android:name="com.moko.mkscannerpro.activity.GuideActivity">
+        <activity
+            android:name="com.moko.mkscannerpro.activity.GuideActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -191,9 +193,11 @@
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.moko.mkscannerpro.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
+                tools:replace="android:resource"
                 android:resource="@xml/file_paths" />
         </provider>
     </application>

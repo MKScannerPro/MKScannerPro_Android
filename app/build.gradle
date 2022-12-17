@@ -1,15 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion '29.0.3'
 
     defaultConfig {
         applicationId "com.moko.mkscannerpro"
-        minSdkVersion 18
-        targetSdkVersion 30
+        minSdkVersion 21
+        targetSdkVersion 31
         versionCode 17
         versionName "1.0.12"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -21,6 +22,17 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+
+
+
+    viewBinding {
+        enabled = true
+    }
+
+    lintOptions {
+        abortOnError false
     }
 
     applicationVariants.all { variant ->
@@ -35,6 +47,10 @@ android {
                 outputFileName = apkFileName
             }
         }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/kotlinx_coroutines_core.version'
     }
 }
 
@@ -52,4 +68,5 @@ dependencies {
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation 'com.github.GrenderG:Toasty:1.4.1'
+    implementation 'com.guolindev.permissionx:permissionx:1.7.1'
 }

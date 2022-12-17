@@ -26,7 +26,6 @@ import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
-import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -62,6 +61,9 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+
+import info.mqtt.android.service.Ack;
+import info.mqtt.android.service.MqttAndroidClient;
 
 public class MQTTSupport {
     private static final String TAG = "MQTTSupport";
@@ -116,7 +118,7 @@ public class MQTTSupport {
             } else {
                 uri = "tcp://" + mqttConfig.host + ":" + mqttConfig.port;
             }
-            mqttAndroidClient = new MqttAndroidClient(mContext, uri, mqttConfig.clientId);
+            mqttAndroidClient = new MqttAndroidClient(mContext, uri, mqttConfig.clientId, Ack.AUTO_ACK);
             mqttAndroidClient.setCallback(new MqttCallbackExtended() {
                 @Override
                 public void connectComplete(boolean reconnect, String serverURI) {
@@ -419,11 +421,11 @@ public class MQTTSupport {
         if (!isConnected())
             return;
         mqttAndroidClient.close();
-        try {
-            mqttAndroidClient.disconnect();
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
+//        try {
+        mqttAndroidClient.disconnect();
+//        } catch (MqttException e) {
+//            e.printStackTrace();
+//        }
         mqttAndroidClient = null;
     }
 

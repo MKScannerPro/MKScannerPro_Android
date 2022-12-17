@@ -59,7 +59,7 @@ public class Utils {
         Intent intent;
         if (files.length == 1) {
             intent = new Intent(Intent.ACTION_SEND);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 Uri fileUri = IOUtils.insertDownloadFile(context, files[0]);
                 intent.putExtra(Intent.EXTRA_STREAM, fileUri);
             } else {
@@ -69,7 +69,7 @@ public class Utils {
         } else {
             ArrayList<Uri> uris = new ArrayList<>();
             for (int i = 0; i < files.length; i++) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     Uri fileUri = IOUtils.insertDownloadFile(context, files[i]);
                     uris.add(fileUri);
                 } else {

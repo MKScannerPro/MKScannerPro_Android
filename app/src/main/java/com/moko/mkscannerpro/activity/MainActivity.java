@@ -114,7 +114,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         try {
             MQTTSupport.getInstance().connectMqtt(MQTTAppConfigStr);
         } catch (FileNotFoundException e) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 ToastUtils.showToast(this, "Please select your SSL certificates again, otherwise the APP can't use normally.");
                 startActivityForResult(new Intent(this, SetAppMQTTActivity.class), AppConstants.REQUEST_CODE_MQTT_CONFIG_APP);
             }
