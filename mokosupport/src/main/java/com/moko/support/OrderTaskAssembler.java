@@ -2,6 +2,7 @@ package com.moko.support;
 
 import com.moko.ble.lib.task.OrderTask;
 import com.moko.support.entity.ParamsKeyEnum;
+import com.moko.support.entity.ParamsLongKeyEnum;
 import com.moko.support.task.ParamsTask;
 import com.moko.support.task.SetPasswordTask;
 
@@ -59,6 +60,78 @@ public class OrderTaskAssembler {
     public static OrderTask getChannelDomain() {
         ParamsTask task = new ParamsTask();
         task.setData(ParamsKeyEnum.KEY_CHANNEL_DOMAIN);
+        return task;
+    }
+
+    public static OrderTask getMQTTConnectMode() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_MQTT_CONNECT_MODE);
+        return task;
+    }
+
+    public static OrderTask getMQTTHost() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_MQTT_HOST);
+        return task;
+    }
+
+    public static OrderTask getMQTTPort() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_MQTT_PORT);
+        return task;
+    }
+
+    public static OrderTask getMQTTCleanSession() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_MQTT_CLEAN_SESSION);
+        return task;
+    }
+
+    public static OrderTask getMQTTKeepAlive() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_MQTT_KEEP_ALIVE);
+        return task;
+    }
+
+    public static OrderTask getMQTTQos() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_MQTT_QOS);
+        return task;
+    }
+
+    public static OrderTask getMQTTClientId() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_MQTT_CLIENT_ID);
+        return task;
+    }
+
+    public static OrderTask getMQTTDeviceId() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_MQTT_DEVICE_ID);
+        return task;
+    }
+
+    public static OrderTask getMQTTSubscribeTopic() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_MQTT_SUBSCRIBE_TOPIC);
+        return task;
+    }
+
+    public static OrderTask getMQTTPublishTopic() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_MQTT_PUBLISH_TOPIC);
+        return task;
+    }
+
+    public static OrderTask getMQTTUsername() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsLongKeyEnum.KEY_MQTT_USERNAME);
+        return task;
+    }
+
+    public static OrderTask getMQTTPassword() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsLongKeyEnum.KEY_MQTT_PASSWORD);
         return task;
     }
 
@@ -183,31 +256,31 @@ public class OrderTaskAssembler {
 
     public static OrderTask setMqttUserName(String username) {
         ParamsTask task = new ParamsTask();
-        task.setLongChar(ParamsKeyEnum.KEY_MQTT_USERNAME, username);
+        task.setLongChar(ParamsLongKeyEnum.KEY_MQTT_USERNAME, username);
         return task;
     }
 
     public static OrderTask setMqttPassword(String password) {
         ParamsTask task = new ParamsTask();
-        task.setLongChar(ParamsKeyEnum.KEY_MQTT_PASSWORD, password);
+        task.setLongChar(ParamsLongKeyEnum.KEY_MQTT_PASSWORD, password);
         return task;
     }
 
     public static OrderTask setCA(File file) throws Exception {
         ParamsTask task = new ParamsTask();
-        task.setFile(ParamsKeyEnum.KEY_MQTT_CA, file);
+        task.setFile(ParamsLongKeyEnum.KEY_MQTT_CA, file);
         return task;
     }
 
     public static OrderTask setClientCert(File file) throws Exception {
         ParamsTask task = new ParamsTask();
-        task.setFile(ParamsKeyEnum.KEY_MQTT_CLIENT_CERT, file);
+        task.setFile(ParamsLongKeyEnum.KEY_MQTT_CLIENT_CERT, file);
         return task;
     }
 
     public static OrderTask setClientKey(File file) throws Exception {
         ParamsTask task = new ParamsTask();
-        task.setFile(ParamsKeyEnum.KEY_MQTT_CLIENT_KEY, file);
+        task.setFile(ParamsLongKeyEnum.KEY_MQTT_CLIENT_KEY, file);
         return task;
     }
 }

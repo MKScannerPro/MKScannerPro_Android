@@ -85,7 +85,7 @@ public class DeviceSettingActivity extends BaseActivity {
             mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
             tvName.setText(mMokoDevice.nickName);
         }
-        if (mMokoDevice.deviceType > 1) {
+        if ((mMokoDevice.deviceType & 0x0F) > 1) {
             // MK107 Pro
             rlScanTimeoutOption.setVisibility(View.GONE);
             rlModifyMqttSettings.setVisibility(View.VISIBLE);
@@ -349,7 +349,7 @@ public class DeviceSettingActivity extends BaseActivity {
             ToastUtils.showToast(this, R.string.device_offline);
             return;
         }
-        if (mMokoDevice.deviceType > 1) {
+        if ((mMokoDevice.deviceType & 0x0F) > 1) {
             // MK107 Pro
             Intent i = new Intent(this, SystemTimeProActivity.class);
             i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
@@ -372,7 +372,7 @@ public class DeviceSettingActivity extends BaseActivity {
             ToastUtils.showToast(this, R.string.device_offline);
             return;
         }
-        if (mMokoDevice.deviceType > 1) {
+        if ((mMokoDevice.deviceType & 0x0F) > 1) {
             // MK107 Pro
             Intent i = new Intent(this, OTAProActivity.class);
             i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);
@@ -395,7 +395,7 @@ public class DeviceSettingActivity extends BaseActivity {
             ToastUtils.showToast(this, R.string.device_offline);
             return;
         }
-        if (mMokoDevice.deviceType > 1) {
+        if ((mMokoDevice.deviceType & 0x0F) > 1) {
             // MK107 Pro
             Intent i = new Intent(this, DeviceInfoProActivity.class);
             i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);

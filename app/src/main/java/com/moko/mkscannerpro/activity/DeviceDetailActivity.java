@@ -207,7 +207,7 @@ public class DeviceDetailActivity extends BaseActivity {
             ToastUtils.showToast(this, R.string.device_offline);
             return;
         }
-        if (mMokoDevice.deviceType > 1) {
+        if ((mMokoDevice.deviceType & 0x0F) > 1) {
             // MK107 Pro
             Intent i = new Intent(this, ScannerUploadOptionProActivity.class);
             i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mMokoDevice);

@@ -57,7 +57,7 @@ public class SSLDeviceFragment extends Fragment {
 
     private BaseActivity activity;
 
-    private int connectMode;
+    private int mConnectMode;
 
     private String caPath;
     private String clientKeyPath;
@@ -87,20 +87,20 @@ public class SSLDeviceFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_ssl_device, container, false);
         ButterKnife.bind(this, view);
         activity = (BaseActivity) getActivity();
-        clCertificate.setVisibility(connectMode > 0 ? View.VISIBLE : View.GONE);
-        cbSsl.setChecked(connectMode > 0);
+        clCertificate.setVisibility(mConnectMode > 0 ? View.VISIBLE : View.GONE);
+        cbSsl.setChecked(mConnectMode > 0);
         cbSsl.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {
-                    connectMode = 0;
+                    mConnectMode = 0;
                 } else {
                     if (selected == 0) {
-                        connectMode = 1;
+                        mConnectMode = 1;
                     } else if (selected == 1) {
-                        connectMode = 2;
+                        mConnectMode = 2;
                     } else if (selected == 2) {
-                        connectMode = 3;
+                        mConnectMode = 3;
                     }
                 }
                 clCertificate.setVisibility(isChecked ? View.VISIBLE : View.GONE);
@@ -110,8 +110,8 @@ public class SSLDeviceFragment extends Fragment {
         values.add("CA signed server certificate");
         values.add("CA certificate file");
         values.add("Self signed certificates");
-        if (connectMode > 0) {
-            selected = connectMode - 1;
+        if (mConnectMode > 0) {
+            selected = mConnectMode - 1;
             tvCaFile.setText(caPath);
             tvClientKeyFile.setText(clientKeyPath);
             tvClientCertFile.setText(clientCertPath);
@@ -152,7 +152,47 @@ public class SSLDeviceFragment extends Fragment {
     }
 
     public void setConnectMode(int connectMode) {
-        this.connectMode = connectMode;
+        this.mConnectMode = connectMode;
+        activity = (BaseActivity) getActivity();
+        clCertificate.setVisibility(connectMode > 0 ? View.VISIBLE : View.GONE);
+        cbSsl.setChecked(connectMode > 0);
+        cbSsl.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!isChecked) {
+                    mConnectMode = 0;
+                } else {
+                    if (selected == 0) {
+                        mConnectMode = 1;
+                    } else if (selected == 1) {
+                        mConnectMode = 2;
+                    } else if (selected == 2) {
+                        mConnectMode = 3;
+                    }
+                }
+                clCertificate.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            }
+        });
+        if (connectMode > 0) {
+            selected = connectMode - 1;
+            tvCaFile.setText(caPath);
+            tvClientKeyFile.setText(clientKeyPath);
+            tvClientCertFile.setText(clientCertPath);
+            tvCertification.setText(values.get(selected));
+        }
+        if (selected == 0) {
+            llCa.setVisibility(View.GONE);
+            llClientKey.setVisibility(View.GONE);
+            llClientCert.setVisibility(View.GONE);
+        } else if (selected == 1) {
+            llCa.setVisibility(View.VISIBLE);
+            llClientKey.setVisibility(View.GONE);
+            llClientCert.setVisibility(View.GONE);
+        } else if (selected == 2) {
+            llCa.setVisibility(View.VISIBLE);
+            llClientKey.setVisibility(View.VISIBLE);
+            llClientCert.setVisibility(View.VISIBLE);
+        }
     }
 
     public void setCAPath(String caPath) {
@@ -174,17 +214,17 @@ public class SSLDeviceFragment extends Fragment {
             selected = value;
             tvCertification.setText(values.get(selected));
             if (selected == 0) {
-                connectMode = 1;
+                mConnectMode = 1;
                 llCa.setVisibility(View.GONE);
                 llClientKey.setVisibility(View.GONE);
                 llClientCert.setVisibility(View.GONE);
             } else if (selected == 1) {
-                connectMode = 2;
+                mConnectMode = 2;
                 llCa.setVisibility(View.VISIBLE);
                 llClientKey.setVisibility(View.GONE);
                 llClientCert.setVisibility(View.GONE);
             } else if (selected == 2) {
-                connectMode = 3;
+                mConnectMode = 3;
                 llCa.setVisibility(View.VISIBLE);
                 llClientKey.setVisibility(View.VISIBLE);
                 llClientCert.setVisibility(View.VISIBLE);
@@ -261,12 +301,12 @@ public class SSLDeviceFragment extends Fragment {
         final String caFile = tvCaFile.getText().toString();
         final String clientKeyFile = tvClientKeyFile.getText().toString();
         final String clientCertFile = tvClientCertFile.getText().toString();
-        if (connectMode == 2) {
+        if (mConnectMode == 2) {
             if (TextUtils.isEmpty(caFile)) {
                 ToastUtils.showToast(activity, getString(R.string.mqtt_verify_ca));
                 return false;
             }
-        } else if (connectMode == 3) {
+        } else if (mConnectMode == 3) {
             if (TextUtils.isEmpty(caFile)) {
                 ToastUtils.showToast(activity, getString(R.string.mqtt_verify_ca));
                 return false;
@@ -283,8 +323,8 @@ public class SSLDeviceFragment extends Fragment {
         return true;
     }
 
-    public int getConnectMode() {
-        return connectMode;
+    public int getmConnectMode() {
+        return mConnectMode;
     }
 
     public String getCaPath() {

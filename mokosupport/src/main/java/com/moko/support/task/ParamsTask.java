@@ -5,9 +5,11 @@ import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.support.MokoSupport;
 import com.moko.support.entity.OrderCHAR;
 import com.moko.support.entity.ParamsKeyEnum;
+import com.moko.support.entity.ParamsLongKeyEnum;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Arrays;
 
 import androidx.annotation.IntRange;
 
@@ -25,6 +27,17 @@ public class ParamsTask extends OrderTask {
 
     public void setData(ParamsKeyEnum key) {
         switch (key) {
+            case KEY_MQTT_CONNECT_MODE:
+            case KEY_MQTT_HOST:
+            case KEY_MQTT_PORT:
+            case KEY_MQTT_CLEAN_SESSION:
+            case KEY_MQTT_KEEP_ALIVE:
+            case KEY_MQTT_QOS:
+            case KEY_MQTT_CLIENT_ID:
+            case KEY_MQTT_DEVICE_ID:
+            case KEY_MQTT_SUBSCRIBE_TOPIC:
+            case KEY_MQTT_PUBLISH_TOPIC:
+
             case KEY_DEVICE_MAC:
             case KEY_DEVICE_NAME:
             case KEY_PRODUCT_MODEL:
@@ -37,6 +50,24 @@ public class ParamsTask extends OrderTask {
                 createGetConfigData(key.getParamsKey());
                 break;
         }
+    }
+
+    public void setData(ParamsLongKeyEnum key) {
+        switch (key) {
+            case KEY_MQTT_USERNAME:
+            case KEY_MQTT_PASSWORD:
+                createGetLongConfigData(key.getParamsKey());
+                break;
+        }
+    }
+
+    private void createGetLongConfigData(int paramsKey) {
+        data = new byte[]{
+                (byte) 0xEE,
+                (byte) 0x00,
+                (byte) paramsKey,
+                (byte) 0x00
+        };
     }
 
     private void createGetConfigData(int configKey) {
@@ -256,7 +287,7 @@ public class ParamsTask extends OrderTask {
         };
     }
 
-    public void setFile(ParamsKeyEnum key, File file) throws Exception {
+    public void setFile(ParamsLongKeyEnum key, File file) throws Exception {
         FileInputStream inputSteam = new FileInputStream(file);
         dataBytes = new byte[(int) file.length()];
         inputSteam.read(dataBytes);
@@ -293,7 +324,7 @@ public class ParamsTask extends OrderTask {
         }
     }
 
-    public void setLongChar(ParamsKeyEnum key, String character) {
+    public void setLongChar(ParamsLongKeyEnum key, String character) {
         dataBytes = character.getBytes();
         dataLength = dataBytes.length;
         if (dataLength % DATA_LENGTH_MAX > 0) {
@@ -333,22 +364,57 @@ public class ParamsTask extends OrderTask {
     private int dataLength;
     private int dataOrigin;
     private byte[] dataBytes;
+    private String dataBytesStr = "";
     private static final int DATA_LENGTH_MAX = 238;
 
     @Override
     public boolean parseValue(byte[] value) {
         final int header = value[0] & 0xFF;
+        final int flag = value[1] & 0xFF;
         if (header == 0xED)
             return true;
-        final int cmd = value[2] & 0xFF;
-        final int result = value[4] & 0xFF;
-        if (result == 1) {
-            remainPack--;
-            if (remainPack >= 0) {
-                assembleRemainData(cmd);
-                return false;
+        if (flag == 0x01) {
+            final int cmd = value[2] & 0xFF;
+            final int result = value[4] & 0xFF;
+            if (result == 1) {
+                remainPack--;
+                if (remainPack >= 0) {
+                    assembleRemainData(cmd);
+                    return false;
+                }
+                return true;
             }
-            return true;
+        } else {
+            final int cmd = value[2] & 0xFF;
+            final int remainPack = value[4] & 0xFF;
+            final int length = value[5] & 0xFF;
+            if (remainPack > 0) {
+                byte[] remainBytes = Arrays.copyOfRange(value, 6, 6 + length);
+                dataBytesStr += MokoUtils.bytesToHexString(remainBytes);
+            } else {
+                if (length == 0)
+                    return true;
+                byte[] remainBytes = Arrays.copyOfRange(value, 6, 6 + length);
+                dataBytesStr += MokoUtils.bytesToHexString(remainBytes);
+                dataBytes = MokoUtils.hex2bytes(dataBytesStr);
+                dataLength = dataBytes.length;
+                byte[] dataLengthBytes = MokoUtils.toByteArray(dataLength, 2);
+                data = new byte[dataLength + 5];
+                data[0] = (byte) 0xEE;
+                data[1] = (byte) 0x00;
+                data[2] = (byte) cmd;
+                data[3] = dataLengthBytes[0];
+                data[4] = dataLengthBytes[1];
+                for (int i = 0; i < dataLength; i++) {
+                    data[i + 5] = dataBytes[i];
+                }
+                response.responseValue = data;
+                orderStatus = ORDER_STATUS_SUCCESS;
+                MokoSupport.getInstance().pollTask();
+                MokoSupport.getInstance().executeTask();
+                MokoSupport.getInstance().orderResult(response);
+                dataBytesStr = "";
+            }
         }
         return false;
     }
