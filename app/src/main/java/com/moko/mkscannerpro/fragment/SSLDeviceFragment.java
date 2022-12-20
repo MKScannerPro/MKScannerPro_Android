@@ -153,9 +153,11 @@ public class SSLDeviceFragment extends Fragment {
 
     public void setConnectMode(int connectMode) {
         this.mConnectMode = connectMode;
-        activity = (BaseActivity) getActivity();
-        clCertificate.setVisibility(connectMode > 0 ? View.VISIBLE : View.GONE);
-        cbSsl.setChecked(connectMode > 0);
+    }
+
+    public void setConnectMode() {
+        clCertificate.setVisibility(mConnectMode > 0 ? View.VISIBLE : View.GONE);
+        cbSsl.setChecked(mConnectMode > 0);
         cbSsl.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -173,8 +175,8 @@ public class SSLDeviceFragment extends Fragment {
                 clCertificate.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             }
         });
-        if (connectMode > 0) {
-            selected = connectMode - 1;
+        if (mConnectMode > 0) {
+            selected = mConnectMode - 1;
             tvCaFile.setText(caPath);
             tvClientKeyFile.setText(clientKeyPath);
             tvClientCertFile.setText(clientCertPath);

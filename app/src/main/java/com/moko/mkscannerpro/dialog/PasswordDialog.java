@@ -48,7 +48,7 @@ public class PasswordDialog extends MokoBaseDialog {
                 return null;
             }
         };
-        etPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10), filter});
+        etPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8), filter});
         etPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -62,7 +62,7 @@ public class PasswordDialog extends MokoBaseDialog {
             @Override
             public void afterTextChanged(Editable s) {
                 int length = s.toString().length();
-                tvPasswordEnsure.setEnabled(length >= 6);
+                tvPasswordEnsure.setEnabled(length > 0);
             }
         });
         if (!TextUtils.isEmpty(password)) {

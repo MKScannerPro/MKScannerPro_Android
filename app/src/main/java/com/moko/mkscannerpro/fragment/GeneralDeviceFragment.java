@@ -94,11 +94,21 @@ public class GeneralDeviceFragment extends Fragment {
 
     public void setCleanSession(boolean cleanSession) {
         this.cleanSession = cleanSession;
-        cbCleanSession.setChecked(cleanSession);
     }
 
     public void setQos(int qos) {
         this.qos = qos;
+    }
+
+    public void setKeepAlive(int keepAlive) {
+        this.keepAlive = keepAlive;
+    }
+
+    public void setCleanSession() {
+        cbCleanSession.setChecked(cleanSession);
+    }
+
+    public void setQos() {
         if (qos == 0) {
             rbQos1.setChecked(true);
         } else if (qos == 1) {
@@ -108,8 +118,7 @@ public class GeneralDeviceFragment extends Fragment {
         }
     }
 
-    public void setKeepAlive(int keepAlive) {
-        this.keepAlive = keepAlive;
+    public void setKeepAlive() {
         etKeepAlive.setText(String.valueOf(keepAlive));
     }
 

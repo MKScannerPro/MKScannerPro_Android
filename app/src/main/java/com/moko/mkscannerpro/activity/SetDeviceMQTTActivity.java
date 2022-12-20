@@ -172,6 +172,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
         etDeviceId.setFilters(new InputFilter[]{new InputFilter.LengthFilter(32), filter});
         etNtpUrl.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
         createFragment();
+        initData();
         adapter = new MQTTFragmentAdapter(this);
         adapter.setFragmentList(fragments);
         vpMqtt.setAdapter(adapter);
@@ -245,7 +246,6 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
             MokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
             return;
         }
-        initData();
         if ((mSelectedDeviceType & 0x0F) > 3) {
             // MK107D Pro
             llChannelDomain.setVisibility(View.VISIBLE);
@@ -336,10 +336,12 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
                                     case KEY_MQTT_USERNAME:
                                         mqttDeviceConfig.username = new String(Arrays.copyOfRange(value, 5, 5 + length));
                                         userFragment.setUserName(mqttDeviceConfig.username);
+                                        userFragment.setUserName();
                                         break;
                                     case KEY_MQTT_PASSWORD:
                                         mqttDeviceConfig.password = new String(Arrays.copyOfRange(value, 5, 5 + length));
                                         userFragment.setPassword(mqttDeviceConfig.password);
+                                        userFragment.setPassword();
                                         break;
                                 }
                             }
@@ -396,6 +398,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
                                     case KEY_MQTT_CONNECT_MODE:
                                         mqttDeviceConfig.connectMode = value[4];
                                         sslFragment.setConnectMode(mqttDeviceConfig.connectMode);
+                                        sslFragment.setConnectMode();
                                         break;
                                     case KEY_MQTT_HOST:
                                         mqttDeviceConfig.host = new String(Arrays.copyOfRange(value, 4, 4 + length));
@@ -408,14 +411,17 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
                                     case KEY_MQTT_CLEAN_SESSION:
                                         mqttDeviceConfig.cleanSession = value[4] == 1;
                                         generalFragment.setCleanSession(mqttDeviceConfig.cleanSession);
+                                        generalFragment.setCleanSession();
                                         break;
                                     case KEY_MQTT_KEEP_ALIVE:
                                         mqttDeviceConfig.keepAlive = value[4] & 0xFF;
                                         generalFragment.setKeepAlive(mqttDeviceConfig.keepAlive);
+                                        generalFragment.setKeepAlive();
                                         break;
                                     case KEY_MQTT_QOS:
                                         mqttDeviceConfig.qos = value[4] & 0xFF;
                                         generalFragment.setQos(mqttDeviceConfig.qos);
+                                        generalFragment.setQos();
                                         break;
                                     case KEY_MQTT_CLIENT_ID:
                                         mqttDeviceConfig.clientId = new String(Arrays.copyOfRange(value, 4, 4 + length));
