@@ -2,8 +2,10 @@ package com.moko.support;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
@@ -74,7 +76,9 @@ public class MQTTSupport {
 
 
     private MqttAndroidClient mqttAndroidClient;
+    private String mqttConfigStr;
     private IMqttActionListener listener;
+    private Handler mHandler;
 
     private MQTTSupport() {
         //no instance
@@ -93,6 +97,7 @@ public class MQTTSupport {
 
     public void init(Context context) {
         mContext = context;
+        mHandler = new Handler(Looper.getMainLooper());
         listener = new IMqttActionListener() {
             @Override
             public void onSuccess(IMqttToken asyncActionToken) {
@@ -102,6 +107,19 @@ public class MQTTSupport {
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                 XLog.w(String.format("%s:%s", TAG, "connect failure"));
+                XLog.w("onFailure--->" + exception.getMessage());
+                if (MqttException.REASON_CODE_CLIENT_CONNECTED == asyncActionToken.getException().getReasonCode()) {
+                    if (isWindowLocked()) return;
+                    XLog.w("断开当前连接，2S后重连...");
+                    disconnectMqtt();
+                    mHandler.postDelayed(() -> {
+                        try {
+                            connectMqtt(mqttConfigStr);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }, 2000);
+                }
                 EventBus.getDefault().post(new MQTTConnectionFailureEvent());
             }
         };
@@ -112,6 +130,7 @@ public class MQTTSupport {
             return;
         MQTTConfig mqttConfig = new Gson().fromJson(mqttAppConfigStr, MQTTConfig.class);
         if (!mqttConfig.isError()) {
+            this.mqttConfigStr = mqttAppConfigStr;
             String uri;
             if (mqttConfig.connectMode > 0) {
                 uri = "ssl://" + mqttConfig.host + ":" + mqttConfig.port;
@@ -132,6 +151,8 @@ public class MQTTSupport {
 
                 @Override
                 public void connectionLost(Throwable cause) {
+                    if (cause != null)
+                        XLog.w("connectionLost--->" + cause.getMessage());
                     EventBus.getDefault().post(new MQTTConnectionLostEvent());
                 }
 
@@ -181,6 +202,12 @@ public class MQTTSupport {
                         // 单向验证
                         try {
                             connOpts.setSocketFactory(getSingleSocketFactory(mqttConfig.caPath));
+                        } catch (FileNotFoundException fileNotFoundException) {
+                            if (mqttAndroidClient != null) {
+                                mqttAndroidClient.close();
+                                mqttAndroidClient = null;
+                            }
+                            throw fileNotFoundException;
                         } catch (Exception e) {
                             // 读取stacktrace信息
                             final Writer result = new StringWriter();
@@ -197,6 +224,10 @@ public class MQTTSupport {
                             connOpts.setSocketFactory(getSocketFactory(mqttConfig.caPath, mqttConfig.clientKeyPath, mqttConfig.clientCertPath));
                             connOpts.setHttpsHostnameVerificationEnabled(false);
                         } catch (FileNotFoundException fileNotFoundException) {
+                            if (mqttAndroidClient != null) {
+                                mqttAndroidClient.close();
+                                mqttAndroidClient = null;
+                            }
                             throw fileNotFoundException;
                         } catch (Exception e) {
                             // 读取stacktrace信息
@@ -413,6 +444,7 @@ public class MQTTSupport {
 
     private void connectMqtt(MqttConnectOptions options) throws MqttException {
         if (mqttAndroidClient != null && !mqttAndroidClient.isConnected()) {
+            XLog.w("start connect");
             mqttAndroidClient.connect(options, null, listener);
         }
     }
@@ -420,13 +452,11 @@ public class MQTTSupport {
     public void disconnectMqtt() {
         if (!isConnected())
             return;
-        mqttAndroidClient.close();
-//        try {
-        mqttAndroidClient.disconnect();
-//        } catch (MqttException e) {
-//            e.printStackTrace();
-//        }
-        mqttAndroidClient = null;
+        if (mqttAndroidClient != null) {
+            mqttAndroidClient.close();
+            mqttAndroidClient.disconnect();
+            mqttAndroidClient = null;
+        }
     }
 
     public void subscribe(String topic, int qos) throws MqttException {
@@ -449,7 +479,7 @@ public class MQTTSupport {
             @Override
             public void messageArrived(String topic, MqttMessage message) {
                 String messageInfo = new String(message.getPayload());
-                Log.w("MKScannerPro", String.format("Message:%s:%s", topic, messageInfo));
+                XLog.w(String.format("Message:%s:%s", topic, messageInfo));
                 EventBus.getDefault().post(new MQTTMessageArrivedEvent(topic, new String(message.getPayload())));
             }
         });
@@ -502,5 +532,18 @@ public class MQTTSupport {
             return mqttAndroidClient.isConnected();
         }
         return false;
+    }
+
+    // 记录上次页面控件点击时间,屏蔽无效点击事件
+    protected long mLastOnClickTime = 0;
+
+    public boolean isWindowLocked() {
+        long current = SystemClock.elapsedRealtime();
+        if (current - mLastOnClickTime > 1000) {
+            mLastOnClickTime = current;
+            return false;
+        } else {
+            return true;
+        }
     }
 }
