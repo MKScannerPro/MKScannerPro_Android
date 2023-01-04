@@ -5,15 +5,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
-import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityDeviceInfoProBinding;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.utils.SPUtiles;
@@ -33,29 +32,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class DeviceInfoProActivity extends BaseActivity {
-
-    @BindView(R.id.tv_product_model)
-    TextView tvProductModel;
-    @BindView(R.id.tv_manufacturer)
-    TextView tvManufacturer;
-    @BindView(R.id.tv_device_hardware_version)
-    TextView tvDeviceHardwareVersion;
-    @BindView(R.id.tv_device_master_software_version)
-    TextView tvDeviceMasterSoftwareVersion;
-    @BindView(R.id.tv_device_master_firmware_version)
-    TextView tvDeviceMasterFirmwareVersion;
-    @BindView(R.id.tv_device_master_mac)
-    TextView tvDeviceMasterMac;
-    @BindView(R.id.tv_device_slave_software_version)
-    TextView tvDeviceSlaveSoftwareVersion;
-    @BindView(R.id.tv_device_slave_firmware_version)
-    TextView tvDeviceSlaveFirmwareVersion;
-    @BindView(R.id.tv_device_slave_mac)
-    TextView tvDeviceSlaveMac;
+    private ActivityDeviceInfoProBinding mBind;
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -65,8 +43,8 @@ public class DeviceInfoProActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_device_info_pro);
-        ButterKnife.bind(this);
+        mBind = ActivityDeviceInfoProBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -103,12 +81,12 @@ public class DeviceInfoProActivity extends BaseActivity {
             if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
                 return;
             }
-            tvProductModel.setText(result.data.product_model);
-            tvManufacturer.setText(result.data.company_name);
-            tvDeviceHardwareVersion.setText(result.data.hardware_version);
-            tvDeviceMasterSoftwareVersion.setText(result.data.software_version);
-            tvDeviceMasterFirmwareVersion.setText(result.data.firmware_version);
-            tvDeviceMasterMac.setText(result.data.mac.toUpperCase());
+            mBind.tvProductModel.setText(result.data.product_model);
+            mBind.tvManufacturer.setText(result.data.company_name);
+            mBind.tvDeviceHardwareVersion.setText(result.data.hardware_version);
+            mBind.tvDeviceMasterSoftwareVersion.setText(result.data.software_version);
+            mBind.tvDeviceMasterFirmwareVersion.setText(result.data.firmware_version);
+            mBind.tvDeviceMasterMac.setText(result.data.mac.toUpperCase());
             getSlaveDeviceInfo();
         }
         if (msg_id == MQTTConstants.READ_MSG_ID_SLAVE_DEVICE_INFO) {
@@ -120,9 +98,9 @@ public class DeviceInfoProActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            tvDeviceSlaveSoftwareVersion.setText(result.data.software_version);
-            tvDeviceSlaveFirmwareVersion.setText(result.data.firmware_version);
-            tvDeviceSlaveMac.setText(result.data.slave_mac.toUpperCase());
+            mBind.tvDeviceSlaveSoftwareVersion.setText(result.data.software_version);
+            mBind.tvDeviceSlaveFirmwareVersion.setText(result.data.firmware_version);
+            mBind.tvDeviceSlaveMac.setText(result.data.slave_mac.toUpperCase());
         }
     }
 

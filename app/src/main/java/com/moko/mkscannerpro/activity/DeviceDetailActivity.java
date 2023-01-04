@@ -6,10 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -19,6 +15,7 @@ import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.adapter.ScanDeviceAdapter;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityDetailBinding;
 import com.moko.mkscannerpro.db.DBTools;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
@@ -45,23 +42,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class DeviceDetailActivity extends BaseActivity {
-    @BindView(R.id.tv_device_name)
-    TextView tvDeviceName;
-    @BindView(R.id.iv_scan_switch)
-    ImageView ivScanSwitch;
-    @BindView(R.id.tv_scan_device_total)
-    TextView tvScanDeviceTotal;
-    @BindView(R.id.rv_devices)
-    RecyclerView rvDevices;
-    @BindView(R.id.et_scan_interval)
-    EditText etScanInterval;
-    @BindView(R.id.ll_scan_interval)
-    LinearLayout llScanInterval;
+    private ActivityDetailBinding mBind;
+
     private boolean mScanSwitch;
     private int mScanInterval;
     private MokoDevice mMokoDevice;
@@ -73,18 +57,18 @@ public class DeviceDetailActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-        ButterKnife.bind(this);
+        mBind = ActivityDetailBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
-        tvDeviceName.setText(mMokoDevice.nickName);
+        mBind.tvDeviceName.setText(mMokoDevice.nickName);
         mScanDevices = new ArrayList<>();
         mAdapter = new ScanDeviceAdapter();
         mAdapter.openLoadAnimation();
         mAdapter.replaceData(mScanDevices);
-        rvDevices.setLayoutManager(new LinearLayoutManager(this));
-        rvDevices.setAdapter(mAdapter);
+        mBind.rvDevices.setLayoutManager(new LinearLayoutManager(this));
+        mBind.rvDevices.setAdapter(mAdapter);
         mHandler = new Handler(Looper.getMainLooper());
         mHandler.postDelayed(() -> {
             dismissLoadingProgressDialog();
@@ -95,11 +79,11 @@ public class DeviceDetailActivity extends BaseActivity {
     }
 
     private void changeView() {
-        ivScanSwitch.setImageResource(mScanSwitch ? R.drawable.checkbox_open : R.drawable.checkbox_close);
-        tvScanDeviceTotal.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
-        tvScanDeviceTotal.setText(getString(R.string.scan_device_total, mScanDevices.size()));
-        llScanInterval.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
-        rvDevices.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
+        mBind.ivScanSwitch.setImageResource(mScanSwitch ? R.drawable.checkbox_open : R.drawable.checkbox_close);
+        mBind.tvScanDeviceTotal.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
+        mBind.tvScanDeviceTotal.setText(getString(R.string.scan_device_total, mScanDevices.size()));
+        mBind.llScanInterval.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
+        mBind.rvDevices.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -129,7 +113,7 @@ public class DeviceDetailActivity extends BaseActivity {
             mHandler.removeMessages(0);
             mScanSwitch = result.data.scan_switch == 1;
             mScanInterval = result.data.scan_time;
-            etScanInterval.setText(String.valueOf(mScanInterval));
+            mBind.etScanInterval.setText(String.valueOf(mScanInterval));
             changeView();
         }
         if (msg_id == MQTTConstants.NOTIFY_MSG_ID_BLE_SCAN_RESULT) {
@@ -142,7 +126,7 @@ public class DeviceDetailActivity extends BaseActivity {
             for (JsonObject jsonObject : result.data) {
                 mScanDevices.add(0, jsonObject.toString());
             }
-            tvScanDeviceTotal.setText(getString(R.string.scan_device_total, mScanDevices.size()));
+            mBind.tvScanDeviceTotal.setText(getString(R.string.scan_device_total, mScanDevices.size()));
             mAdapter.replaceData(mScanDevices);
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_SCAN_CONFIG) {
@@ -167,7 +151,7 @@ public class DeviceDetailActivity extends BaseActivity {
         // 修改了设备名称
         MokoDevice device = DBTools.getInstance(DeviceDetailActivity.this).selectDevice(mMokoDevice.deviceId);
         mMokoDevice.nickName = device.nickName;
-        tvDeviceName.setText(mMokoDevice.nickName);
+        mBind.tvDeviceName.setText(mMokoDevice.nickName);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -233,13 +217,13 @@ public class DeviceDetailActivity extends BaseActivity {
             return;
         }
         mScanSwitch = !mScanSwitch;
-        ivScanSwitch.setImageResource(mScanSwitch ? R.drawable.checkbox_open : R.drawable.checkbox_close);
-        tvScanDeviceTotal.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
-        tvScanDeviceTotal.setText(getString(R.string.scan_device_total, 0));
-        llScanInterval.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
-        rvDevices.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
-        etScanInterval.setEnabled(mScanSwitch);
-        etScanInterval.setText(String.valueOf(mScanInterval));
+        mBind.ivScanSwitch.setImageResource(mScanSwitch ? R.drawable.checkbox_open : R.drawable.checkbox_close);
+        mBind.tvScanDeviceTotal.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
+        mBind.tvScanDeviceTotal.setText(getString(R.string.scan_device_total, 0));
+        mBind.llScanInterval.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
+        mBind.rvDevices.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
+        mBind.etScanInterval.setEnabled(mScanSwitch);
+        mBind.etScanInterval.setText(String.valueOf(mScanInterval));
         mScanDevices.clear();
         mAdapter.replaceData(mScanDevices);
         mHandler.postDelayed(() -> {
@@ -262,7 +246,7 @@ public class DeviceDetailActivity extends BaseActivity {
             ToastUtils.showToast(this, R.string.device_offline);
             return;
         }
-        String interval = etScanInterval.getText().toString();
+        String interval = mBind.etScanInterval.getText().toString();
         if (TextUtils.isEmpty(interval)) {
             ToastUtils.showToast(this, "Failed");
             return;

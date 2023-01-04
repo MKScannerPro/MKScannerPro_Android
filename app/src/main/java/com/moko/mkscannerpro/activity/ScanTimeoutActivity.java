@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -14,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityScanTimeoutBinding;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.utils.SPUtiles;
@@ -34,13 +34,9 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class ScanTimeoutActivity extends BaseActivity {
+    private ActivityScanTimeoutBinding mBind;
 
-    @BindView(R.id.et_scan_timeout)
-    EditText etScanTimeout;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -49,8 +45,8 @@ public class ScanTimeoutActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scan_timeout);
-        ButterKnife.bind(this);
+        mBind = ActivityScanTimeoutBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -88,7 +84,7 @@ public class ScanTimeoutActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            etScanTimeout.setText(String.valueOf(result.data.timeout));
+            mBind.etScanTimeout.setText(String.valueOf(result.data.timeout));
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_BLE_SCAN_TIMEOUT) {
             Type type = new TypeToken<MsgConfigResult>() {
@@ -165,7 +161,7 @@ public class ScanTimeoutActivity extends BaseActivity {
     public void onConfirm(View view) {
         if (isWindowLocked())
             return;
-        String timeoutStr = etScanTimeout.getText().toString();
+        String timeoutStr = mBind.etScanTimeout.getText().toString();
         if (!MQTTSupport.getInstance().isConnected()) {
             ToastUtils.showToast(this, R.string.network_error);
             return;

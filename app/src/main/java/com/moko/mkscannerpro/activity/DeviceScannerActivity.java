@@ -9,7 +9,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.elvishew.xlog.XLog;
@@ -22,6 +21,7 @@ import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.adapter.DeviceInfoAdapter;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityScannerBinding;
 import com.moko.mkscannerpro.dialog.PasswordDialog;
 import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
@@ -44,21 +44,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import no.nordicsemi.android.support.v18.scanner.ScanRecord;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 
 public class DeviceScannerActivity extends BaseActivity implements MokoScanDeviceCallback, BaseQuickAdapter.OnItemClickListener {
+    private ActivityScannerBinding mBind;
 
-
-    @BindView(R.id.iv_refresh)
-    ImageView ivRefresh;
-    @BindView(R.id.rv_devices)
-    RecyclerView rvDevices;
     private Animation animation = null;
     private DeviceInfoAdapter mAdapter;
     private ConcurrentHashMap<String, DeviceInfo> mDeviceMap;
@@ -75,22 +67,32 @@ public class DeviceScannerActivity extends BaseActivity implements MokoScanDevic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scanner);
-        ButterKnife.bind(this);
+        mBind = ActivityScannerBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         mDeviceMap = new ConcurrentHashMap<>();
         mDevices = new ArrayList<>();
         mAdapter = new DeviceInfoAdapter();
         mAdapter.openLoadAnimation();
         mAdapter.replaceData(mDevices);
         mAdapter.setOnItemClickListener(this);
-        rvDevices.setLayoutManager(new LinearLayoutManager(this));
-        rvDevices.setAdapter(mAdapter);
+        mBind.rvDevices.setLayoutManager(new LinearLayoutManager(this));
+        mBind.rvDevices.setAdapter(mAdapter);
         mokoBleScanner = new MokoBleScanner(this);
         mHandler = new Handler(Looper.getMainLooper());
         mSavedPassword = SPUtiles.getStringValue(this, AppConstants.SP_KEY_PASSWORD, "");
         if (animation == null) {
             startScan();
         }
+        mBind.ivRefresh.setOnClickListener(v -> {
+            if (isWindowLocked())
+                return;
+            if (animation == null) {
+                startScan();
+            } else {
+                mHandler.removeMessages(0);
+                mokoBleScanner.stopScanDevice();
+            }
+        });
     }
 
     @Override
@@ -125,7 +127,7 @@ public class DeviceScannerActivity extends BaseActivity implements MokoScanDevic
 
     @Override
     public void onStopScan() {
-        ivRefresh.clearAnimation();
+        mBind.ivRefresh.clearAnimation();
         animation = null;
     }
 
@@ -149,22 +151,6 @@ public class DeviceScannerActivity extends BaseActivity implements MokoScanDevic
         }
     }
 
-    @OnClick({R.id.iv_refresh})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.iv_refresh:
-                if (isWindowLocked())
-                    return;
-                if (animation == null) {
-                    startScan();
-                } else {
-                    mHandler.removeMessages(0);
-                    mokoBleScanner.stopScanDevice();
-                }
-                break;
-        }
-    }
-
     private void startScan() {
         if (!MokoSupport.getInstance().isBluetoothOpen()) {
             // 蓝牙未打开，开启蓝牙
@@ -172,7 +158,7 @@ public class DeviceScannerActivity extends BaseActivity implements MokoScanDevic
             return;
         }
         animation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
-        ivRefresh.startAnimation(animation);
+        mBind.ivRefresh.startAnimation(animation);
         mokoBleScanner.startScanDevice(this);
         mHandler.postDelayed(new Runnable() {
             @Override
@@ -227,7 +213,7 @@ public class DeviceScannerActivity extends BaseActivity implements MokoScanDevic
                         mokoBleScanner.stopScanDevice();
                     }
                     showLoadingProgressDialog();
-                    ivRefresh.postDelayed(() -> MokoSupport.getInstance().connDevice(deviceInfo.mac), 500);
+                    mBind.ivRefresh.postDelayed(() -> MokoSupport.getInstance().connDevice(deviceInfo.mac), 500);
                 }
 
                 @Override

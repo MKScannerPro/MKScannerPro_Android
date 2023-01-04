@@ -5,15 +5,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.CheckBox;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
-import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityBeaconTypeFilterBinding;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.utils.SPUtiles;
@@ -34,29 +33,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class BeaconTypeFilterActivity extends BaseActivity {
 
-    @BindView(R.id.cb_type_ibeacon)
-    CheckBox cbTypeIbeacon;
-    @BindView(R.id.cb_type_eddystone_uid)
-    CheckBox cbTypeEddystoneUid;
-    @BindView(R.id.cb_type_eddystone_url)
-    CheckBox cbTypeEddystoneUrl;
-    @BindView(R.id.cb_type_eddystone_tlm)
-    CheckBox cbTypeEddystoneTlm;
-    @BindView(R.id.cb_type_mkibeacon)
-    CheckBox cbTypeMkibeacon;
-    @BindView(R.id.cb_type_mkibeacon_acc)
-    CheckBox cbTypeMkibeaconAcc;
-    @BindView(R.id.cb_type_bxp_acc)
-    CheckBox cbTypeBxpAcc;
-    @BindView(R.id.cb_type_bxp_th)
-    CheckBox cbTypeBxpTh;
-    @BindView(R.id.cb_type_unknown)
-    CheckBox cbTypeUnknown;
+    private ActivityBeaconTypeFilterBinding mBind;
+
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -65,8 +45,8 @@ public class BeaconTypeFilterActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_beacon_type_filter);
-        ButterKnife.bind(this);
+        mBind = ActivityBeaconTypeFilterBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -104,15 +84,15 @@ public class BeaconTypeFilterActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            cbTypeIbeacon.setChecked(result.data.ibeacon == 1);
-            cbTypeEddystoneUid.setChecked(result.data.eddystone_uid == 1);
-            cbTypeEddystoneUrl.setChecked(result.data.eddystone_url == 1);
-            cbTypeEddystoneTlm.setChecked(result.data.eddystone_tlm == 1);
-            cbTypeMkibeacon.setChecked(result.data.MK_iBeacon == 1);
-            cbTypeMkibeaconAcc.setChecked(result.data.MK_ACC == 1);
-            cbTypeBxpAcc.setChecked(result.data.BXP_ACC == 1);
-            cbTypeBxpTh.setChecked(result.data.BXP_TH == 1);
-            cbTypeUnknown.setChecked(result.data.unknown == 1);
+            mBind.cbTypeIbeacon.setChecked(result.data.ibeacon == 1);
+            mBind.cbTypeEddystoneUid.setChecked(result.data.eddystone_uid == 1);
+            mBind.cbTypeEddystoneUrl.setChecked(result.data.eddystone_url == 1);
+            mBind.cbTypeEddystoneTlm.setChecked(result.data.eddystone_tlm == 1);
+            mBind.cbTypeMkibeacon.setChecked(result.data.MK_iBeacon == 1);
+            mBind.cbTypeMkibeaconAcc.setChecked(result.data.MK_ACC == 1);
+            mBind.cbTypeBxpAcc.setChecked(result.data.BXP_ACC == 1);
+            mBind.cbTypeBxpTh.setChecked(result.data.BXP_TH == 1);
+            mBind.cbTypeUnknown.setChecked(result.data.unknown == 1);
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_BEACON_TYPE_FILTER) {
             Type type = new TypeToken<MsgConfigResult>() {
@@ -158,15 +138,15 @@ public class BeaconTypeFilterActivity extends BaseActivity {
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
         TypeFilter typeFilter = new TypeFilter();
-        typeFilter.ibeacon = cbTypeIbeacon.isChecked() ? 1 : 0;
-        typeFilter.eddystone_uid = cbTypeEddystoneUid.isChecked() ? 1 : 0;
-        typeFilter.eddystone_url = cbTypeEddystoneUrl.isChecked() ? 1 : 0;
-        typeFilter.eddystone_tlm = cbTypeEddystoneTlm.isChecked() ? 1 : 0;
-        typeFilter.MK_iBeacon = cbTypeMkibeacon.isChecked() ? 1 : 0;
-        typeFilter.MK_ACC = cbTypeMkibeaconAcc.isChecked() ? 1 : 0;
-        typeFilter.BXP_ACC = cbTypeBxpAcc.isChecked() ? 1 : 0;
-        typeFilter.BXP_TH = cbTypeBxpTh.isChecked() ? 1 : 0;
-        typeFilter.unknown = cbTypeUnknown.isChecked() ? 1 : 0;
+        typeFilter.ibeacon = mBind.cbTypeIbeacon.isChecked() ? 1 : 0;
+        typeFilter.eddystone_uid = mBind.cbTypeEddystoneUid.isChecked() ? 1 : 0;
+        typeFilter.eddystone_url = mBind.cbTypeEddystoneUrl.isChecked() ? 1 : 0;
+        typeFilter.eddystone_tlm = mBind.cbTypeEddystoneTlm.isChecked() ? 1 : 0;
+        typeFilter.MK_iBeacon = mBind.cbTypeMkibeacon.isChecked() ? 1 : 0;
+        typeFilter.MK_ACC = mBind.cbTypeMkibeaconAcc.isChecked() ? 1 : 0;
+        typeFilter.BXP_ACC = mBind.cbTypeBxpAcc.isChecked() ? 1 : 0;
+        typeFilter.BXP_TH = mBind.cbTypeBxpTh.isChecked() ? 1 : 0;
+        typeFilter.unknown = mBind.cbTypeUnknown.isChecked() ? 1 : 0;
         String message = MQTTMessageAssembler.assembleWriteBeaconTypeFilter(deviceInfo, typeFilter);
         try {
             MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_BEACON_TYPE_FILTER, appMqttConfig.qos);

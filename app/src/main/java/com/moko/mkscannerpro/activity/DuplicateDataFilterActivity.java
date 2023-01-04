@@ -5,9 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -16,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityDuplicateDataFilterBinding;
 import com.moko.mkscannerpro.dialog.BottomDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
@@ -38,18 +36,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class DuplicateDataFilterActivity extends BaseActivity {
+    private ActivityDuplicateDataFilterBinding mBind;
 
-
-    @BindView(R.id.tv_filer_by)
-    TextView tvFilerBy;
-    @BindView(R.id.et_filtering_period)
-    EditText etFilteringPeriod;
-    @BindView(R.id.rl_filtering_period)
-    RelativeLayout rlFilteringPeriod;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -62,8 +51,8 @@ public class DuplicateDataFilterActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_duplicate_data_filter);
-        ButterKnife.bind(this);
+        mBind = ActivityDuplicateDataFilterBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -108,9 +97,9 @@ public class DuplicateDataFilterActivity extends BaseActivity {
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
             mSelected = result.data.rule;
-            tvFilerBy.setText(mValues.get(mSelected));
-            rlFilteringPeriod.setVisibility(mSelected > 0 ? View.VISIBLE : View.GONE);
-            etFilteringPeriod.setText(String.valueOf(result.data.time));
+            mBind.tvFilerBy.setText(mValues.get(mSelected));
+            mBind.rlFilteringPeriod.setVisibility(mSelected > 0 ? View.VISIBLE : View.GONE);
+            mBind.etFilteringPeriod.setText(String.valueOf(result.data.time));
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_DUPLICATE_DATA_FILTER) {
             Type type = new TypeToken<MsgConfigResult>() {
@@ -190,8 +179,8 @@ public class DuplicateDataFilterActivity extends BaseActivity {
         dialog.setDatas(mValues, mSelected);
         dialog.setListener(value -> {
             mSelected = value;
-            tvFilerBy.setText(mValues.get(value));
-            rlFilteringPeriod.setVisibility(mSelected > 0 ? View.VISIBLE : View.GONE);
+            mBind.tvFilerBy.setText(mValues.get(value));
+            mBind.rlFilteringPeriod.setVisibility(mSelected > 0 ? View.VISIBLE : View.GONE);
         });
         dialog.show(getSupportFragmentManager());
     }
@@ -199,7 +188,7 @@ public class DuplicateDataFilterActivity extends BaseActivity {
     public void onSave(View view) {
         if (isWindowLocked())
             return;
-        String filterPeriod = etFilteringPeriod.getText().toString();
+        String filterPeriod = mBind.etFilteringPeriod.getText().toString();
         if (!MQTTSupport.getInstance().isConnected()) {
             ToastUtils.showToast(this, R.string.network_error);
             return;

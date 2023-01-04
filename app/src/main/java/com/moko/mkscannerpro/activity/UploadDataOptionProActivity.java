@@ -5,15 +5,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.CheckBox;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
-import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityUploadDataOptionProBinding;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.utils.SPUtiles;
@@ -34,22 +33,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class UploadDataOptionProActivity extends BaseActivity {
 
+    private ActivityUploadDataOptionProBinding mBind;
 
-    @BindView(R.id.cb_timestamp)
-    CheckBox cbTimestamp;
-    @BindView(R.id.cb_device_type)
-    CheckBox cbDeviceType;
-    @BindView(R.id.cb_rssi)
-    CheckBox cbRssi;
-    @BindView(R.id.cb_raw_data_adv)
-    CheckBox cbRawDataAdv;
-    @BindView(R.id.cb_raw_data_rsp)
-    CheckBox cbRawDataRsp;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -58,8 +45,8 @@ public class UploadDataOptionProActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_upload_data_option_pro);
-        ButterKnife.bind(this);
+        mBind = ActivityUploadDataOptionProBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -97,11 +84,11 @@ public class UploadDataOptionProActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            cbTimestamp.setChecked(result.data.timestamp == 1);
-            cbDeviceType.setChecked(result.data.type == 1);
-            cbRssi.setChecked(result.data.rssi == 1);
-            cbRawDataAdv.setChecked(result.data.adv == 1);
-            cbRawDataRsp.setChecked(result.data.rsp == 1);
+            mBind.cbTimestamp.setChecked(result.data.timestamp == 1);
+            mBind.cbDeviceType.setChecked(result.data.type == 1);
+            mBind.cbRssi.setChecked(result.data.rssi == 1);
+            mBind.cbRawDataAdv.setChecked(result.data.adv == 1);
+            mBind.cbRawDataRsp.setChecked(result.data.rsp == 1);
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_UPLOAD_DATA_OPTION_PRO) {
             Type type = new TypeToken<MsgConfigResult>() {
@@ -147,11 +134,11 @@ public class UploadDataOptionProActivity extends BaseActivity {
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
         UploadDataOption uploadDataOption = new UploadDataOption();
-        uploadDataOption.type = cbDeviceType.isChecked() ? 1 : 0;
-        uploadDataOption.adv = cbRawDataAdv.isChecked() ? 1 : 0;
-        uploadDataOption.rsp = cbRawDataRsp.isChecked() ? 1 : 0;
-        uploadDataOption.rssi = cbRssi.isChecked() ? 1 : 0;
-        uploadDataOption.timestamp = cbTimestamp.isChecked() ? 1 : 0;
+        uploadDataOption.type = mBind.cbDeviceType.isChecked() ? 1 : 0;
+        uploadDataOption.adv = mBind.cbRawDataAdv.isChecked() ? 1 : 0;
+        uploadDataOption.rsp = mBind.cbRawDataRsp.isChecked() ? 1 : 0;
+        uploadDataOption.rssi = mBind.cbRssi.isChecked() ? 1 : 0;
+        uploadDataOption.timestamp = mBind.cbTimestamp.isChecked() ? 1 : 0;
         String message = MQTTMessageAssembler.assembleWriteUploadDataOptionPro(deviceInfo, uploadDataOption);
         try {
             MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_UPLOAD_DATA_OPTION_PRO, appMqttConfig.qos);

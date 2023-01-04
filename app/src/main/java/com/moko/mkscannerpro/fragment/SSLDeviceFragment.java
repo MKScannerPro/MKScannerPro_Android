@@ -9,13 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.FragmentSslDeviceBinding;
 import com.moko.mkscannerpro.dialog.BottomDialog;
 import com.moko.mkscannerpro.utils.FileUtils;
 import com.moko.mkscannerpro.utils.ToastUtils;
@@ -24,10 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class SSLDeviceFragment extends Fragment {
     public static final int REQUEST_CODE_SELECT_CA = 0x10;
@@ -35,24 +30,8 @@ public class SSLDeviceFragment extends Fragment {
     public static final int REQUEST_CODE_SELECT_CLIENT_CERT = 0x12;
 
     private static final String TAG = SSLDeviceFragment.class.getSimpleName();
-    @BindView(R.id.cb_ssl)
-    CheckBox cbSsl;
-    @BindView(R.id.tv_certification)
-    TextView tvCertification;
-    @BindView(R.id.tv_ca_file)
-    TextView tvCaFile;
-    @BindView(R.id.ll_ca)
-    LinearLayout llCa;
-    @BindView(R.id.tv_client_key_file)
-    TextView tvClientKeyFile;
-    @BindView(R.id.ll_client_key)
-    LinearLayout llClientKey;
-    @BindView(R.id.tv_client_cert_file)
-    TextView tvClientCertFile;
-    @BindView(R.id.ll_client_cert)
-    LinearLayout llClientCert;
-    @BindView(R.id.cl_certificate)
-    ConstraintLayout clCertificate;
+
+    private FragmentSslDeviceBinding mBind;
 
 
     private BaseActivity activity;
@@ -84,12 +63,11 @@ public class SSLDeviceFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView: ");
-        View view = inflater.inflate(R.layout.fragment_ssl_device, container, false);
-        ButterKnife.bind(this, view);
+        mBind = FragmentSslDeviceBinding.inflate(inflater, container, false);
         activity = (BaseActivity) getActivity();
-        clCertificate.setVisibility(mConnectMode > 0 ? View.VISIBLE : View.GONE);
-        cbSsl.setChecked(mConnectMode > 0);
-        cbSsl.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mBind.clCertificate.setVisibility(mConnectMode > 0 ? View.VISIBLE : View.GONE);
+        mBind.cbSsl.setChecked(mConnectMode > 0);
+        mBind.cbSsl.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {
@@ -103,7 +81,7 @@ public class SSLDeviceFragment extends Fragment {
                         mConnectMode = 3;
                     }
                 }
-                clCertificate.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                mBind.clCertificate.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             }
         });
         values = new ArrayList<>();
@@ -112,25 +90,25 @@ public class SSLDeviceFragment extends Fragment {
         values.add("Self signed certificates");
         if (mConnectMode > 0) {
             selected = mConnectMode - 1;
-            tvCaFile.setText(caPath);
-            tvClientKeyFile.setText(clientKeyPath);
-            tvClientCertFile.setText(clientCertPath);
-            tvCertification.setText(values.get(selected));
+            mBind.tvCaFile.setText(caPath);
+            mBind.tvClientKeyFile.setText(clientKeyPath);
+            mBind.tvClientCertFile.setText(clientCertPath);
+            mBind.tvCertification.setText(values.get(selected));
         }
         if (selected == 0) {
-            llCa.setVisibility(View.GONE);
-            llClientKey.setVisibility(View.GONE);
-            llClientCert.setVisibility(View.GONE);
+            mBind.llCa.setVisibility(View.GONE);
+            mBind.llClientKey.setVisibility(View.GONE);
+            mBind.llClientCert.setVisibility(View.GONE);
         } else if (selected == 1) {
-            llCa.setVisibility(View.VISIBLE);
-            llClientKey.setVisibility(View.GONE);
-            llClientCert.setVisibility(View.GONE);
+            mBind.llCa.setVisibility(View.VISIBLE);
+            mBind.llClientKey.setVisibility(View.GONE);
+            mBind.llClientCert.setVisibility(View.GONE);
         } else if (selected == 2) {
-            llCa.setVisibility(View.VISIBLE);
-            llClientKey.setVisibility(View.VISIBLE);
-            llClientCert.setVisibility(View.VISIBLE);
+            mBind.llCa.setVisibility(View.VISIBLE);
+            mBind.llClientKey.setVisibility(View.VISIBLE);
+            mBind.llClientCert.setVisibility(View.VISIBLE);
         }
-        return view;
+        return mBind.getRoot();
     }
 
     @Override
@@ -156,9 +134,9 @@ public class SSLDeviceFragment extends Fragment {
     }
 
     public void setConnectMode() {
-        clCertificate.setVisibility(mConnectMode > 0 ? View.VISIBLE : View.GONE);
-        cbSsl.setChecked(mConnectMode > 0);
-        cbSsl.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mBind.clCertificate.setVisibility(mConnectMode > 0 ? View.VISIBLE : View.GONE);
+        mBind.cbSsl.setChecked(mConnectMode > 0);
+        mBind.cbSsl.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {
@@ -172,28 +150,28 @@ public class SSLDeviceFragment extends Fragment {
                         mConnectMode = 3;
                     }
                 }
-                clCertificate.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                mBind.clCertificate.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             }
         });
         if (mConnectMode > 0) {
             selected = mConnectMode - 1;
-            tvCaFile.setText(caPath);
-            tvClientKeyFile.setText(clientKeyPath);
-            tvClientCertFile.setText(clientCertPath);
-            tvCertification.setText(values.get(selected));
+            mBind.tvCaFile.setText(caPath);
+            mBind.tvClientKeyFile.setText(clientKeyPath);
+            mBind.tvClientCertFile.setText(clientCertPath);
+            mBind.tvCertification.setText(values.get(selected));
         }
         if (selected == 0) {
-            llCa.setVisibility(View.GONE);
-            llClientKey.setVisibility(View.GONE);
-            llClientCert.setVisibility(View.GONE);
+            mBind.llCa.setVisibility(View.GONE);
+            mBind.llClientKey.setVisibility(View.GONE);
+            mBind.llClientCert.setVisibility(View.GONE);
         } else if (selected == 1) {
-            llCa.setVisibility(View.VISIBLE);
-            llClientKey.setVisibility(View.GONE);
-            llClientCert.setVisibility(View.GONE);
+            mBind.llCa.setVisibility(View.VISIBLE);
+            mBind.llClientKey.setVisibility(View.GONE);
+            mBind.llClientCert.setVisibility(View.GONE);
         } else if (selected == 2) {
-            llCa.setVisibility(View.VISIBLE);
-            llClientKey.setVisibility(View.VISIBLE);
-            llClientCert.setVisibility(View.VISIBLE);
+            mBind.llCa.setVisibility(View.VISIBLE);
+            mBind.llClientKey.setVisibility(View.VISIBLE);
+            mBind.llClientCert.setVisibility(View.VISIBLE);
         }
     }
 
@@ -214,22 +192,22 @@ public class SSLDeviceFragment extends Fragment {
         dialog.setDatas(values, selected);
         dialog.setListener(value -> {
             selected = value;
-            tvCertification.setText(values.get(selected));
+            mBind.tvCertification.setText(values.get(selected));
             if (selected == 0) {
                 mConnectMode = 1;
-                llCa.setVisibility(View.GONE);
-                llClientKey.setVisibility(View.GONE);
-                llClientCert.setVisibility(View.GONE);
+                mBind.llCa.setVisibility(View.GONE);
+                mBind.llClientKey.setVisibility(View.GONE);
+                mBind.llClientCert.setVisibility(View.GONE);
             } else if (selected == 1) {
                 mConnectMode = 2;
-                llCa.setVisibility(View.VISIBLE);
-                llClientKey.setVisibility(View.GONE);
-                llClientCert.setVisibility(View.GONE);
+                mBind.llCa.setVisibility(View.VISIBLE);
+                mBind.llClientKey.setVisibility(View.GONE);
+                mBind.llClientCert.setVisibility(View.GONE);
             } else if (selected == 2) {
                 mConnectMode = 3;
-                llCa.setVisibility(View.VISIBLE);
-                llClientKey.setVisibility(View.VISIBLE);
-                llClientCert.setVisibility(View.VISIBLE);
+                mBind.llCa.setVisibility(View.VISIBLE);
+                mBind.llClientKey.setVisibility(View.VISIBLE);
+                mBind.llClientCert.setVisibility(View.VISIBLE);
             }
         });
         dialog.show(activity.getSupportFragmentManager());
@@ -284,15 +262,15 @@ public class SSLDeviceFragment extends Fragment {
         if (file.exists()) {
             if (requestCode == REQUEST_CODE_SELECT_CA) {
                 caPath = filePath;
-                tvCaFile.setText(filePath);
+                mBind.tvCaFile.setText(filePath);
             }
             if (requestCode == REQUEST_CODE_SELECT_CLIENT_KEY) {
                 clientKeyPath = filePath;
-                tvClientKeyFile.setText(filePath);
+                mBind.tvClientKeyFile.setText(filePath);
             }
             if (requestCode == REQUEST_CODE_SELECT_CLIENT_CERT) {
                 clientCertPath = filePath;
-                tvClientCertFile.setText(filePath);
+                mBind.tvClientCertFile.setText(filePath);
             }
         } else {
             ToastUtils.showToast(activity, "file is not exists!");
@@ -300,9 +278,9 @@ public class SSLDeviceFragment extends Fragment {
     }
 
     public boolean isValid() {
-        final String caFile = tvCaFile.getText().toString();
-        final String clientKeyFile = tvClientKeyFile.getText().toString();
-        final String clientCertFile = tvClientCertFile.getText().toString();
+        final String caFile = mBind.tvCaFile.getText().toString();
+        final String clientKeyFile = mBind.tvClientKeyFile.getText().toString();
+        final String clientCertFile =mBind.tvClientCertFile.getText().toString();
         if (mConnectMode == 2) {
             if (TextUtils.isEmpty(caFile)) {
                 ToastUtils.showToast(activity, getString(R.string.mqtt_verify_ca));

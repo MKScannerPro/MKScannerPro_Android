@@ -7,23 +7,20 @@ import android.os.Looper;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.EditText;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
-import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivitySyncFromNtpBinding;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.support.MQTTConstants;
 import com.moko.support.MQTTSupport;
-import com.moko.support.entity.FilterUrl;
 import com.moko.support.entity.MsgConfigResult;
 import com.moko.support.entity.MsgDeviceInfo;
 import com.moko.support.entity.MsgReadResult;
@@ -38,16 +35,9 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class SyncTimeFromNTPActivity extends BaseActivity {
     private final String FILTER_ASCII = "[ -~]*";
-    @BindView(R.id.cb_sync_switch)
-    CheckBox cbSyncSwitch;
-    @BindView(R.id.et_ntp_server)
-    EditText etNtpServer;
-
+    private ActivitySyncFromNtpBinding mBind;
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -57,8 +47,8 @@ public class SyncTimeFromNTPActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sync_from_ntp);
-        ButterKnife.bind(this);
+        mBind = ActivitySyncFromNtpBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -76,7 +66,7 @@ public class SyncTimeFromNTPActivity extends BaseActivity {
 
             return null;
         };
-        etNtpServer.setFilters(new InputFilter[]{new InputFilter.LengthFilter(255), inputFilter});
+        mBind.etNtpServer.setFilters(new InputFilter[]{new InputFilter.LengthFilter(255), inputFilter});
         getNtpServer();
     }
 
@@ -105,8 +95,8 @@ public class SyncTimeFromNTPActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            cbSyncSwitch.setChecked(result.data.onOff == 1);
-            etNtpServer.setText(result.data.host);
+            mBind.cbSyncSwitch.setChecked(result.data.onOff == 1);
+            mBind.etNtpServer.setText(result.data.host);
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_NTP_SERVER) {
             Type type = new TypeToken<MsgConfigResult>() {
@@ -187,8 +177,8 @@ public class SyncTimeFromNTPActivity extends BaseActivity {
         deviceInfo.mac = mMokoDevice.mac;
 
         NTPServer ntpServer = new NTPServer();
-        ntpServer.onOff = cbSyncSwitch.isChecked() ? 1 : 0;
-        ntpServer.host = etNtpServer.getText().toString();
+        ntpServer.onOff = mBind.cbSyncSwitch.isChecked() ? 1 : 0;
+        ntpServer.host = mBind.etNtpServer.getText().toString();
 
         String message = MQTTMessageAssembler.assembleWriteNTPServer(deviceInfo, ntpServer);
         try {

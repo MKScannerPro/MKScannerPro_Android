@@ -7,9 +7,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -19,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityFilterMacAddressBinding;
 import com.moko.mkscannerpro.dialog.AlertMessageDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
@@ -42,18 +41,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class FilterMacAddressActivity extends BaseActivity {
+    private ActivityFilterMacAddressBinding mBind;
 
-
-    @BindView(R.id.cb_precise_match)
-    CheckBox cbPreciseMatch;
-    @BindView(R.id.cb_reverse_filter)
-    CheckBox cbReverseFilter;
-    @BindView(R.id.ll_mac_address)
-    LinearLayout llMacAddress;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -64,8 +54,8 @@ public class FilterMacAddressActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter_mac_address);
-        ButterKnife.bind(this);
+        mBind = ActivityFilterMacAddressBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -105,8 +95,8 @@ public class FilterMacAddressActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            cbPreciseMatch.setChecked(result.data.precise == 1);
-            cbReverseFilter.setChecked(result.data.reverse == 1);
+            mBind.cbPreciseMatch.setChecked(result.data.precise == 1);
+            mBind.cbReverseFilter.setChecked(result.data.reverse == 1);
             int number = result.data.array_num;
             if (number == 0) {
                 filterMacAddress = new ArrayList<>();
@@ -115,12 +105,12 @@ public class FilterMacAddressActivity extends BaseActivity {
                 if (filterMacAddress.size() > 0) {
                     for (int i = 0, l = filterMacAddress.size(); i < l; i++) {
                         String macAddress = filterMacAddress.get(i);
-                        View v = LayoutInflater.from(FilterMacAddressActivity.this).inflate(R.layout.item_mac_address_filter, llMacAddress, false);
+                        View v = LayoutInflater.from(FilterMacAddressActivity.this).inflate(R.layout.item_mac_address_filter, mBind.llMacAddress, false);
                         TextView title = v.findViewById(R.id.tv_mac_address_title);
                         EditText etMacAddress = v.findViewById(R.id.et_mac_address);
                         title.setText(String.format("MAC %d", i + 1));
                         etMacAddress.setText(macAddress);
-                        llMacAddress.addView(v);
+                        mBind.llMacAddress.addView(v);
                     }
                 }
             }
@@ -197,21 +187,21 @@ public class FilterMacAddressActivity extends BaseActivity {
     public void onAdd(View view) {
         if (isWindowLocked())
             return;
-        int count = llMacAddress.getChildCount();
+        int count = mBind.llMacAddress.getChildCount();
         if (count > 9) {
             ToastUtils.showToast(this, "You can set up to 10 filters!");
             return;
         }
-        View v = LayoutInflater.from(this).inflate(R.layout.item_mac_address_filter, llMacAddress, false);
+        View v = LayoutInflater.from(this).inflate(R.layout.item_mac_address_filter, mBind.llMacAddress, false);
         TextView title = v.findViewById(R.id.tv_mac_address_title);
         title.setText(String.format("MAC %d", count + 1));
-        llMacAddress.addView(v);
+        mBind.llMacAddress.addView(v);
     }
 
     public void onDel(View view) {
         if (isWindowLocked())
             return;
-        final int c = llMacAddress.getChildCount();
+        final int c = mBind.llMacAddress.getChildCount();
         if (c == 0) {
             ToastUtils.showToast(this, "There are currently no filters to delete");
             return;
@@ -220,9 +210,9 @@ public class FilterMacAddressActivity extends BaseActivity {
         dialog.setTitle("Warning");
         dialog.setMessage("Please confirm whether to delete it, if yes, the last option will be deleted!");
         dialog.setOnAlertConfirmListener(() -> {
-            int count = llMacAddress.getChildCount();
+            int count = mBind.llMacAddress.getChildCount();
             if (count > 0) {
-                llMacAddress.removeViewAt(count - 1);
+                mBind.llMacAddress.removeViewAt(count - 1);
             }
         });
         dialog.show(getSupportFragmentManager());
@@ -241,8 +231,8 @@ public class FilterMacAddressActivity extends BaseActivity {
         deviceInfo.mac = mMokoDevice.mac;
 
         FilterType filterType = new FilterType();
-        filterType.precise = cbPreciseMatch.isChecked() ? 1 : 0;
-        filterType.reverse = cbReverseFilter.isChecked() ? 1 : 0;
+        filterType.precise = mBind.cbPreciseMatch.isChecked() ? 1 : 0;
+        filterType.reverse = mBind.cbReverseFilter.isChecked() ? 1 : 0;
         filterType.array_num = filterMacAddress.size();
         filterType.rule = filterMacAddress;
 
@@ -255,17 +245,17 @@ public class FilterMacAddressActivity extends BaseActivity {
     }
 
     private boolean isValid() {
-        final int c = llMacAddress.getChildCount();
+        final int c = mBind.llMacAddress.getChildCount();
         if (c > 0) {
             // 发送设置的过滤RawData
-            int count = llMacAddress.getChildCount();
+            int count = mBind.llMacAddress.getChildCount();
             if (count == 0) {
                 ToastUtils.showToast(this, "Para Error");
                 return false;
             }
             filterMacAddress.clear();
             for (int i = 0; i < count; i++) {
-                View v = llMacAddress.getChildAt(i);
+                View v = mBind.llMacAddress.getChildAt(i);
                 EditText etMacAddress = v.findViewById(R.id.et_mac_address);
                 final String macAddress = etMacAddress.getText().toString();
                 if (TextUtils.isEmpty(macAddress)) {

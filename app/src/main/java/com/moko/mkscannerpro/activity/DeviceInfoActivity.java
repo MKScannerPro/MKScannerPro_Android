@@ -5,15 +5,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
-import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityDeviceInfoBinding;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.utils.SPUtiles;
@@ -32,23 +31,9 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class DeviceInfoActivity extends BaseActivity {
+    private ActivityDeviceInfoBinding mBind;
 
-    @BindView(R.id.tv_product_model)
-    TextView tvProductModel;
-    @BindView(R.id.tv_manufacturer)
-    TextView tvManufacturer;
-    @BindView(R.id.tv_device_hardware_version)
-    TextView tvDeviceHardwareVersion;
-    @BindView(R.id.tv_device_software_version)
-    TextView tvDeviceSoftwareVersion;
-    @BindView(R.id.tv_device_firmware_version)
-    TextView tvDeviceFirmwareVersion;
-    @BindView(R.id.tv_device_mac)
-    TextView tvDeviceMac;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -57,8 +42,8 @@ public class DeviceInfoActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_device_info);
-        ButterKnife.bind(this);
+        mBind = ActivityDeviceInfoBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -97,12 +82,12 @@ public class DeviceInfoActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            tvProductModel.setText(result.data.product_model);
-            tvManufacturer.setText(result.data.company_name);
-            tvDeviceHardwareVersion.setText(result.data.hardware_version);
-            tvDeviceSoftwareVersion.setText(result.data.software_version);
-            tvDeviceFirmwareVersion.setText(result.data.firmware_version);
-            tvDeviceMac.setText(result.data.device_mac.toUpperCase());
+            mBind.tvProductModel.setText(result.data.product_model);
+            mBind.tvManufacturer.setText(result.data.company_name);
+            mBind.tvDeviceHardwareVersion.setText(result.data.hardware_version);
+            mBind.tvDeviceSoftwareVersion.setText(result.data.software_version);
+            mBind.tvDeviceFirmwareVersion.setText(result.data.firmware_version);
+            mBind.tvDeviceMac.setText(result.data.device_mac.toUpperCase());
         }
     }
 

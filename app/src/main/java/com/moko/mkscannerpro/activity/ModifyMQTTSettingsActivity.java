@@ -8,8 +8,6 @@ import android.os.Looper;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.google.gson.Gson;
@@ -20,6 +18,7 @@ import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.adapter.MQTTFragmentAdapter;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityMqttDeviceModifyBinding;
 import com.moko.mkscannerpro.db.DBTools;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
@@ -50,36 +49,12 @@ import java.util.ArrayList;
 
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
     public static String TAG = ModifyMQTTSettingsActivity.class.getSimpleName();
     private final String FILTER_ASCII = "[ -~]*";
-    @BindView(R.id.et_mqtt_host)
-    EditText etMqttHost;
-    @BindView(R.id.et_mqtt_port)
-    EditText etMqttPort;
-    @BindView(R.id.et_mqtt_client_id)
-    EditText etMqttClientId;
-    @BindView(R.id.et_mqtt_subscribe_topic)
-    EditText etMqttSubscribeTopic;
-    @BindView(R.id.et_mqtt_publish_topic)
-    EditText etMqttPublishTopic;
-    @BindView(R.id.rb_general)
-    RadioButton rbGeneral;
-    @BindView(R.id.rb_user)
-    RadioButton rbUser;
-    @BindView(R.id.rb_ssl)
-    RadioButton rbSsl;
-    @BindView(R.id.vp_mqtt)
-    ViewPager2 vpMqtt;
-    @BindView(R.id.rg_mqtt)
-    RadioGroup rgMqtt;
-    @BindView(R.id.et_ssid)
-    EditText etSSID;
-    @BindView(R.id.et_password)
-    EditText etPassword;
+    private ActivityMqttDeviceModifyBinding mBind;
+
 
     private GeneralDeviceFragment generalFragment;
     private UserDeviceFragment userFragment;
@@ -97,8 +72,8 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mqtt_device_modify);
-        ButterKnife.bind(this);
+        mBind = ActivityMqttDeviceModifyBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -111,31 +86,31 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
 
             return null;
         };
-        etMqttHost.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
-        etMqttClientId.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
-        etMqttSubscribeTopic.setFilters(new InputFilter[]{new InputFilter.LengthFilter(128), filter});
-        etMqttPublishTopic.setFilters(new InputFilter[]{new InputFilter.LengthFilter(128), filter});
-        etSSID.setFilters(new InputFilter[]{new InputFilter.LengthFilter(32), filter});
-        etPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
+        mBind.etMqttHost.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
+        mBind.etMqttClientId.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
+        mBind.etMqttSubscribeTopic.setFilters(new InputFilter[]{new InputFilter.LengthFilter(128), filter});
+        mBind.etMqttPublishTopic.setFilters(new InputFilter[]{new InputFilter.LengthFilter(128), filter});
+        mBind.etSsid.setFilters(new InputFilter[]{new InputFilter.LengthFilter(32), filter});
+        mBind.etPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), filter});
         createFragment();
         initData();
         adapter = new MQTTFragmentAdapter(this);
         adapter.setFragmentList(fragments);
-        vpMqtt.setAdapter(adapter);
-        vpMqtt.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        mBind.vpMqtt.setAdapter(adapter);
+        mBind.vpMqtt.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 if (position == 0) {
-                    rbGeneral.setChecked(true);
+                    mBind.rbGeneral.setChecked(true);
                 } else if (position == 1) {
-                    rbUser.setChecked(true);
+                    mBind.rbUser.setChecked(true);
                 } else if (position == 2) {
-                    rbSsl.setChecked(true);
+                    mBind.rbSsl.setChecked(true);
                 }
             }
         });
-        vpMqtt.setOffscreenPageLimit(3);
-        rgMqtt.setOnCheckedChangeListener(this);
+        mBind.vpMqtt.setOffscreenPageLimit(3);
+        mBind.rgMqtt.setOnCheckedChangeListener(this);
         mHandler = new Handler(Looper.getMainLooper());
     }
 
@@ -285,13 +260,13 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
 
-        final String host = etMqttHost.getText().toString().trim();
-        final String port = etMqttPort.getText().toString().trim();
-        final String clientId = etMqttClientId.getText().toString().trim();
-        String topicSubscribe = etMqttSubscribeTopic.getText().toString().trim();
-        String topicPublish = etMqttPublishTopic.getText().toString().trim();
-        final String wifiSSID = etSSID.getText().toString().trim();
-        final String wifiPassword = etPassword.getText().toString().trim();
+        final String host = mBind.etMqttHost.getText().toString().trim();
+        final String port = mBind.etMqttPort.getText().toString().trim();
+        final String clientId = mBind.etMqttClientId.getText().toString().trim();
+        String topicSubscribe = mBind.etMqttSubscribeTopic.getText().toString().trim();
+        String topicPublish = mBind.etMqttPublishTopic.getText().toString().trim();
+        final String wifiSSID = mBind.etSsid.getText().toString().trim();
+        final String wifiPassword = mBind.etPassword.getText().toString().trim();
 
         mMQTTSettings.mqtt_host = host;
         mMQTTSettings.mqtt_port = Integer.parseInt(port);
@@ -357,12 +332,12 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
 
 
     private boolean isValid() {
-        String host = etMqttHost.getText().toString().trim();
-        String port = etMqttPort.getText().toString().trim();
-        String clientId = etMqttClientId.getText().toString().trim();
-        String topicSubscribe = etMqttSubscribeTopic.getText().toString().trim();
-        String topicPublish = etMqttPublishTopic.getText().toString().trim();
-        String ssid = etSSID.getText().toString().trim();
+        String host = mBind.etMqttHost.getText().toString().trim();
+        String port = mBind.etMqttPort.getText().toString().trim();
+        String clientId = mBind.etMqttClientId.getText().toString().trim();
+        String topicSubscribe = mBind.etMqttSubscribeTopic.getText().toString().trim();
+        String topicPublish = mBind.etMqttPublishTopic.getText().toString().trim();
+        String ssid = mBind.etSsid.getText().toString().trim();
 
         if (TextUtils.isEmpty(host)) {
             ToastUtils.showToast(this, getString(R.string.mqtt_verify_host));
@@ -405,13 +380,13 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
     public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
         switch (checkedId) {
             case R.id.rb_general:
-                vpMqtt.setCurrentItem(0);
+                mBind.vpMqtt.setCurrentItem(0);
                 break;
             case R.id.rb_user:
-                vpMqtt.setCurrentItem(1);
+                mBind.vpMqtt.setCurrentItem(1);
                 break;
             case R.id.rb_ssl:
-                vpMqtt.setCurrentItem(2);
+                mBind.vpMqtt.setCurrentItem(2);
                 break;
         }
     }

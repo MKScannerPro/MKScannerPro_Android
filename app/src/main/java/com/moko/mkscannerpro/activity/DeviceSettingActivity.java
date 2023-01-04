@@ -12,8 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
@@ -23,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityDeviceSettingBinding;
 import com.moko.mkscannerpro.db.DBTools;
 import com.moko.mkscannerpro.dialog.AlertMessageDialog;
 import com.moko.mkscannerpro.dialog.CustomDialog;
@@ -49,18 +48,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class DeviceSettingActivity extends BaseActivity {
     private final String FILTER_ASCII = "[ -~]*";
     public static String TAG = DeviceSettingActivity.class.getSimpleName();
-    @BindView(R.id.tv_name)
-    TextView tvName;
-    @BindView(R.id.rl_scan_timeout_option)
-    RelativeLayout rlScanTimeoutOption;
-    @BindView(R.id.rl_modify_mqtt_settings)
-    RelativeLayout rlModifyMqttSettings;
+    private ActivityDeviceSettingBinding mBind;
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -71,8 +62,8 @@ public class DeviceSettingActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_device_setting);
-        ButterKnife.bind(this);
+        mBind = ActivityDeviceSettingBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         filter = (source, start, end, dest, dstart, dend) -> {
             if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
@@ -83,15 +74,15 @@ public class DeviceSettingActivity extends BaseActivity {
 
         if (getIntent().getExtras() != null) {
             mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
-            tvName.setText(mMokoDevice.nickName);
+            mBind.tvName.setText(mMokoDevice.nickName);
         }
         if ((mMokoDevice.deviceType & 0x0F) > 1) {
             // MK107 Pro
-            rlScanTimeoutOption.setVisibility(View.GONE);
-            rlModifyMqttSettings.setVisibility(View.VISIBLE);
+            mBind.rlScanTimeoutOption.setVisibility(View.GONE);
+            mBind.rlModifyMqttSettings.setVisibility(View.VISIBLE);
         } else {
-            rlScanTimeoutOption.setVisibility(View.VISIBLE);
-            rlModifyMqttSettings.setVisibility(View.GONE);
+            mBind.rlScanTimeoutOption.setVisibility(View.VISIBLE);
+            mBind.rlModifyMqttSettings.setVisibility(View.GONE);
         }
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -166,7 +157,7 @@ public class DeviceSettingActivity extends BaseActivity {
                 }
                 DBTools.getInstance(this).deleteDevice(mMokoDevice);
                 EventBus.getDefault().post(new DeviceDeletedEvent(mMokoDevice.id));
-                tvName.postDelayed(() -> {
+                mBind.tvName.postDelayed(() -> {
                     dismissLoadingProgressDialog();
                     // 跳转首页，刷新数据
                     Intent intent = new Intent(this, MainActivity.class);
@@ -184,7 +175,7 @@ public class DeviceSettingActivity extends BaseActivity {
         // 修改了设备名称
         MokoDevice device = DBTools.getInstance(this).selectDevice(mMokoDevice.deviceId);
         mMokoDevice.nickName = device.nickName;
-        tvName.setText(mMokoDevice.nickName);
+        mBind.tvName.setText(mMokoDevice.nickName);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

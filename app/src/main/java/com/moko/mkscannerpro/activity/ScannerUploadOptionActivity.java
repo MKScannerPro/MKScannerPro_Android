@@ -6,9 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -17,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityScannerUploadOptionBinding;
 import com.moko.mkscannerpro.dialog.BottomDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
@@ -41,25 +40,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class ScannerUploadOptionActivity extends BaseActivity {
 
+    private ActivityScannerUploadOptionBinding mBind;
 
-    @BindView(R.id.tv_name)
-    TextView tvName;
-    @BindView(R.id.tv_condition_a)
-    TextView tvConditionA;
-    @BindView(R.id.tv_condition_b)
-    TextView tvConditionB;
-    @BindView(R.id.tv_relation)
-    TextView tvRelation;
-    @BindView(R.id.cl_filter)
-    ConstraintLayout clFilter;
-    @BindView(R.id.cb_filter_switch)
-    CheckBox cbFilterSwitch;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -73,16 +58,16 @@ public class ScannerUploadOptionActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scanner_upload_option);
-        ButterKnife.bind(this);
+        mBind = ActivityScannerUploadOptionBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
-        tvName.setText(mMokoDevice.nickName);
-        cbFilterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mBind.tvName.setText(mMokoDevice.nickName);
+        mBind.cbFilterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                clFilter.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                mBind.clFilter.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             }
         });
         mHandler = new Handler(Looper.getMainLooper());
@@ -124,15 +109,15 @@ public class ScannerUploadOptionActivity extends BaseActivity {
             mHandler.removeMessages(0);
             String relation = result.data.relation;
             mSelected = "AND".equals(relation) ? 1 : 0;
-            tvRelation.setText(mValues.get(mSelected));
-            tvConditionA.setText(result.data.rule1_switch == 0 ? "OFF" : "ON");
+            mBind.tvRelation.setText(mValues.get(mSelected));
+            mBind.tvConditionA.setText(result.data.rule1_switch == 0 ? "OFF" : "ON");
             isFilterAEnable = result.data.rule1_switch == 1;
-            tvConditionB.setText(result.data.rule2_switch == 0 ? "OFF" : "ON");
+            mBind.tvConditionB.setText(result.data.rule2_switch == 0 ? "OFF" : "ON");
             isFilterBEnable = result.data.rule2_switch == 1;
             if (isFilterAEnable && isFilterBEnable) {
-                tvRelation.setEnabled(true);
+                mBind.tvRelation.setEnabled(true);
             } else {
-                tvRelation.setEnabled(false);
+                mBind.tvRelation.setEnabled(false);
             }
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_FILTER_RELATION) {
@@ -260,7 +245,7 @@ public class ScannerUploadOptionActivity extends BaseActivity {
         BottomDialog dialog = new BottomDialog();
         dialog.setDatas(mValues, mSelected);
         dialog.setListener(value -> {
-            tvRelation.setText(value == 1 ? "And" : "Or");
+            mBind.tvRelation.setText(value == 1 ? "And" : "Or");
             mSelected = value;
             mHandler.postDelayed(() -> {
                 dismissLoadingProgressDialog();

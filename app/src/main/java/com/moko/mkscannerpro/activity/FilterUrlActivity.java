@@ -7,16 +7,14 @@ import android.os.Looper;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.EditText;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
-import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityFilterUrlBinding;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.utils.SPUtiles;
@@ -37,16 +35,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class FilterUrlActivity extends BaseActivity {
     private final String FILTER_ASCII = "[ -~]*";
+    private ActivityFilterUrlBinding mBind;
 
-    @BindView(R.id.cb_url)
-    CheckBox cbUrl;
-    @BindView(R.id.et_url)
-    EditText etUrl;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -55,8 +47,8 @@ public class FilterUrlActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter_url);
-        ButterKnife.bind(this);
+        mBind = ActivityFilterUrlBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -74,7 +66,7 @@ public class FilterUrlActivity extends BaseActivity {
 
             return null;
         };
-        etUrl.setFilters(new InputFilter[]{new InputFilter.LengthFilter(255), inputFilter});
+        mBind.etUrl.setFilters(new InputFilter[]{new InputFilter.LengthFilter(255), inputFilter});
         getFilterUrl();
     }
 
@@ -103,8 +95,8 @@ public class FilterUrlActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            cbUrl.setChecked(result.data.onOff == 1);
-            etUrl.setText(result.data.url);
+            mBind.cbUrl.setChecked(result.data.onOff == 1);
+            mBind.etUrl.setText(result.data.url);
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_FILTER_URL) {
             Type type = new TypeToken<MsgConfigResult>() {
@@ -185,8 +177,8 @@ public class FilterUrlActivity extends BaseActivity {
         deviceInfo.mac = mMokoDevice.mac;
 
         FilterUrl filterUrl = new FilterUrl();
-        filterUrl.onOff = cbUrl.isChecked() ? 1 : 0;
-        filterUrl.url = etUrl.getText().toString();
+        filterUrl.onOff = mBind.cbUrl.isChecked() ? 1 : 0;
+        filterUrl.url = mBind.etUrl.getText().toString();
 
         String message = MQTTMessageAssembler.assembleWriteFilterUrl(deviceInfo, filterUrl);
         try {

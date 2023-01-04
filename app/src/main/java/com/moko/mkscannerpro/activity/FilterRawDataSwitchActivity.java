@@ -7,8 +7,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -17,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityFilterRawDataSwitchBinding;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.utils.SPUtiles;
@@ -39,30 +38,10 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.lang.reflect.Type;
 
 import androidx.annotation.Nullable;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class FilterRawDataSwitchActivity extends BaseActivity {
+    private ActivityFilterRawDataSwitchBinding mBind;
 
-
-    @BindView(R.id.tv_filter_by_ibeacon)
-    TextView tvFilterByIbeacon;
-    @BindView(R.id.tv_filter_by_uid)
-    TextView tvFilterByUid;
-    @BindView(R.id.tv_filter_by_url)
-    TextView tvFilterByUrl;
-    @BindView(R.id.tv_filter_by_tlm)
-    TextView tvFilterByTlm;
-    @BindView(R.id.tv_filter_by_mkibeacon)
-    TextView tvFilterByMkibeacon;
-    @BindView(R.id.tv_filter_by_mkibeacon_acc)
-    TextView tvFilterByMkibeaconAcc;
-    @BindView(R.id.iv_filter_by_bxp_acc)
-    ImageView ivFilterByBxpAcc;
-    @BindView(R.id.iv_filter_by_bxp_th)
-    ImageView ivFilterByBxpTh;
-    @BindView(R.id.tv_filter_by_other)
-    TextView tvFilterByOther;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -74,8 +53,8 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter_raw_data_switch);
-        ButterKnife.bind(this);
+        mBind = ActivityFilterRawDataSwitchBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -115,17 +94,17 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            tvFilterByIbeacon.setText(result.data.ibeacon == 1 ? "ON" : "OFF");
-            tvFilterByUid.setText(result.data.eddystone_uid == 1 ? "ON" : "OFF");
-            tvFilterByUrl.setText(result.data.eddystone_url == 1 ? "ON" : "OFF");
-            tvFilterByTlm.setText(result.data.eddystone_tlm == 1 ? "ON" : "OFF");
-            tvFilterByMkibeacon.setText(result.data.mkibeacon == 1 ? "ON" : "OFF");
-            tvFilterByMkibeaconAcc.setText(result.data.mkibeacon_acc == 1 ? "ON" : "OFF");
+            mBind.tvFilterByIbeacon.setText(result.data.ibeacon == 1 ? "ON" : "OFF");
+            mBind.tvFilterByUid.setText(result.data.eddystone_uid == 1 ? "ON" : "OFF");
+            mBind.tvFilterByUrl.setText(result.data.eddystone_url == 1 ? "ON" : "OFF");
+            mBind.tvFilterByTlm.setText(result.data.eddystone_tlm == 1 ? "ON" : "OFF");
+            mBind.tvFilterByMkibeacon.setText(result.data.mkibeacon == 1 ? "ON" : "OFF");
+            mBind.tvFilterByMkibeaconAcc.setText(result.data.mkibeacon_acc == 1 ? "ON" : "OFF");
             isBXPAccOpen = result.data.bxp_acc == 1;
             isBXPTHOpen = result.data.bxp_th == 1;
-            ivFilterByBxpAcc.setImageResource(isBXPAccOpen ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
-            ivFilterByBxpTh.setImageResource(isBXPTHOpen ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
-            tvFilterByOther.setText(result.data.unknown == 1 ? "ON" : "OFF");
+            mBind.ivFilterByBxpAcc.setImageResource(isBXPAccOpen ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+            mBind.ivFilterByBxpTh.setImageResource(isBXPTHOpen ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+            mBind.tvFilterByOther.setText(result.data.unknown == 1 ? "ON" : "OFF");
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_FILTER_BXP_ACC
                 || msg_id == MQTTConstants.CONFIG_MSG_ID_FILTER_BXP_TH) {

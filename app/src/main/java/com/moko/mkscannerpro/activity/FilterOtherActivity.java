@@ -7,9 +7,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -19,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityFilterOtherBinding;
 import com.moko.mkscannerpro.dialog.AlertMessageDialog;
 import com.moko.mkscannerpro.dialog.BottomDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
@@ -27,7 +26,6 @@ import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.support.MQTTConstants;
 import com.moko.support.MQTTSupport;
-import com.moko.support.entity.DataTypeEnum;
 import com.moko.support.entity.FilterCondition;
 import com.moko.support.entity.FilterOther;
 import com.moko.support.entity.MsgConfigResult;
@@ -45,21 +43,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class FilterOtherActivity extends BaseActivity {
+    private ActivityFilterOtherBinding mBind;
 
-
-    @BindView(R.id.cb_other)
-    CheckBox cbOther;
-    @BindView(R.id.ll_filter_condition)
-    LinearLayout llFilterCondition;
-    @BindView(R.id.tv_other_relationship)
-    TextView tvOtherRelationship;
-    @BindView(R.id.cl_other_relationship)
-    ConstraintLayout clOtherRelationship;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -73,8 +59,8 @@ public class FilterOtherActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter_other);
-        ButterKnife.bind(this);
+        mBind = ActivityFilterOtherBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -114,14 +100,14 @@ public class FilterOtherActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            cbOther.setChecked(result.data.onOff == 1);
+            mBind.cbOther.setChecked(result.data.onOff == 1);
             if (result.data.array_num > 0) {
-                clOtherRelationship.setVisibility(View.VISIBLE);
+                mBind.clOtherRelationship.setVisibility(View.VISIBLE);
                 filterOther = result.data.rule;
                 if (filterOther.size() > 0) {
                     for (int i = 0, l = filterOther.size(); i < l; i++) {
                         FilterCondition.RawDataBean rawDataBean = filterOther.get(i);
-                        View v = LayoutInflater.from(FilterOtherActivity.this).inflate(R.layout.item_other_filter, llFilterCondition, false);
+                        View v = LayoutInflater.from(FilterOtherActivity.this).inflate(R.layout.item_other_filter, mBind.llFilterCondition, false);
                         TextView tvCondition = v.findViewById(R.id.tv_condition);
                         EditText etDataType = v.findViewById(R.id.et_data_type);
                         EditText etMin = v.findViewById(R.id.et_min);
@@ -138,7 +124,7 @@ public class FilterOtherActivity extends BaseActivity {
                         etMin.setText(String.valueOf(rawDataBean.start));
                         etMax.setText(String.valueOf(rawDataBean.end));
                         etRawData.setText(rawDataBean.data);
-                        llFilterCondition.addView(v);
+                        mBind.llFilterCondition.addView(v);
                     }
                 }
                 if (result.data.relationship < 1) {
@@ -157,10 +143,10 @@ public class FilterOtherActivity extends BaseActivity {
                     mValues.add("A | B | C");
                     mSelected = result.data.relationship - 3;
                 }
-                tvOtherRelationship.setText(mValues.get(mSelected));
+                mBind.tvOtherRelationship.setText(mValues.get(mSelected));
             } else {
                 filterOther = new ArrayList<>();
-                clOtherRelationship.setVisibility(View.GONE);
+                mBind.clOtherRelationship.setVisibility(View.GONE);
             }
 
         }
@@ -235,12 +221,12 @@ public class FilterOtherActivity extends BaseActivity {
     public void onAdd(View view) {
         if (isWindowLocked())
             return;
-        int count = llFilterCondition.getChildCount();
+        int count = mBind.llFilterCondition.getChildCount();
         if (count > 2) {
             ToastUtils.showToast(this, "You can set up to 3 filters!");
             return;
         }
-        View v = LayoutInflater.from(this).inflate(R.layout.item_other_filter, llFilterCondition, false);
+        View v = LayoutInflater.from(this).inflate(R.layout.item_other_filter, mBind.llFilterCondition, false);
         TextView tvCondition = v.findViewById(R.id.tv_condition);
         if (count == 0) {
             tvCondition.setText("Condition A");
@@ -249,8 +235,8 @@ public class FilterOtherActivity extends BaseActivity {
         } else {
             tvCondition.setText("Condition C");
         }
-        llFilterCondition.addView(v);
-        clOtherRelationship.setVisibility(View.VISIBLE);
+        mBind.llFilterCondition.addView(v);
+        mBind.clOtherRelationship.setVisibility(View.VISIBLE);
         mValues = new ArrayList<>();
         if (count == 0) {
             mValues.add("A");
@@ -267,13 +253,13 @@ public class FilterOtherActivity extends BaseActivity {
             mValues.add("A | B | C");
             mSelected = 2;
         }
-        tvOtherRelationship.setText(mValues.get(mSelected));
+        mBind.tvOtherRelationship.setText(mValues.get(mSelected));
     }
 
     public void onDel(View view) {
         if (isWindowLocked())
             return;
-        final int c = llFilterCondition.getChildCount();
+        final int c = mBind.llFilterCondition.getChildCount();
         if (c == 0) {
             ToastUtils.showToast(this, "There are currently no filters to delete");
             return;
@@ -282,12 +268,12 @@ public class FilterOtherActivity extends BaseActivity {
         dialog.setTitle("Warning");
         dialog.setMessage("Please confirm whether to delete it, if yes, the last option will be deleted!");
         dialog.setOnAlertConfirmListener(() -> {
-            int count = llFilterCondition.getChildCount();
+            int count = mBind.llFilterCondition.getChildCount();
             if (count > 0) {
-                llFilterCondition.removeViewAt(count - 1);
+                mBind.llFilterCondition.removeViewAt(count - 1);
                 mValues = new ArrayList<>();
                 if (count == 1) {
-                    clOtherRelationship.setVisibility(View.GONE);
+                    mBind.clOtherRelationship.setVisibility(View.GONE);
                     return;
                 }
                 if (count == 2) {
@@ -299,7 +285,7 @@ public class FilterOtherActivity extends BaseActivity {
                     mValues.add("A | B");
                     mSelected = 1;
                 }
-                tvOtherRelationship.setText(mValues.get(mSelected));
+                mBind.tvOtherRelationship.setText(mValues.get(mSelected));
             }
         });
         dialog.show(getSupportFragmentManager());
@@ -318,7 +304,7 @@ public class FilterOtherActivity extends BaseActivity {
         deviceInfo.mac = mMokoDevice.mac;
 
         FilterOther other = new FilterOther();
-        other.onOff = cbOther.isChecked() ? 1 : 0;
+        other.onOff = mBind.cbOther.isChecked() ? 1 : 0;
         other.array_num = this.filterOther.size();
         if (other.array_num == 1) {
             other.relationship = 0;
@@ -340,12 +326,12 @@ public class FilterOtherActivity extends BaseActivity {
     }
 
     private boolean isValid() {
-        final int count = llFilterCondition.getChildCount();
+        final int count = mBind.llFilterCondition.getChildCount();
         if (count > 0) {
             // 发送设置的过滤RawData
             filterOther.clear();
             for (int i = 0; i < count; i++) {
-                View v = llFilterCondition.getChildAt(i);
+                View v = mBind.llFilterCondition.getChildAt(i);
                 EditText etDataType = v.findViewById(R.id.et_data_type);
                 EditText etMin = v.findViewById(R.id.et_min);
                 EditText etMax = v.findViewById(R.id.et_max);
@@ -421,7 +407,7 @@ public class FilterOtherActivity extends BaseActivity {
         dialog.setDatas(mValues, mSelected);
         dialog.setListener(value -> {
             mSelected = value;
-            tvOtherRelationship.setText(mValues.get(value));
+            mBind.tvOtherRelationship.setText(mValues.get(value));
         });
         dialog.show(getSupportFragmentManager());
     }

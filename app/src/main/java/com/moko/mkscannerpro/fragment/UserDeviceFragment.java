@@ -6,22 +6,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
-import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.FragmentUserDeviceBinding;
 
 import androidx.fragment.app.Fragment;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class UserDeviceFragment extends Fragment {
     private final String FILTER_ASCII = "[ -~]*";
     private static final String TAG = UserDeviceFragment.class.getSimpleName();
-    @BindView(R.id.et_mqtt_username)
-    EditText etMqttUsername;
-    @BindView(R.id.et_mqtt_password)
-    EditText etMqttPassword;
+    private FragmentUserDeviceBinding mBind;
 
 
     private BaseActivity activity;
@@ -46,8 +40,7 @@ public class UserDeviceFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView: ");
-        View view = inflater.inflate(R.layout.fragment_user_device, container, false);
-        ButterKnife.bind(this, view);
+        mBind = FragmentUserDeviceBinding.inflate(inflater, container, false);
         activity = (BaseActivity) getActivity();
         InputFilter filter = (source, start, end, dest, dstart, dend) -> {
             if (!(source + "").matches(FILTER_ASCII)) {
@@ -56,11 +49,11 @@ public class UserDeviceFragment extends Fragment {
 
             return null;
         };
-        etMqttUsername.setFilters(new InputFilter[]{new InputFilter.LengthFilter(256), filter});
-        etMqttPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(256), filter});
-        etMqttUsername.setText(username);
-        etMqttPassword.setText(password);
-        return view;
+        mBind.etMqttUsername.setFilters(new InputFilter[]{new InputFilter.LengthFilter(256), filter});
+        mBind.etMqttPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(256), filter});
+        mBind.etMqttUsername.setText(username);
+        mBind.etMqttPassword.setText(password);
+        return mBind.getRoot();
     }
 
     @Override
@@ -86,7 +79,7 @@ public class UserDeviceFragment extends Fragment {
     }
 
     public void setUserName() {
-        etMqttUsername.setText(username);
+        mBind.etMqttUsername.setText(username);
     }
 
     public void setPassword(String password) {
@@ -94,16 +87,16 @@ public class UserDeviceFragment extends Fragment {
     }
 
     public void setPassword() {
-        etMqttPassword.setText(password);
+        mBind.etMqttPassword.setText(password);
     }
 
     public String getUsername() {
-        String username = etMqttUsername.getText().toString();
+        String username = mBind.etMqttUsername.getText().toString();
         return username;
     }
 
     public String getPassword() {
-        String password = etMqttPassword.getText().toString();
+        String password = mBind.etMqttPassword.getText().toString();
         return password;
     }
 }

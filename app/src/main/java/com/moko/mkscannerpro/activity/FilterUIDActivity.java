@@ -6,24 +6,20 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.Filter;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
-import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityFilterUidBinding;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.utils.SPUtiles;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.support.MQTTConstants;
 import com.moko.support.MQTTSupport;
-import com.moko.support.entity.FilterIBeacon;
 import com.moko.support.entity.FilterUid;
 import com.moko.support.entity.MsgConfigResult;
 import com.moko.support.entity.MsgDeviceInfo;
@@ -38,17 +34,9 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class FilterUIDActivity extends BaseActivity {
+    private ActivityFilterUidBinding mBind;
 
-    @BindView(R.id.cb_uid)
-    CheckBox cbUid;
-    @BindView(R.id.et_uid_namespace)
-    EditText etUidNamespace;
-    @BindView(R.id.et_uid_instance_id)
-    EditText etUidInstanceId;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -57,8 +45,8 @@ public class FilterUIDActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter_uid);
-        ButterKnife.bind(this);
+        mBind = ActivityFilterUidBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -97,9 +85,9 @@ public class FilterUIDActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            cbUid.setChecked(result.data.onOff == 1);
-            etUidNamespace.setText(result.data.namespace);
-            etUidInstanceId.setText(result.data.instance);
+            mBind.cbUid.setChecked(result.data.onOff == 1);
+            mBind.etUidNamespace.setText(result.data.namespace);
+            mBind.etUidInstanceId.setText(result.data.instance);
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_FILTER_UID) {
             Type type = new TypeToken<MsgConfigResult>() {
@@ -182,9 +170,9 @@ public class FilterUIDActivity extends BaseActivity {
         deviceInfo.mac = mMokoDevice.mac;
 
         FilterUid filterUid = new FilterUid();
-        filterUid.onOff = cbUid.isChecked() ? 1 : 0;
-        filterUid.namespace = etUidNamespace.getText().toString();
-        filterUid.instance = etUidInstanceId.getText().toString();
+        filterUid.onOff = mBind.cbUid.isChecked() ? 1 : 0;
+        filterUid.namespace = mBind.etUidNamespace.getText().toString();
+        filterUid.instance = mBind.etUidInstanceId.getText().toString();
 
         String message = MQTTMessageAssembler.assembleWriteFilterUid(deviceInfo, filterUid);
         try {
@@ -195,8 +183,8 @@ public class FilterUIDActivity extends BaseActivity {
     }
 
     private boolean isValid() {
-        final String namespace = etUidNamespace.getText().toString();
-        final String instanceId = etUidInstanceId.getText().toString();
+        final String namespace = mBind.etUidNamespace.getText().toString();
+        final String instanceId = mBind.etUidInstanceId.getText().toString();
         if (!TextUtils.isEmpty(namespace)) {
             int length = namespace.length();
             if (length % 2 != 0) {

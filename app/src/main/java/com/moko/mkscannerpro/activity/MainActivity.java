@@ -9,8 +9,6 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.elvishew.xlog.XLog;
@@ -22,6 +20,7 @@ import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.adapter.DeviceAdapter;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityMainBinding;
 import com.moko.mkscannerpro.db.DBTools;
 import com.moko.mkscannerpro.dialog.AlertMessageDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
@@ -56,18 +55,10 @@ import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnItemClickListener, BaseQuickAdapter.OnItemLongClickListener {
 
-    @BindView(R.id.rl_empty)
-    RelativeLayout rlEmpty;
-    @BindView(R.id.rv_device_list)
-    RecyclerView rvDeviceList;
-    @BindView(R.id.tv_title)
-    TextView tvTitle;
+    private ActivityMainBinding mBind;
     private ArrayList<MokoDevice> devices;
     private DeviceAdapter adapter;
     public Handler mHandler;
@@ -76,27 +67,27 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        mBind = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         devices = DBTools.getInstance(this).selectAllDevice();
         adapter = new DeviceAdapter();
         adapter.openLoadAnimation();
         adapter.replaceData(devices);
         adapter.setOnItemClickListener(this);
         adapter.setOnItemLongClickListener(this);
-        rvDeviceList.setLayoutManager(new LinearLayoutManager(this));
-        rvDeviceList.setAdapter(adapter);
+        mBind.rvDeviceList.setLayoutManager(new LinearLayoutManager(this));
+        mBind.rvDeviceList.setAdapter(adapter);
         if (devices.isEmpty()) {
-            rlEmpty.setVisibility(View.VISIBLE);
-            rvDeviceList.setVisibility(View.GONE);
+            mBind. rlEmpty.setVisibility(View.VISIBLE);
+            mBind.rvDeviceList.setVisibility(View.GONE);
         } else {
-            rvDeviceList.setVisibility(View.VISIBLE);
-            rlEmpty.setVisibility(View.GONE);
+            mBind.rvDeviceList.setVisibility(View.VISIBLE);
+            mBind.rlEmpty.setVisibility(View.GONE);
         }
         mHandler = new Handler(Looper.getMainLooper());
         MQTTAppConfigStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         if (!TextUtils.isEmpty(MQTTAppConfigStr)) {
-            tvTitle.setText(getString(R.string.mqtt_connecting));
+            mBind.tvTitle.setText(getString(R.string.mqtt_connecting));
         }
         StringBuffer buffer = new StringBuffer();
         // 记录机型
@@ -131,19 +122,19 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMQTTConnectionCompleteEvent(MQTTConnectionCompleteEvent event) {
-        tvTitle.setText(getString(R.string.app_name));
+        mBind.tvTitle.setText(getString(R.string.app_name));
         // 订阅所有设备的Topic
         subscribeAllDevices();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMQTTConnectionLostEvent(MQTTConnectionLostEvent event) {
-        tvTitle.setText(getString(R.string.mqtt_connecting));
+        mBind.tvTitle.setText(getString(R.string.mqtt_connecting));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMQTTConnectionFailureEvent(MQTTConnectionFailureEvent event) {
-        tvTitle.setText(getString(R.string.mqtt_connect_failed));
+        mBind.tvTitle.setText(getString(R.string.mqtt_connect_failed));
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING, priority = 100)
@@ -219,11 +210,11 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
                 }
                 adapter.replaceData(devices);
                 if (!devices.isEmpty()) {
-                    rvDeviceList.setVisibility(View.VISIBLE);
-                    rlEmpty.setVisibility(View.GONE);
+                    mBind.rvDeviceList.setVisibility(View.VISIBLE);
+                    mBind.rlEmpty.setVisibility(View.GONE);
                 } else {
-                    rvDeviceList.setVisibility(View.GONE);
-                    rlEmpty.setVisibility(View.VISIBLE);
+                    mBind.rvDeviceList.setVisibility(View.GONE);
+                    mBind.rlEmpty.setVisibility(View.VISIBLE);
                 }
             }
             if (ModifyMQTTSettingsActivity.TAG.equals(from)) {
@@ -329,8 +320,8 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
             devices.remove(mokoDevice);
             adapter.replaceData(devices);
             if (devices.isEmpty()) {
-                rlEmpty.setVisibility(View.VISIBLE);
-                rvDeviceList.setVisibility(View.GONE);
+                mBind.rlEmpty.setVisibility(View.VISIBLE);
+                mBind.rvDeviceList.setVisibility(View.GONE);
             }
         });
         dialog.show(getSupportFragmentManager());
@@ -414,7 +405,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
             return;
         if (requestCode == AppConstants.REQUEST_CODE_MQTT_CONFIG_APP) {
             MQTTAppConfigStr = data.getStringExtra(AppConstants.EXTRA_KEY_MQTT_CONFIG_APP);
-            tvTitle.setText(getString(R.string.app_name));
+            mBind.tvTitle.setText(getString(R.string.app_name));
             // 订阅所有设备的Topic
             subscribeAllDevices();
         }

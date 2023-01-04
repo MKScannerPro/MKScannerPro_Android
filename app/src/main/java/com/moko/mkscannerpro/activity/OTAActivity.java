@@ -6,8 +6,6 @@ import android.os.Looper;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
@@ -17,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityOtaBinding;
 import com.moko.mkscannerpro.dialog.BottomDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
@@ -40,22 +39,10 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class OTAActivity extends BaseActivity {
     private final String FILTER_ASCII = "[ -~]*";
-
     public static String TAG = OTAActivity.class.getSimpleName();
-    @BindView(R.id.et_host_content)
-    EditText etHostContent;
-    @BindView(R.id.et_host_port)
-    EditText etHostPort;
-    @BindView(R.id.et_host_catalogue)
-    EditText etHostCatalogue;
-    @BindView(R.id.tv_update_type)
-    TextView tvUpdateType;
-
+    private ActivityOtaBinding mBind;
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -66,8 +53,8 @@ public class OTAActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ota);
-        ButterKnife.bind(this);
+        mBind = ActivityOtaBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         if (getIntent().getExtras() != null) {
             mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
         }
@@ -78,8 +65,8 @@ public class OTAActivity extends BaseActivity {
 
             return null;
         };
-        etHostContent.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), inputFilter});
-        etHostCatalogue.setFilters(new InputFilter[]{new InputFilter.LengthFilter(100), inputFilter});
+        mBind.etHostContent.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), inputFilter});
+        mBind.etHostCatalogue.setFilters(new InputFilter[]{new InputFilter.LengthFilter(100), inputFilter});
         mHandler = new Handler(Looper.getMainLooper());
         String mqttConfigAppStr = SPUtiles.getStringValue(OTAActivity.this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -88,7 +75,7 @@ public class OTAActivity extends BaseActivity {
         mValues.add("CA certificate");
         mValues.add("Client certificate");
         mValues.add("Private key");
-        tvUpdateType.setText(mValues.get(mSelected));
+        mBind.tvUpdateType.setText(mValues.get(mSelected));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -164,9 +151,9 @@ public class OTAActivity extends BaseActivity {
             ToastUtils.showToast(this, R.string.device_offline);
             return;
         }
-        String hostStr = etHostContent.getText().toString();
-        String portStr = etHostPort.getText().toString();
-        String catalogueStr = etHostCatalogue.getText().toString();
+        String hostStr = mBind.etHostContent.getText().toString();
+        String portStr = mBind.etHostPort.getText().toString();
+        String catalogueStr = mBind.etHostCatalogue.getText().toString();
         if (TextUtils.isEmpty(hostStr)) {
             ToastUtils.showToast(this, R.string.mqtt_verify_host);
             return;
@@ -193,7 +180,7 @@ public class OTAActivity extends BaseActivity {
         dialog.setDatas(mValues, mSelected);
         dialog.setListener(value -> {
             mSelected = value;
-            tvUpdateType.setText(mValues.get(value));
+            mBind.tvUpdateType.setText(mValues.get(value));
         });
         dialog.show(getSupportFragmentManager());
     }

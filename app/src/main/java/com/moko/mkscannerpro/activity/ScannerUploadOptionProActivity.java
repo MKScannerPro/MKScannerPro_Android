@@ -7,7 +7,6 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -16,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityScannerUploadOptionProBinding;
 import com.moko.mkscannerpro.dialog.BottomDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
@@ -41,24 +41,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class ScannerUploadOptionProActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
 
+    private ActivityScannerUploadOptionProBinding mBind;
 
-    @BindView(R.id.tv_name)
-    TextView tvName;
-    @BindView(R.id.sb_rssi_filter)
-    SeekBar sbRssiFilter;
-    @BindView(R.id.tv_rssi_filter_value)
-    TextView tvRssiFilterValue;
-    @BindView(R.id.tv_rssi_filter_tips)
-    TextView tvRssiFilterTips;
-    @BindView(R.id.tv_filter_by_phy)
-    TextView tvFilterByPhy;
-    @BindView(R.id.tv_filter_relationship)
-    TextView tvFilterRelationship;
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -72,13 +59,13 @@ public class ScannerUploadOptionProActivity extends BaseActivity implements Seek
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scanner_upload_option_pro);
-        ButterKnife.bind(this);
+        mBind = ActivityScannerUploadOptionProBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
-        tvName.setText(mMokoDevice.nickName);
-        sbRssiFilter.setOnSeekBarChangeListener(this);
+        mBind.tvName.setText(mMokoDevice.nickName);
+        mBind.sbRssiFilter.setOnSeekBarChangeListener(this);
         mHandler = new Handler(Looper.getMainLooper());
         mPHYValues = new ArrayList<>();
         mPHYValues.add("1M PHY(V4.2)");
@@ -126,9 +113,9 @@ public class ScannerUploadOptionProActivity extends BaseActivity implements Seek
             }
             final int rssi = result.data.rssi;
             int progress = rssi + 127;
-            sbRssiFilter.setProgress(progress);
-            tvRssiFilterValue.setText(String.format("%ddBm", rssi));
-            tvRssiFilterTips.setText(getString(R.string.rssi_filter, rssi));
+            mBind.sbRssiFilter.setProgress(progress);
+            mBind.tvRssiFilterValue.setText(String.format("%ddBm", rssi));
+            mBind.tvRssiFilterTips.setText(getString(R.string.rssi_filter, rssi));
             getFilterPHY();
         }
         if (msg_id == MQTTConstants.READ_MSG_ID_FILTER_PHY) {
@@ -140,7 +127,7 @@ public class ScannerUploadOptionProActivity extends BaseActivity implements Seek
             }
             final int phy = result.data.phy;
             mPHYSelected = phy;
-            tvFilterByPhy.setText(mPHYValues.get(phy));
+            mBind.tvFilterByPhy.setText(mPHYValues.get(phy));
             getFilterRelationship();
         }
         if (msg_id == MQTTConstants.READ_MSG_ID_FILTER_RELATIONSHIP) {
@@ -152,7 +139,7 @@ public class ScannerUploadOptionProActivity extends BaseActivity implements Seek
             }
             final int rule = result.data.rule;
             mRelationshipSelected = rule;
-            tvFilterRelationship.setText(mRelationshipValues.get(rule));
+            mBind.tvFilterRelationship.setText(mRelationshipValues.get(rule));
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
         }
@@ -238,7 +225,7 @@ public class ScannerUploadOptionProActivity extends BaseActivity implements Seek
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
         FilterRSSI filterRSSI = new FilterRSSI();
-        filterRSSI.rssi = sbRssiFilter.getProgress() - 127;
+        filterRSSI.rssi = mBind.sbRssiFilter.getProgress() - 127;
         String message = MQTTMessageAssembler.assembleWriteFilterRSSI(deviceInfo, filterRSSI);
         try {
             MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_FILTER_RSSI, appMqttConfig.qos);
@@ -331,7 +318,7 @@ public class ScannerUploadOptionProActivity extends BaseActivity implements Seek
         dialog.setDatas(mPHYValues, mPHYSelected);
         dialog.setListener(value -> {
             mPHYSelected = value;
-            tvFilterByPhy.setText(mPHYValues.get(value));
+            mBind.tvFilterByPhy.setText(mPHYValues.get(value));
         });
         dialog.show(getSupportFragmentManager());
     }
@@ -343,7 +330,7 @@ public class ScannerUploadOptionProActivity extends BaseActivity implements Seek
         dialog.setDatas(mRelationshipValues, mRelationshipSelected);
         dialog.setListener(value -> {
             mRelationshipSelected = value;
-            tvFilterRelationship.setText(mRelationshipValues.get(value));
+            mBind.tvFilterRelationship.setText(mRelationshipValues.get(value));
         });
         dialog.show(getSupportFragmentManager());
     }
@@ -456,8 +443,8 @@ public class ScannerUploadOptionProActivity extends BaseActivity implements Seek
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         int rssi = progress - 127;
-        tvRssiFilterValue.setText(String.format("%ddBm", rssi));
-        tvRssiFilterTips.setText(getString(R.string.rssi_filter, rssi));
+        mBind.tvRssiFilterValue.setText(String.format("%ddBm", rssi));
+        mBind.tvRssiFilterTips.setText(getString(R.string.rssi_filter, rssi));
     }
 
     @Override

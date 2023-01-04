@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -14,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivitySettingForDeviceBinding;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.utils.SPUtiles;
@@ -32,37 +32,12 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 
 public class SettingForDeviceActivity extends BaseActivity {
 
     public static String TAG = SettingForDeviceActivity.class.getSimpleName();
-    @BindView(R.id.tv_type)
-    TextView tvType;
-    @BindView(R.id.tv_host)
-    TextView tvHost;
-    @BindView(R.id.tv_port)
-    TextView tvPort;
-    @BindView(R.id.tv_client_id)
-    TextView tvClientId;
-    @BindView(R.id.tv_user_name)
-    TextView tvUserName;
-    @BindView(R.id.tv_password)
-    TextView tvPassword;
-    @BindView(R.id.tv_clean_session)
-    TextView tvCleanSession;
-    @BindView(R.id.tv_qos)
-    TextView tvQos;
-    @BindView(R.id.tv_keep_alive)
-    TextView tvKeepAlive;
-    @BindView(R.id.tv_device_id)
-    TextView tvDeviceId;
-    @BindView(R.id.tv_subscribe_topic)
-    TextView tvSubscribeTopic;
-    @BindView(R.id.tv_publish_topic)
-    TextView tvPublishTopic;
+    private ActivitySettingForDeviceBinding mBind;
+
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -73,8 +48,8 @@ public class SettingForDeviceActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setting_for_device);
-        ButterKnife.bind(this);
+        mBind = ActivitySettingForDeviceBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -113,23 +88,23 @@ public class SettingForDeviceActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            tvHost.setText(result.data.host);
-            tvPort.setText(String.valueOf(result.data.port));
-            tvCleanSession.setText(result.data.clean_session == 0 ? "NO" : "YES");
-            tvUserName.setText(result.data.username);
-            tvPassword.setText(result.data.password);
-            tvQos.setText(String.valueOf(result.data.qos));
-            tvKeepAlive.setText(String.valueOf(result.data.keep_alive));
-            tvClientId.setText(result.data.client_id);
-            tvDeviceId.setText(result.data.device_id);
+            mBind.tvHost.setText(result.data.host);
+            mBind.tvPort.setText(String.valueOf(result.data.port));
+            mBind.tvCleanSession.setText(result.data.clean_session == 0 ? "NO" : "YES");
+            mBind.tvUserName.setText(result.data.username);
+            mBind.tvPassword.setText(result.data.password);
+            mBind.tvQos.setText(String.valueOf(result.data.qos));
+            mBind.tvKeepAlive.setText(String.valueOf(result.data.keep_alive));
+            mBind.tvClientId.setText(result.data.client_id);
+            mBind.tvDeviceId.setText(result.data.device_id);
 
             if (result.data.connect_type == 0) {
-                tvType.setText(getString(R.string.mqtt_connct_mode_tcp));
+                mBind.tvType.setText(getString(R.string.mqtt_connct_mode_tcp));
             } else {
-                tvType.setText("SSL");
+                mBind.tvType.setText("SSL");
             }
-            tvSubscribeTopic.setText(result.data.subscribe_topic);
-            tvPublishTopic.setText(result.data.publish_topic);
+            mBind.tvSubscribeTopic.setText(result.data.subscribe_topic);
+            mBind.tvPublishTopic.setText(result.data.publish_topic);
         }
     }
 

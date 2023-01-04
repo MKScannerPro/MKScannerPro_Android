@@ -9,9 +9,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -21,6 +19,7 @@ import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityFilterAdvNameBinding;
 import com.moko.mkscannerpro.dialog.AlertMessageDialog;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
@@ -44,19 +43,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class FilterAdvNameActivity extends BaseActivity {
 
     private final String FILTER_ASCII = "[ -~]*";
-
-    @BindView(R.id.cb_precise_match)
-    CheckBox cbPreciseMatch;
-    @BindView(R.id.cb_reverse_filter)
-    CheckBox cbReverseFilter;
-    @BindView(R.id.ll_dav_name)
-    LinearLayout llDavName;
+    private ActivityFilterAdvNameBinding mBind;
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -69,8 +59,8 @@ public class FilterAdvNameActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter_adv_name);
-        ButterKnife.bind(this);
+        mBind = ActivityFilterAdvNameBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -119,8 +109,8 @@ public class FilterAdvNameActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            cbPreciseMatch.setChecked(result.data.precise == 1);
-            cbReverseFilter.setChecked(result.data.reverse == 1);
+            mBind.cbPreciseMatch.setChecked(result.data.precise == 1);
+            mBind.cbReverseFilter.setChecked(result.data.reverse == 1);
             int number = result.data.array_num;
             if (number == 0) {
                 filterAdvName = new ArrayList<>();
@@ -129,13 +119,13 @@ public class FilterAdvNameActivity extends BaseActivity {
                 if (filterAdvName.size() > 0) {
                     for (int i = 0, l = filterAdvName.size(); i < l; i++) {
                         String advName = filterAdvName.get(i);
-                        View v = LayoutInflater.from(FilterAdvNameActivity.this).inflate(R.layout.item_adv_name_filter, llDavName, false);
+                        View v = LayoutInflater.from(FilterAdvNameActivity.this).inflate(R.layout.item_adv_name_filter, mBind.llDavName, false);
                         TextView title = v.findViewById(R.id.tv_adv_name_title);
                         EditText etAdvName = v.findViewById(R.id.et_adv_name);
                         etAdvName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20), filter});
                         title.setText(String.format("ADV Name%d", i + 1));
                         etAdvName.setText(advName);
-                        llDavName.addView(v);
+                        mBind.llDavName.addView(v);
                     }
                 }
             }
@@ -212,23 +202,23 @@ public class FilterAdvNameActivity extends BaseActivity {
     public void onAdd(View view) {
         if (isWindowLocked())
             return;
-        int count = llDavName.getChildCount();
+        int count = mBind.llDavName.getChildCount();
         if (count > 9) {
             ToastUtils.showToast(this, "You can set up to 10 filters!");
             return;
         }
-        View v = LayoutInflater.from(this).inflate(R.layout.item_adv_name_filter, llDavName, false);
+        View v = LayoutInflater.from(this).inflate(R.layout.item_adv_name_filter, mBind.llDavName, false);
         TextView title = v.findViewById(R.id.tv_adv_name_title);
         title.setText(String.format("ADV Name%d", count + 1));
         EditText etAdvName = v.findViewById(R.id.et_adv_name);
         etAdvName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20), filter});
-        llDavName.addView(v);
+        mBind.llDavName.addView(v);
     }
 
     public void onDel(View view) {
         if (isWindowLocked())
             return;
-        final int c = llDavName.getChildCount();
+        final int c = mBind.llDavName.getChildCount();
         if (c == 0) {
             ToastUtils.showToast(this, "There are currently no filters to delete");
             return;
@@ -237,9 +227,9 @@ public class FilterAdvNameActivity extends BaseActivity {
         dialog.setTitle("Warning");
         dialog.setMessage("Please confirm whether to delete it, if yes, the last option will be deleted!");
         dialog.setOnAlertConfirmListener(() -> {
-            int count = llDavName.getChildCount();
+            int count = mBind.llDavName.getChildCount();
             if (count > 0) {
-                llDavName.removeViewAt(count - 1);
+                mBind.llDavName.removeViewAt(count - 1);
             }
         });
         dialog.show(getSupportFragmentManager());
@@ -258,8 +248,8 @@ public class FilterAdvNameActivity extends BaseActivity {
         deviceInfo.mac = mMokoDevice.mac;
 
         FilterType filterType = new FilterType();
-        filterType.precise = cbPreciseMatch.isChecked() ? 1 : 0;
-        filterType.reverse = cbReverseFilter.isChecked() ? 1 : 0;
+        filterType.precise = mBind.cbPreciseMatch.isChecked() ? 1 : 0;
+        filterType.reverse = mBind.cbReverseFilter.isChecked() ? 1 : 0;
         filterType.array_num = filterAdvName.size();
         filterType.rule = filterAdvName;
 
@@ -272,17 +262,17 @@ public class FilterAdvNameActivity extends BaseActivity {
     }
 
     private boolean isValid() {
-        final int c = llDavName.getChildCount();
+        final int c = mBind.llDavName.getChildCount();
         if (c > 0) {
             // 发送设置的过滤RawData
-            int count = llDavName.getChildCount();
+            int count = mBind.llDavName.getChildCount();
             if (count == 0) {
                 ToastUtils.showToast(this, "Para Error");
                 return false;
             }
             filterAdvName.clear();
             for (int i = 0; i < count; i++) {
-                View v = llDavName.getChildAt(i);
+                View v = mBind.llDavName.getChildAt(i);
                 EditText etAdvName = v.findViewById(R.id.et_adv_name);
                 final String advName = etAdvName.getText().toString();
                 if (TextUtils.isEmpty(advName)) {

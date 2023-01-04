@@ -1,58 +1,47 @@
 package com.moko.mkscannerpro.dialog;
 
 import android.text.TextUtils;
-import android.view.View;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
-import com.moko.mkscannerpro.R;
-import com.moko.mkscannerpro.view.WheelView;
+import com.moko.mkscannerpro.databinding.DialogBottomBinding;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class BottomDialog extends MokoBaseDialog {
+public class BottomDialog extends MokoBaseDialog<DialogBottomBinding> {
 
 
-    @BindView(R.id.wv_bottom)
-    WheelView wvBottom;
     private ArrayList<String> mDatas;
     private int mIndex;
 
-
     @Override
-    public int getLayoutRes() {
-        return R.layout.dialog_bottom;
+    protected DialogBottomBinding getViewBind(LayoutInflater inflater, ViewGroup container) {
+        return DialogBottomBinding.inflate(inflater, container, false);
     }
 
     @Override
-    public void bindView(View v) {
-        ButterKnife.bind(this, v);
-        wvBottom.setData(mDatas);
-        wvBottom.setDefault(mIndex);
+    protected void onCreateView() {
+        mBind.wvBottom.setData(mDatas);
+        mBind.wvBottom.setDefault(mIndex);
+        mBind.tvCancel.setOnClickListener(v -> {
+            dismiss();
+        });
+        mBind.tvConfirm.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(mBind.wvBottom.getSelectedText())) {
+                return;
+            }
+            dismiss();
+            final int selected = mBind.wvBottom.getSelected();
+            if (listener != null) {
+                listener.onValueSelected(selected);
+            }
+        });
+        super.onCreateView();
     }
 
     @Override
     public float getDimAmount() {
         return 0.7f;
-    }
-
-    @OnClick(R.id.tv_cancel)
-    public void onCancel(View view) {
-        dismiss();
-    }
-
-    @OnClick(R.id.tv_confirm)
-    public void onConfirm(View view) {
-        if (TextUtils.isEmpty(wvBottom.getSelectedText())) {
-            return;
-        }
-        dismiss();
-        final int selected = wvBottom.getSelected();
-        if (listener != null) {
-            listener.onValueSelected(selected);
-        }
     }
 
     public void setDatas(ArrayList<String> datas, int index) {

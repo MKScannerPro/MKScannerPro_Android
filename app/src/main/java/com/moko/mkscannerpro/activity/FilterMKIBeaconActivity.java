@@ -6,16 +6,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.EditText;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannerpro.AppConstants;
-import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityFilterMkibeaconBinding;
 import com.moko.mkscannerpro.entity.MQTTConfig;
 import com.moko.mkscannerpro.entity.MokoDevice;
 import com.moko.mkscannerpro.utils.SPUtiles;
@@ -36,23 +34,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class FilterMKIBeaconActivity extends BaseActivity {
 
-    @BindView(R.id.cb_ibeacon)
-    CheckBox cbIbeacon;
-    @BindView(R.id.et_ibeacon_uuid)
-    EditText etIbeaconUuid;
-    @BindView(R.id.et_ibeacon_major_min)
-    EditText etIbeaconMajorMin;
-    @BindView(R.id.et_ibeacon_major_max)
-    EditText etIbeaconMajorMax;
-    @BindView(R.id.et_ibeacon_minor_min)
-    EditText etIbeaconMinorMin;
-    @BindView(R.id.et_ibeacon_minor_max)
-    EditText etIbeaconMinorMax;
+    private ActivityFilterMkibeaconBinding mBind;
+
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
 
@@ -61,8 +46,8 @@ public class FilterMKIBeaconActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter_mkibeacon);
-        ButterKnife.bind(this);
+        mBind = ActivityFilterMkibeaconBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -101,12 +86,12 @@ public class FilterMKIBeaconActivity extends BaseActivity {
             }
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
-            cbIbeacon.setChecked(result.data.onOff == 1);
-            etIbeaconUuid.setText(result.data.uuid);
-            etIbeaconMajorMin.setText(String.valueOf(result.data.min_major));
-            etIbeaconMajorMax.setText(String.valueOf(result.data.max_major));
-            etIbeaconMinorMin.setText(String.valueOf(result.data.min_minor));
-            etIbeaconMinorMax.setText(String.valueOf(result.data.max_minor));
+            mBind.cbIbeacon.setChecked(result.data.onOff == 1);
+            mBind.etIbeaconUuid.setText(result.data.uuid);
+            mBind.etIbeaconMajorMin.setText(String.valueOf(result.data.min_major));
+            mBind.etIbeaconMajorMax.setText(String.valueOf(result.data.max_major));
+            mBind.etIbeaconMinorMin.setText(String.valueOf(result.data.min_minor));
+            mBind.etIbeaconMinorMax.setText(String.valueOf(result.data.max_minor));
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_FILTER_MKIBEACON) {
             Type type = new TypeToken<MsgConfigResult>() {
@@ -189,12 +174,12 @@ public class FilterMKIBeaconActivity extends BaseActivity {
         deviceInfo.mac = mMokoDevice.mac;
 
         FilterIBeacon filterIBeacon = new FilterIBeacon();
-        filterIBeacon.onOff = cbIbeacon.isChecked() ? 1 : 0;
-        filterIBeacon.min_major = Integer.parseInt(etIbeaconMajorMin.getText().toString());
-        filterIBeacon.max_major = Integer.parseInt(etIbeaconMajorMax.getText().toString());
-        filterIBeacon.min_minor = Integer.parseInt(etIbeaconMinorMin.getText().toString());
-        filterIBeacon.max_minor = Integer.parseInt(etIbeaconMinorMax.getText().toString());
-        filterIBeacon.uuid = etIbeaconUuid.getText().toString();
+        filterIBeacon.onOff = mBind.cbIbeacon.isChecked() ? 1 : 0;
+        filterIBeacon.min_major = Integer.parseInt(mBind.etIbeaconMajorMin.getText().toString());
+        filterIBeacon.max_major = Integer.parseInt(mBind.etIbeaconMajorMax.getText().toString());
+        filterIBeacon.min_minor = Integer.parseInt(mBind.etIbeaconMinorMin.getText().toString());
+        filterIBeacon.max_minor = Integer.parseInt(mBind.etIbeaconMinorMax.getText().toString());
+        filterIBeacon.uuid = mBind.etIbeaconUuid.getText().toString();
 
         String message = MQTTMessageAssembler.assembleWriteFilterMKIBeacon(deviceInfo, filterIBeacon);
         try {
@@ -205,11 +190,11 @@ public class FilterMKIBeaconActivity extends BaseActivity {
     }
 
     private boolean isValid() {
-        final String uuid = etIbeaconUuid.getText().toString();
-        final String majorMin = etIbeaconMajorMin.getText().toString();
-        final String majorMax = etIbeaconMajorMax.getText().toString();
-        final String minorMin = etIbeaconMinorMin.getText().toString();
-        final String minorMax = etIbeaconMinorMax.getText().toString();
+        final String uuid = mBind.etIbeaconUuid.getText().toString();
+        final String majorMin = mBind.etIbeaconMajorMin.getText().toString();
+        final String majorMax = mBind.etIbeaconMajorMax.getText().toString();
+        final String minorMin = mBind.etIbeaconMinorMin.getText().toString();
+        final String minorMax = mBind.etIbeaconMinorMax.getText().toString();
         if (!TextUtils.isEmpty(uuid)) {
             int length = uuid.length();
             if (length % 2 != 0) {

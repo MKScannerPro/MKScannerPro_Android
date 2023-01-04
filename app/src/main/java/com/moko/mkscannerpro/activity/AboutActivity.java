@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.mkscannerpro.BaseApplication;
 import com.moko.mkscannerpro.R;
 import com.moko.mkscannerpro.base.BaseActivity;
+import com.moko.mkscannerpro.databinding.ActivityAboutBinding;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.mkscannerpro.utils.Utils;
 import com.moko.support.event.MQTTConnectionCompleteEvent;
@@ -20,20 +20,17 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.Calendar;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class AboutActivity extends BaseActivity {
 
-    @BindView(R.id.tv_soft_version)
-    TextView tvSoftVersion;
+
+    private ActivityAboutBinding mBind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
-        ButterKnife.bind(this);
-        tvSoftVersion.setText(getString(R.string.version_info, Utils.getVersionInfo(this)));
+        mBind = ActivityAboutBinding.inflate(getLayoutInflater());
+        setContentView(mBind.getRoot());
+        mBind.tvSoftVersion.setText(getString(R.string.version_info, Utils.getVersionInfo(this)));
     }
 
     public void openURL(View view) {
