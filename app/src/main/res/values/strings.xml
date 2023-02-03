@@ -2,82 +2,14 @@
     <string name="app_name">MKScannerPro</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
-    <string name="save">Save</string>
     <string name="mqtt_connecting">Connecting...</string>
     <string name="mqtt_connect_failed">Connect Failed</string>
     <string name="network_error">Network error,please check.</string>
     <string name="device_offline">Device is offline,pleaese check!</string>
     <string name="main_welcome">Please add new device!</string>
     <string name="main_add_device">Add Devices</string>
-    <string name="add_device_title">Add Device</string>
-    <string name="settings_mqtt_device">MQTT settings for device</string>
     <string name="setting_syncing">syncing</string>
 
-    <string name="password_null">Password cannot be empty!</string>
-    <string name="main_password_length">The password should be 8 characters</string>
-    <string name="mqtt_host">Host</string>
-    <string name="mqtt_port">Port</string>
-    <string name="mqtt_clean_session">Clean Session</string>
-    <string name="mqtt_connct_mode_tcp">TCP</string>
-    <string name="mqtt_connct_mode_ssl_one_way">One-way SSL</string>
-    <string name="mqtt_connct_mode_ssl_two_way">Two-way SSL</string>
-    <string name="mqtt_qos">Qos</string>
-    <string name="mqtt_keep_alive">Keep Alive</string>
-    <string name="mqtt_device_id">Device Id</string>
-    <string name="mqtt_client_id">Client Id</string>
-    <string name="mqtt_topic_subscribe">Subscribed Topic</string>
-    <string name="mqtt_topic_publish">Published Topic</string>
-    <string name="mqtt_username">Username</string>
-    <string name="mqtt_Password">Password</string>
-    <string name="mqtt_verify_client_id_empty">ClientId error</string>
-    <string name="mqtt_verify_device_id_empty">DeivceId error</string>
-    <string name="mqtt_verify_host">Host error</string>
-    <string name="mqtt_verify_port">Port range is 0~65535</string>
-    <string name="mqtt_verify_port_empty">Port error</string>
-    <string name="mqtt_verify_catalogue">Catalogue error</string>
-    <string name="mqtt_verify_file_path">File Path error</string>
-    <string name="mqtt_verify_ca">CA error</string>
-    <string name="mqtt_verify_topic_subscribe">Subscribed Topic error</string>
-    <string name="mqtt_verify_topic_publish">Published Topic error</string>
-    <string name="mqtt_verify_client_key">Client Key error</string>
-    <string name="mqtt_verify_client_cert">Client Cert error</string>
-    <string name="success">Success</string>
-    <string name="update_success">Update Success</string>
-    <string name="update_failed">Update Failed</string>
-    <string name="device_state_offline">Off-line</string>
-    <string name="device_state_online">On-line</string>
-    <string name="wifi_input_title">Please enter Wi-Fi information</string>
-    <string name="wifi_input_ssid">Wi-Fi :</string>
-    <string name="wifi_input_password">Password :</string>
-    <string name="wifi_verify_empty">Please enter a valid WIFI information</string>
-    <string name="mqtt_connecting_title">Connecting now</string>
-    <string name="mqtt_connecting_content">Make sure your phone and device are \nas close to your router as possible.</string>
-    <string name="mqtt_connecting_timeout">connect timeout</string>
-
-    <string name="modify_device_name_conn_success">Connection successful</string>
-    <string name="modify_device_name_done">Done</string>
-    <string name="modify_device_name_empty">Device name can\'t be blank</string>
-
-
-    <string name="more_modify_name_tips">Device name can\'t be blank</string>
-    <string name="more_device_info">Device information</string>
-
-    <string name="device_info_title">Device information</string>
-    <string name="device_info_manufacturer">Manufacturer</string>
-    <string name="device_info_date">Date of Manufacture</string>
-    <string name="device_info_product_model">Product Model</string>
-    <string name="device_info_hardware_version">Hardware Version</string>
-    <string name="device_info_software_version">Software Version</string>
-    <string name="device_info_master_software_version">Master Software Version</string>
-    <string name="device_info_slave_software_version">Slave Software Version</string>
-    <string name="device_info_firmware_version">Firmware Version</string>
-    <string name="device_info_master_firmware_version">Master Firmware Version</string>
-    <string name="device_info_slave_firmware_version">Slave Firmware Version</string>
-    <string name="device_info_mac">Device Mac</string>
-    <string name="device_info_master_mac">Master Device Mac</string>
-    <string name="device_info_slave_mac">Slave Device Mac</string>
-
-    <string name="ensure">OK</string>
 
     <string name="permission_storage_close_content">Please find it in cellphone setting- permission, and allow MKScannerPro use the Storage and location permission</string>
     <string name="permission_ble_close_content">Please find it in cellphone setting- permission, and allow MKScannerPro use the bluetooth and location permission</string>
@@ -93,18 +25,6 @@
     <string name="version_info">Version:%s</string>
     <string name="about_moko_name">MOKO TECHNOLOGY LTD.</string>
     <string name="company_website">www.mokosmart.com</string>
-    <string name="scan_device_total">Total %d pieces of data</string>
-    <string name="date_time"><![CDATA[Date&Time]]></string>
-    <string name="mkibeacon_acc"><![CDATA[MKiBeacon&ACC]]></string>
-    <string name="mkibeacon_acc_uuid"><![CDATA[MKiBeacon&ACC UUID]]></string>
-    <string name="mkibeacon_acc_major"><![CDATA[MKiBeacon&ACC Major]]></string>
-    <string name="mkibeacon_acc_minor"><![CDATA[MKiBeacon&ACC Minor]]></string>
-    <string name="beaconx_pro_t_h"><![CDATA[BeaconX Pro - T&H]]></string>
-    <string name="rssi_filter">*The device will uplink valid ADV data with RSSI no less than %ddBm.</string>
-    <string name="condition_tips">*Turn on the Filter Condition %s ,all filtration of this page will take effect.Turn off the Filter Condition %s, all filtration of this page will not take effect.</string>
-    <string name="filter_adv_name_raw_data"><![CDATA[ADV name&Raw data]]></string>
-    <string name="channel_domain"><![CDATA[Channel & Domain]]></string>
-    <string name="channel_domain_tips"><![CDATA[Note: Configure 2.4G&5G channel by selecting your domain, channels will be matched according to the domain]]></string>
 
 
 </resources>
