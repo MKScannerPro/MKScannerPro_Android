@@ -2,35 +2,28 @@ package com.moko.mkscannerpro.activity;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.view.View;
 
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.mkscannerpro.BaseApplication;
 import com.moko.mkscannerpro.R;
-import com.moko.mkscannerpro.base.BaseActivity;
 import com.moko.mkscannerpro.databinding.ActivityAboutBinding;
 import com.moko.mkscannerpro.utils.ToastUtils;
 import com.moko.mkscannerpro.utils.Utils;
-import com.moko.support.event.MQTTConnectionCompleteEvent;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.Calendar;
 
-public class AboutActivity extends BaseActivity {
-
-
-    private ActivityAboutBinding mBind;
+public class AboutActivity extends BaseActivity<ActivityAboutBinding> {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityAboutBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         mBind.tvSoftVersion.setText(getString(R.string.version_info, Utils.getVersionInfo(this)));
+    }
+
+    @Override
+    protected ActivityAboutBinding getViewBinding() {
+        return ActivityAboutBinding.inflate(getLayoutInflater());
     }
 
     public void openURL(View view) {
@@ -41,10 +34,6 @@ public class AboutActivity extends BaseActivity {
 
     public void back(View view) {
         finish();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMQTTConnectionCompleteEvent(MQTTConnectionCompleteEvent event) {
     }
 
     public void onFeedbackLog(View view) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grey_f2f2f2"
@@ -10,22 +11,13 @@
         android:layout_height="55dp"
         android:background="@color/blue_0188cc">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:onClick="setAppMQTTConfig"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/settings" />
 
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/app_name"
+            android:text="Select Device Type"
             android:textColor="@color/white_ffffff"
             android:textSize="17sp" />
 
@@ -40,60 +32,58 @@
             android:paddingRight="12dp"
             android:src="@drawable/about" />
 
-        <View
-            style="@style/divider_line"
-            android:layout_alignParentBottom="true"
-            android:background="@color/grey_999999" />
+
     </RelativeLayout>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1.0">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_device_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:overScrollMode="never" />
-
-        <RelativeLayout
-            android:id="@+id/rl_empty"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/grey_f2f2f2"
-            android:visibility="visible">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="50dp"
-                android:text="@string/main_welcome"
-                android:textColor="@color/grey_808080"
-                android:textSize="15sp" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="30dp"
-                android:src="@drawable/empty_device" />
-        </RelativeLayout>
-    </RelativeLayout>
-
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginLeft="53dp"
-        android:layout_marginRight="53dp"
-        android:layout_marginBottom="50dp"
-        android:background="@drawable/shape_corner_btn_bg"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@color/white_ffffff"
         android:clickable="true"
-        android:gravity="center"
-        android:onClick="mainAddDevices"
-        android:text="@string/main_add_device"
-        android:textColor="@color/white_ffffff"
-        android:textSize="15sp" />
+        android:onClick="onScannerGW"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:drawableRight="@drawable/arrow_right"
+            android:gravity="center_vertical"
+            android:text="Scanner gateway"
+            android:textColor="@color/black_333333"
+            android:textSize="15sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@color/white_ffffff"
+        android:clickable="true"
+        android:onClick="onRemoteGW"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:drawableRight="@drawable/arrow_right"
+            android:gravity="center_vertical"
+            android:text="Remote gateway"
+            android:textColor="@color/black_333333"
+            android:textSize="15sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

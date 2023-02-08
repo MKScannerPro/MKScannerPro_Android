@@ -12,19 +12,6 @@
         <item name="android:background">@color/grey_b3b3b3</item>
     </style>
 
-    <style name="divider_line_vertical">
-        <item name="android:layout_width">1px</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/grey_b3b3b3</item>
-    </style>
-
-    <style name="Dialog" parent="android:style/Theme.Dialog">
-        <item name="android:background">#00000000</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">true</item>
-    </style>
-
     <style name="BottomDialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowTitleStyle">@null</item>
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -51,9 +38,4 @@
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
     </style>
     <!--自定义seekbarstyle-->
-    <style name="CustomSeekbarStyle">
-        <item name="android:progressDrawable">@drawable/seekbar_progress_drawable</item>
-        <item name="android:thumb">@drawable/seekbar_thumb</item>
-        <item name="android:thumbOffset">0dp</item>
-    </style>
 </resources>
